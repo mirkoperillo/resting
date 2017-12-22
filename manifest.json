@@ -1,0 +1,24 @@
+{
+  "description": "rest client focused on organization of the saved requests",
+  "manifest_version": 2,
+  "name": "Resting",
+  "version": "0.1.0",
+  "author" : "Mirko Perillo",
+  "homepage_url": "http://owlcode.eu",
+  "icons": {
+    "32": "icons/letter-r_32.png",
+    "64": "icons/letter-r_64.png"
+  },
+
+  "background": {
+    "scripts": ["background.js"]
+  },
+  "browser_action": {
+    "default_icon": "icons/letter-r_32.png"
+  },
+  "permissions": [
+    "<all_urls>" 
+  ],
+  "content_security_policy": "script-src 'self' 'unsafe-eval'; object-src 'self';"
+
+}

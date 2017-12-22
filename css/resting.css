@@ -1,0 +1,25 @@
+.response-metric, .response-metric-value {
+  font-size: 0.9em;
+}
+
+.response-metric-value {
+  color: #d100a7;
+  font-weight: bold;
+}
+
+.selected-option {
+  font-weight: bold;
+  font-size: 110%;
+}
+
+
+.panel-heading > .panel-title > a {
+  display: block;
+  width: 100%;
+  text-decoration: none;
+}
+
+.panel-heading.active {
+  background-color: #337ab7;
+  color: white;
+}
