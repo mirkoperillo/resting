@@ -4,12 +4,11 @@
   "name": "Resting",
   "version": "0.1.0",
   "author" : "Mirko Perillo",
-  "homepage_url": "http://owlcode.eu",
+  "homepage_url": "https://github.com/mirkoperillo/resting",
   "icons": {
     "32": "icons/letter-r_32.png",
     "64": "icons/letter-r_64.png"
   },
-
   "background": {
     "scripts": ["background.js"]
   },
@@ -20,5 +19,4 @@
     "<all_urls>" 
   ],
   "content_security_policy": "script-src 'self' 'unsafe-eval'; object-src 'self';"
-
 }
