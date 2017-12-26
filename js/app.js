@@ -73,7 +73,7 @@ function AppViewModel() {
         self.bodyType(selectedBookmark.request.bodyType);
         if(self.bodyType() == 'form-data') {
           self.formDataParams(selectedBookmark.request.body);
-        } else if (bodyType == 'x-www-form-urlencoded') {
+        } else if (self.bodyType() == 'x-www-form-urlencoded') {
           self.formEncodedParams(selectedBookmark.request.body);
         } else {
           self.rawBody(selectedBookmark.request.body);
