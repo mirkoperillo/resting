@@ -122,7 +122,7 @@
         .map(header =>
           header.split(':')
             .map(h => h.trim()))
-        .map(header => ({ name: header.name, value: header.value }));
+        .map(headerFields => ({ name: headerFields[0], value: headerFields[1] }));
 
     const convertToHeaderObj = headersList =>
       headersList.reduce((acc, header) => {
