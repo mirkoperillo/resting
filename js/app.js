@@ -38,8 +38,8 @@
     });
 
     const convertToFormData = (data = []) =>
-      data.reduce((acc, [name, value]) => {
-        acc[name] = value;
+      data.reduce((acc, record) => {
+        acc[record.name] = record.value;
         return acc;
       }, {});
 
@@ -122,11 +122,11 @@
         .map(header =>
           header.split(':')
             .map(h => h.trim()))
-        .map(([name, value]) => ({ name, value }));
+        .map(header => ({ name: header.name, value: header.value }));
 
     const convertToHeaderObj = headersList =>
-      headersList.reduce((acc, [name, value]) => {
-        acc[name] = value;
+      headersList.reduce((acc, header) => {
+        acc[header.name] = header.value;
         return acc;
       }, {});
 
