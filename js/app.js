@@ -50,7 +50,7 @@
     loadBookmarks();
 
     const convertToUrlEncoded = (data = []) =>
-      data.map(([name, value]) => `${name}=${value}`).join('&');
+      data.map( param => `${param.name}=${param.value}`).join('&');
 
     const updateBody = (bodyType, body) => {
       if (bodyType === 'form-data') {
