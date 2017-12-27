@@ -1,262 +1,269 @@
-function AppViewModel() {
-  const self = this;
-  self.requestMethod = ko.observable();
-  self.requestUrl = ko.observable();
-  self.responseBody = ko.observable();
-  self.callDuration = ko.observable();
-  self.callStatus = ko.observable();
-  self.responseHeaders = ko.observableArray();
-  self.requestHeaders = ko.observableArray();
+(($, localforage, ko) => {
+  const makeBookmark = (id, request, name) => ({ id, request, name });
 
-  self.showRequestHeaders = ko.observable(true);
-  self.showRequestBody = ko.observable(false);
+  const makeRequest = (method, url, headers, bodyType, body) =>
+    ({ method, url, headers, bodyType, body });
 
-  self.showResponseHeaders = ko.observable(false);
-  self.showResponseBody = ko.observable(true);
-  
-  self.useFormattedResponseBody = ko.observable(false);
-  self.useRawResponseBody = ko.observable(true);
-  
-  self.bodyType = ko.observable();
-  self.formDataParams = ko.observableArray();
-  self.formEncodedParams = ko.observableArray();
-  self.rawBody = ko.observable();
-  
-  self.bookmarks = ko.observableArray();
-  
- 
-  
-  localforage.config({
-    name: 'resting',
-    storeName: 'bookmarks'
-});
-  
-  
-  let convertToFormData = function(data) {
-    let formDataObj = {};
-    if(data) {
-      data.forEach(function(entry) {
-        formDataObj[entry.name] = entry.value;
-      });
-    }
-    return formDataObj;
-  };
-  
-  let loadBookmarks = function() {
-    let bookmarks = [];
-    localforage.iterate(function(value,key, iterationNumber) {
-      self.bookmarks.push(JSON.parse(value));
-    });
-  };
-  
-   
-   // ATTENTION: load the bookmarks in an async mode
-   loadBookmarks();
-
-  
-  let convertToUrlEncoded = function(data) {
-    let encodedParams = "";
-    if(data) {
-      data.forEach(function(entry) {
-        encodedParams+=`${entry.name}=${entry.value}&`;
-      });
-    }
-    return encodedParams.slice(0,-1);
-  };
-
-  this.loadBookmark = function(bookmarkIdx) {
-      let idx = bookmarkIdx();
-      let selectedBookmark = self.bookmarks()[idx];
-      if(selectedBookmark) {
-        self.requestMethod(selectedBookmark.request.method);
-        self.requestUrl(selectedBookmark.request.url);
-        self.bodyType(selectedBookmark.request.bodyType);
-        if(self.bodyType() == 'form-data') {
-          self.formDataParams(selectedBookmark.request.body);
-        } else if (self.bodyType() == 'x-www-form-urlencoded') {
-          self.formEncodedParams(selectedBookmark.request.body);
-        } else {
-          self.rawBody(selectedBookmark.request.body);
-        }
-      }
-  }
-
-  this.saveBookmark = function() {
-    let bodyContent = body(self.bodyType());
-    let request = makeRequest(self.requestMethod(), self.requestUrl(),self.requestHeaders(), self.bodyType(), bodyContent);
-    let bookmark = makeBookmark(new Date().toString(), request);
-    localforage.setItem(bookmark.id, JSON.stringify(bookmark));
-    self.bookmarks.push(bookmark);
-  }
-  
-  this.deleteBookmark = function(bookmark) {
-    localforage.removeItem(bookmark.id).then(function() {
-      self.bookmarks.remove(bookmark);
-    });
-  }
-  
-  let body = function(bodyType) {
-    if(bodyType == 'form-data') {
-      return self.formDataParams();
-    } else if (bodyType == 'x-www-form-urlencoded') {
-      return self.formEncodedParams();
-    } else {
-      return self.rawBody();
-    }
-  }
-
-  this.send = function () {
-    console.log(`${self.requestMethod()} -- ${self.requestUrl()}`);
-    const serviceUrl = self.requestUrl();
-    const startCall = new Date().getTime();
-    let contentType = "application/x-www-form-urlencoded";
-    let flagProcessData = false;
-    
-    if(self.bodyType() == "form-data") {
-      flagProcessData = true;
-      contentType = "multipart/form-data";
-      data = convertToFormData(self.formDataParams());
-    } else if(self.bodyType() == "x-www-form-urlencoded") {
-      contentType = "application/x-www-form-urlencoded";
-      data = convertToUrlEncoded(self.formEncodedParams());
-    } else if(self.bodyType() == "raw") {
-      contentType = "application/json";
-      data = self.rawBody().trim();
-    } 
-    $.ajax({
-      method: self.requestMethod(),
-      url: serviceUrl,
-      headers: convertToHeaderObj(self.requestHeaders()),
-      processData: flagProcessData,
-      cache: false,
-      crossDomain: true,
-      contentType: contentType,
-      data: data,
-      success(data, status, jqXHR) {
-        const endCall = new Date().getTime();
-        const callDuration = endCall - startCall;
-        self.responseBody(JSON.stringify(data));
-        self.callDuration(`${callDuration}ms`);
-        self.callStatus(jqXHR.status);
-        let headers = parseHeaders(jqXHR.getAllResponseHeaders());
-        headers.forEach(function(h) {
-          self.responseHeaders.push(h);
-        });
-      },
-      error(jqXHR, textStatus, errorThrown) {
-        self.callStatus(jqXHR.status);
-      },
-    });
-  };
-
-  this.requestHeadersPanel = function() {
-    self.showRequestHeaders(true);
-    self.showRequestBody(false);
-  }
-  
-  this.requestBodyPanel = function() {
-    self.showRequestHeaders(false);
-    self.showRequestBody(true);
-  }
-  
-  this.responseHeadersPanel = function() {
-    self.showResponseHeaders(true);
-    self.showResponseBody(false);
-    
-    // close jquery accordion
-    $('#collapseOne').collapse('hide');
-  };
-  
-  this.responseBodyPanel = function() {
-    self.showResponseBody(true);
-    self.showResponseHeaders(false);
-  };
-  
-  this.formattedResponseBody = function() {
-    self.useFormattedResponseBody(true);
-    self.useRawResponseBody(false);
-    hljs.highlightBlock($('#formatted-resp'));
-  };
-  
-  this.rawResponseBody = function() {
-    self.useFormattedResponseBody(false);
-    self.useRawResponseBody(true);
-  };
-
-  let convertToHeaderObj = function(headersList) {
-    let headerObj = {};
-    $.each(headersList, function(index, header) {
-      headerObj[header.name] = header.value;
-    });
-    return headerObj;
-  }
-}
-
-function parseHeaders(headers) {
-  return headers.trim().split('\n').map((header) => {
-    const i = header.indexOf(':');
-    return {
-      name: header.substr(0, i).trim(),
-      value: header.substr(i + 1).trim(),
+  function AppViewModel() {
+    const Resting = {
+      requestMethod: ko.observable(),
+      requestUrl: ko.observable(),
+      responseBody: ko.observable(),
+      callDuration: ko.observable(),
+      callStatus: ko.observable(),
+      responseHeaders: ko.observableArray(),
+      requestHeaders: ko.observableArray(),
+      showRequestHeaders: ko.observable(true),
+      showRequestBody: ko.observable(false),
+      showResponseHeaders: ko.observable(false),
+      showResponseBody: ko.observable(true),
+      useFormattedResponseBody: ko.observable(false),
+      useRawResponseBody: ko.observable(true),
+      bodyType: ko.observable(),
+      formDataParams: ko.observableArray(),
+      formEncodedParams: ko.observableArray(),
+      rawBody: ko.observable(),
+      bookmarks: ko.observableArray(),
     };
-  });
-}
 
+    const contentTypesFromBodyTypes = {
+      'form-data': 'multipart/form-data',
+      'x-www-form-urlencoded': 'application/x-www-form-urlencoded',
+      'raw': 'application/json',
+    };
 
-function EntryListViewModel(params) {
-  const self = this;
-  self.entryList = params.entryList;
-  
-  self.entryName = ko.observable();
-  self.entryValue = ko.observable();
-  
-  
-  self.add = function() {
-    if(checkValidEntry(self.entryName(),self.entryValue())) {
-      self.entryList.push({name: self.entryName() , value: self.entryValue()});
-      self.entryName('');
-      self.entryValue('');
-    }
+    localforage.config({
+      name: 'resting',
+      storeName: 'bookmarks',
+    });
+
+    const convertToFormData = (data = []) =>
+      data.reduce((acc, record) => {
+        acc[record.name] = record.value;
+        return acc;
+      }, {});
+
+    const loadBookmarks = () =>
+      localforage.iterate(value => Resting.bookmarks.push(JSON.parse(value)));
+
+    // ATTENTION: load the bookmarks in an async mode
+    loadBookmarks();
+
+    const convertToUrlEncoded = (data = []) =>
+      data.map( param => `${param.name}=${param.value}`).join('&');
+
+    const updateBody = (bodyType, body) => {
+      if (bodyType === 'form-data') {
+        return Resting.formDataParams(body);
+      }
+
+      if (bodyType === 'x-www-form-urlencoded') {
+        return Resting.formEncodedParams(body);
+      }
+
+      return Resting.rawBody(body);
+    };
+
+    const parseRequest = (req) => {
+      Resting.requestMethod(req.method);
+      Resting.requestUrl(req.url);
+      Resting.bodyType(req.bodyType);
+      updateBody(req.bodyType, req.body);
+    };
+
+    const dataToSend = () => {
+      if (Resting.bodyType() === 'form-data') {
+        return convertToFormData(Resting.formDataParams());
+      }
+
+      if (Resting.bodyType() === 'x-www-form-urlencoded') {
+        return convertToUrlEncoded(Resting.formEncodedParams());
+      }
+
+      return Resting.rawBody().trim();
+    };
+
+    const loadBookmark = (bookmarkIdx) => {
+      const selectedBookmark = Resting.bookmarks()[bookmarkIdx()];
+      if (!selectedBookmark) return false;
+
+      return Resting.parseRequest(selectedBookmark.request);
+    };
+
+    const body = (bodyType) => {
+      if (bodyType === 'form-data') {
+        return Resting.formDataParams();
+      }
+
+      if (bodyType === 'x-www-form-urlencoded') {
+        return Resting.formEncodedParams();
+      }
+
+      return Resting.rawBody();
+    };
+
+    const saveBookmark = () => {
+      const request = makeRequest(
+        Resting.requestMethod(), Resting.requestUrl(),
+        Resting.requestHeaders(), Resting.bodyType(),
+        body(Resting.bodyType()));
+      const bookmark = makeBookmark(new Date().toString(), request);
+      localforage.setItem(bookmark.id, JSON.stringify(bookmark));
+      Resting.bookmarks.push(bookmark);
+    };
+
+    const deleteBookmark = bookmark =>
+      localforage.removeItem(bookmark.id)
+        .then(() =>
+          Resting.bookmarks.remove(bookmark));
+
+    const parseHeaders = headers =>
+      headers.trim().split('\n')
+        .map(header =>
+          header.split(':')
+            .map(h => h.trim()))
+        .map(headerFields => ({ name: headerFields[0], value: headerFields[1] }));
+
+    const convertToHeaderObj = headersList =>
+      headersList.reduce((acc, header) => {
+        acc[header.name] = header.value;
+        return acc;
+      }, {});
+
+    const send = () => {
+      const serviceUrl = Resting.requestUrl();
+      const serviceMethod = Resting.requestMethod();
+
+      console.log('send', serviceMethod, '--', serviceUrl);
+
+      const startCall = new Date().getTime();
+
+      $.ajax({
+        method: serviceMethod,
+        url: serviceUrl,
+        headers: convertToHeaderObj(Resting.requestHeaders()),
+        processData: (Resting.bodyType() === 'form-data'),
+        cache: false,
+        crossDomain: true,
+        contentType: contentTypesFromBodyTypes[Resting.bodyType()],
+        data: Resting.dataToSend(),
+        success: (data, status, jqXHR) => {
+          const endCall = new Date().getTime();
+          const callDuration = endCall - startCall;
+          Resting.responseBody(JSON.stringify(data));
+          Resting.callDuration(`${callDuration}ms`);
+          Resting.callStatus(jqXHR.status);
+          parseHeaders(jqXHR.getAllResponseHeaders())
+            .forEach(header =>
+              Resting.responseHeaders.push(header));
+        },
+        error: (jqXHR) => {
+          Resting.callStatus(jqXHR.status);
+        },
+      });
+    };
+
+    const requestHeadersPanel = () => {
+      Resting.showRequestHeaders(true);
+      Resting.showRequestBody(false);
+    };
+
+    const requestBodyPanel = () => {
+      Resting.showRequestHeaders(false);
+      Resting.showRequestBody(true);
+    };
+
+    const responseHeadersPanel = () => {
+      Resting.showResponseHeaders(true);
+      Resting.showResponseBody(false);
+
+      // close jquery accordion
+      $('#collapseOne').collapse('hide');
+    };
+
+    const responseBodyPanel = () => {
+      Resting.showResponseBody(true);
+      Resting.showResponseHeaders(false);
+    };
+
+    const formattedResponseBody = () => {
+      Resting.useFormattedResponseBody(true);
+      Resting.useRawResponseBody(false);
+      hljs.highlightBlock($('#formatted-resp')); // should be removed?
+    };
+
+    const rawResponseBody = () => {
+      Resting.useFormattedResponseBody(false);
+      Resting.useRawResponseBody(true);
+    };
+
+    Resting.parseRequest = parseRequest;
+    Resting.dataToSend = dataToSend;
+    Resting.send = send;
+    Resting.saveBookmark = saveBookmark;
+    Resting.loadBookmark = loadBookmark;
+    Resting.deleteBookmark = deleteBookmark;
+    Resting.requestBodyPanel = requestBodyPanel;
+    Resting.responseBodyPanel = responseBodyPanel;
+    Resting.formattedResponseBody = formattedResponseBody;
+    Resting.requestHeadersPanel = requestHeadersPanel;
+    Resting.responseHeadersPanel = responseHeadersPanel;
+    Resting.rawResponseBody = rawResponseBody;
+
+    return Resting;
   }
-  
-  self.remove = function(entry) {
-    self.entryList.remove(entry);
-  }
-  
-  let checkValidEntry = function(name,value) {
-    return name.trim().length > 0 && value.trim().length > 0;
-  }
-}
 
-function RequestBodyViewModel(params) {
-  const self = this;
-  
-  self.bodyType = params.bodyType;
-  self.formDataParams = params.formDataParams;
-  self.formEncodedParams = params.formEncodedParams;
-  self.rawBody = params.rawBody;
-}
+  function EntryListViewModel(params) {
+    const EntryList = {
+      entryList: params.entryList,
+      entryName: ko.observable(),
+      entryValue: ko.observable(),
+    };
 
-// Activates knockout.js
-$(document).ready(function() {
-// seems that this below must be the last instructions to permit component to be registered
-  ko.components.register('entry-list-widget', {
+    const checkValidEntry = (name, value) =>
+      name.trim().length > 0 && value.trim().length > 0;
+
+    const add = () => {
+      if (!checkValidEntry(EntryList.entryName(), EntryList.entryValue())) return false;
+
+      EntryList.entryList.push({ name: EntryList.entryName(), value: EntryList.entryValue() });
+      EntryList.entryName('');
+      EntryList.entryValue('');
+
+      return true;
+    };
+
+    const remove = entry =>
+      EntryList.entryList.remove(entry);
+
+    EntryList.add = add;
+    EntryList.remove = remove;
+
+    return EntryList;
+  }
+
+  function RequestBodyViewModel(params) {
+    const self = this;
+
+    self.bodyType = params.bodyType;
+    self.formDataParams = params.formDataParams;
+    self.formEncodedParams = params.formEncodedParams;
+    self.rawBody = params.rawBody;
+  }
+
+  // Activates knockout.js
+  $(() => {
+    // seems that this below must be the last instructions to permit component to be registered
+    ko.components.register('entry-list-widget', {
       viewModel: EntryListViewModel,
-      template: { element : 'entry-list-widget-template'}
-  });
+      template: { element: 'entry-list-widget-template' },
+    });
 
-  ko.components.register('request-body', {
+    ko.components.register('request-body', {
       viewModel: RequestBodyViewModel,
-      template: { element : 'request-body-template'}
+      template: { element: 'request-body-template' },
+    });
+
+    ko.applyBindings(new AppViewModel());
   });
-
-  ko.applyBindings(new AppViewModel());
-});
-
-
-let makeBookmark = function(id,request, name) {
-  return {id: id, request : request , name : name};
-}
-let makeRequest = function(method, url, headers, bodyType, body) {
-  return {method: method, url : url, headers : headers, bodyType : bodyType, body : body};
-}
+})($, localforage, ko);
