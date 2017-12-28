@@ -45,7 +45,7 @@
       }, {});
 
     const loadBookmarks = () =>
-      localforage.iterate(value => Resting.bookmarks.push(JSON.parse(value)));
+      localforage.iterate(function(value,key,iterationNumber) { Resting.bookmarks.push(JSON.parse(value)); });
 
     // ATTENTION: load the bookmarks in an async mode
     loadBookmarks();
