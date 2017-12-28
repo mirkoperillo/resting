@@ -24,6 +24,7 @@
       formEncodedParams: ko.observableArray(),
       rawBody: ko.observable(),
       bookmarks: ko.observableArray(),
+      methods: ko.observableArray(['GET','POST','PUT','DELETE','HEAD','OPTIONS','CONNECT','TRACE','PATCH'])
     };
 
     const contentTypesFromBodyTypes = {

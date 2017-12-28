@@ -32,22 +32,7 @@
 
     <div class="row" style="margin-top: 20px;">
       <div class="col-md-2">
-        <select class="form-control" id="sel1" data-bind="value: requestMethod">
-          <option>
-            GET
-          </option>
-
-          <option>
-            POST
-          </option>
-
-          <option>
-            PUT
-          </option>
-
-          <option>
-            DELETE
-          </option>
+        <select class="form-control" id="sel1" data-bind="options: methods, value: requestMethod">
         </select>
       </div>
 
