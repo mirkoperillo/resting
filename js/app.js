@@ -69,6 +69,7 @@
       Resting.requestMethod(req.method);
       Resting.requestUrl(req.url);
       Resting.bodyType(req.bodyType);
+      Resting.requestHeaders(req.headers);
       updateBody(req.bodyType, req.body);
     };
 
