@@ -71,6 +71,7 @@
       Resting.requestMethod(req.method);
       Resting.requestUrl(req.url);
       Resting.bodyType(req.bodyType);
+      Resting.requestHeaders(req.headers);
       updateBody(req.bodyType, req.body);
     };
 
@@ -110,7 +111,7 @@
       if(name && name.trim().length > 0) {
         return name.trim();
       } else {
-        return '';
+        return;
       }
     };
 
@@ -119,7 +120,7 @@
         Resting.requestMethod(), Resting.requestUrl(),
         Resting.requestHeaders(), Resting.bodyType(),
         body(Resting.bodyType()));
-      const bookmark = makeBookmark(new Date().toString(), request);
+      const bookmark = makeBookmark(new Date().toString(), request, validateBookmarkName(Resting.bookmarkName()));
       localforage.setItem(bookmark.id, JSON.stringify(bookmark));
       Resting.bookmarks.push(bookmark);
     };

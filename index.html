@@ -64,7 +64,7 @@
           <div class="panel-body">
             <div class="list-group" data-bind="foreach: bookmarks">
               <a class="list-group-item clearfix" data-bind="click: function() {$parent.loadBookmark($index)} ">
-              <span data-bind="text: request.method +' ' + request.url"></span>
+              <span data-bind="text: name && name.length > 0 ? name : request.method +' ' + request.url"></span>
               <span class="pull-right">
                 <button class="btn btn-xs btn-danger" data-bind="click: $parent.deleteBookmark"><span class="glyphicon glyphicon-trash" aria-hidden="true"></span></button> 
               </span>
