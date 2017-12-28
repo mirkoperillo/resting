@@ -189,7 +189,6 @@
     const formattedResponseBody = () => {
       Resting.useFormattedResponseBody(true);
       Resting.useRawResponseBody(false);
-      hljs.highlightBlock($('#formatted-resp')); // should be removed?
     };
 
     const rawResponseBody = () => {
