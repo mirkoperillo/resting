@@ -49,7 +49,7 @@
           </div>
 
           <div class="btn-group" role="group">
-            <button type="button" class="btn btn-primary" data-bind="click: saveBookmark">Save</button>
+            <button type="button" class="btn btn-primary" data-bind="click: saveBookmarkDialog">Save</button>
           </div>
         </div>
       </div>
@@ -209,11 +209,21 @@
       </div>
     </template>
     
+  <div id="save-bookmark-dialog" class="panel panel-primary mm" data-bind="visible: showBookmarkDialog">
+    <div class="panel-heading">
+      Save Bookmark
+    </div>
+    <div class="panel-body">
+      Name: <input type="text" class="form-control" data-bind="value: bookmarkName"></input>
+    </div>
+    <div class="panel-footer">
+      <button class="btn btn-default" data-bind="click: function() {saveBookmark(); dismissSaveBookmarkDialog();}">Save</button><button class="btn btn-default" data-bind="click: dismissSaveBookmarkDialog">Cancel</button> 
+    </div>      
+  </div>  
+    
   <footer>
     <p>Addon icon made by <a href="http://www.freepik.com" target="_blank">Freepik</a> from <a href="http://www.flaticon.com" target="_blank">www.flaticon.com</a></p>
   </footer>    
-    
-    
     
     
 
