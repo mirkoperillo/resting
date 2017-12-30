@@ -24,6 +24,8 @@
       formEncodedParams: ko.observableArray(),
       rawBody: ko.observable(),
       bookmarks: ko.observableArray(),
+      bookmarkName: ko.observable(),
+      showBookmarkDialog: ko.observable(false),
       methods: ko.observableArray(['GET','POST','PUT','DELETE','HEAD','OPTIONS','CONNECT','TRACE','PATCH'])
     };
 
@@ -104,12 +106,21 @@
       return Resting.rawBody();
     };
 
+
+    const validateBookmarkName = (name) => {
+      if(name && name.trim().length > 0) {
+        return name.trim();
+      } else {
+        return;
+      }
+    };
+
     const saveBookmark = () => {
       const request = makeRequest(
         Resting.requestMethod(), Resting.requestUrl(),
         Resting.requestHeaders(), Resting.bodyType(),
         body(Resting.bodyType()));
-      const bookmark = makeBookmark(new Date().toString(), request);
+      const bookmark = makeBookmark(new Date().toString(), request, validateBookmarkName(Resting.bookmarkName()));
       localforage.setItem(bookmark.id, JSON.stringify(bookmark));
       Resting.bookmarks.push(bookmark);
     };
@@ -197,7 +208,16 @@
       Resting.useFormattedResponseBody(false);
       Resting.useRawResponseBody(true);
     };
-
+    
+    const saveBookmarkDialog = () => {
+      Resting.showBookmarkDialog(true);
+    };
+    
+    const dismissSaveBookmarkDialog = () => {
+      Resting.showBookmarkDialog(false);
+      Resting.bookmarkName('');
+    };
+    
     Resting.parseRequest = parseRequest;
     Resting.dataToSend = dataToSend;
     Resting.send = send;
@@ -210,6 +230,8 @@
     Resting.requestHeadersPanel = requestHeadersPanel;
     Resting.responseHeadersPanel = responseHeadersPanel;
     Resting.rawResponseBody = rawResponseBody;
+    Resting.saveBookmarkDialog = saveBookmarkDialog;
+    Resting.dismissSaveBookmarkDialog = dismissSaveBookmarkDialog;
 
     return Resting;
   }
@@ -266,5 +288,10 @@
     });
 
     ko.applyBindings(new AppViewModel());
+    
+    const screenWidth = screen.width;
+    const dialogLeftPosition = screenWidth / 2  - 200;
+    $('div.dialog').css('left', dialogLeftPosition+'px');
+    
   });
 })($, localforage, ko);

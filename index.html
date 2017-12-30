@@ -49,7 +49,7 @@
           </div>
 
           <div class="btn-group" role="group">
-            <button type="button" class="btn btn-primary" data-bind="click: saveBookmark">Save</button>
+            <button type="button" class="btn btn-primary" data-bind="click: saveBookmarkDialog">Save</button>
           </div>
         </div>
       </div>
@@ -64,7 +64,7 @@
           <div class="panel-body">
             <div class="list-group" data-bind="foreach: bookmarks">
               <a class="list-group-item clearfix" data-bind="click: function() {$parent.loadBookmark($index)} ">
-              <span data-bind="text: request.method +' ' + request.url"></span>
+              <span data-bind="text: name && name.length > 0 ? name : request.method +' ' + request.url"></span>
               <span class="pull-right">
                 <button class="btn btn-xs btn-danger" data-bind="click: $parent.deleteBookmark"><span class="glyphicon glyphicon-trash" aria-hidden="true"></span></button> 
               </span>
@@ -209,11 +209,21 @@
       </div>
     </template>
     
+  <div id="save-bookmark-dialog" class="panel panel-primary dialog" data-bind="visible: showBookmarkDialog">
+    <div class="panel-heading">
+      Save Bookmark
+    </div>
+    <div class="panel-body">
+      Name: <input type="text" class="form-control" data-bind="value: bookmarkName"></input>
+    </div>
+    <div class="panel-footer">
+      <button class="btn btn-default" data-bind="click: function() {saveBookmark(); dismissSaveBookmarkDialog();}">Save</button><button class="btn btn-default" data-bind="click: dismissSaveBookmarkDialog">Cancel</button> 
+    </div>      
+  </div>  
+    
   <footer>
     <p>Addon icon made by <a href="http://www.freepik.com" target="_blank">Freepik</a> from <a href="http://www.flaticon.com" target="_blank">www.flaticon.com</a></p>
   </footer>    
-    
-    
     
     
 
