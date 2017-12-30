@@ -288,5 +288,10 @@
     });
 
     ko.applyBindings(new AppViewModel());
+    
+    const screenWidth = screen.width;
+    const dialogLeftPosition = screenWidth / 2  - 200;
+    $('div.dialog').css('left', dialogLeftPosition+'px');
+    
   });
 })($, localforage, ko);

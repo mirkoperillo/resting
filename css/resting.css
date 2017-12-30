@@ -25,10 +25,9 @@
 }
 
 
-.mm {
+.dialog {
  position: absolute;
- top: 400px;
- left: 300px;
+ top: 100px;
  width: 400px;
  z-index: 100;
 }
