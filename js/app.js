@@ -6,6 +6,8 @@
 
   function AppViewModel() {
     const Resting = {
+      bookmarkLoaded: null,
+      bookmarkLoadedIdx: -1,
       requestMethod: ko.observable(),
       requestUrl: ko.observable(),
       responseBody: ko.observable(),
@@ -90,8 +92,14 @@
     const loadBookmark = (bookmarkIdx) => {
       const selectedBookmark = Resting.bookmarks()[bookmarkIdx()];
       if (!selectedBookmark) return false;
-
-      return Resting.parseRequest(selectedBookmark.request);
+      Resting.bookmarkLoadedIdx = bookmarkIdx();
+      return loadBookmarkData(selectedBookmark);
+    };
+    
+    const loadBookmarkData = (bookmark) => {
+      Resting.bookmarkLoaded = bookmark.id;
+      Resting.parseRequest(bookmark.request);
+      Resting.bookmarkName(bookmark.name);
     };
 
     const body = (bodyType) => {
@@ -120,9 +128,15 @@
         Resting.requestMethod(), Resting.requestUrl(),
         Resting.requestHeaders(), Resting.bodyType(),
         body(Resting.bodyType()));
-      const bookmark = makeBookmark(new Date().toString(), request, validateBookmarkName(Resting.bookmarkName()));
+      const bookmarkId = Resting.bookmarkLoaded ? Resting.bookmarkLoaded : new Date().toString(); 
+      const bookmark = makeBookmark(bookmarkId, request, validateBookmarkName(Resting.bookmarkName()));
       localforage.setItem(bookmark.id, JSON.stringify(bookmark));
-      Resting.bookmarks.push(bookmark);
+      if(!Resting.bookmarkLoaded) {
+        Resting.bookmarks.push(bookmark);
+      } else {
+        const oldBookmark = Resting.bookmarks()[Resting.bookmarkLoadedIdx];
+        Resting.bookmarks.replace(oldBookmark, bookmark);
+      }
     };
 
     const deleteBookmark = bookmark =>
