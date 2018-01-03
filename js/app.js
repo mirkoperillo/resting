@@ -3,9 +3,11 @@
 
   const makeRequest = (method, url, headers, bodyType, body) =>
     ({ method, url, headers, bodyType, body });
+    
 
   function AppViewModel() {
     const Resting = {
+      responseContent : {},
       bookmarkLoaded: null,
       bookmarkLoadedIdx: -1,
       requestMethod: ko.observable(),
@@ -19,8 +21,8 @@
       showRequestBody: ko.observable(false),
       showResponseHeaders: ko.observable(false),
       showResponseBody: ko.observable(true),
-      useFormattedResponseBody: ko.observable(false),
-      useRawResponseBody: ko.observable(true),
+      useFormattedResponseBody: ko.observable(true),
+      useRawResponseBody: ko.observable(false), // is it used ??
       bodyType: ko.observable(),
       formDataParams: ko.observableArray(),
       formEncodedParams: ko.observableArray(),
@@ -89,6 +91,7 @@
       return Resting.rawBody().trim();
     };
 
+  
     const loadBookmark = (bookmarkIdx) => {
       const selectedBookmark = Resting.bookmarks()[bookmarkIdx()];
       if (!selectedBookmark) return false;
@@ -177,7 +180,13 @@
         success: (data, status, jqXHR) => {
           const endCall = new Date().getTime();
           const callDuration = endCall - startCall;
-          Resting.responseBody(JSON.stringify(data));
+          Resting.responseContent = data;
+          if(Resting.useFormattedResponseBody()) {
+            Resting.responseBody(JSON.stringify(data,null,2));
+            highlight();
+          } else {
+            Resting.responseBody(JSON.stringify(data));
+          }
           Resting.callDuration(`${callDuration}ms`);
           Resting.callStatus(jqXHR.status);
           parseHeaders(jqXHR.getAllResponseHeaders())
@@ -216,11 +225,15 @@
     const formattedResponseBody = () => {
       Resting.useFormattedResponseBody(true);
       Resting.useRawResponseBody(false);
+      Resting.responseBody(JSON.stringify(Resting.responseContent,null,2));
+      highlight();
     };
 
     const rawResponseBody = () => {
       Resting.useFormattedResponseBody(false);
       Resting.useRawResponseBody(true);
+      Resting.responseBody(JSON.stringify(Resting.responseContent));
+      unhighlight();
     };
     
     const saveBookmarkDialog = () => {
@@ -231,6 +244,18 @@
       Resting.showBookmarkDialog(false);
       Resting.bookmarkName('');
     };
+    
+    
+    const unhighlight = () => {
+      $('#highlighted-response').removeClass('hljs');
+    };
+    
+    const highlight = () => {
+      $('#highlighted-response').each(function(i, block) {
+      hljs.highlightBlock(block);
+      });
+    };
+    
     
     Resting.parseRequest = parseRequest;
     Resting.dataToSend = dataToSend;
