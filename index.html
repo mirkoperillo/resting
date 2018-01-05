@@ -84,7 +84,7 @@
         <div class="panel panel-default">
           <div class="panel-body">
             <request-body params="{bodyType: bodyType, formDataParams : formDataParams, formEncodedParams : formEncodedParams, rawBody : rawBody}" data-bind="visible : showRequestBody"></request-body>
-            <entry-list-widget params="{entryList : requestHeaders}" data-bind="visible : showRequestHeaders"></entry-list-widget>
+            <entry-list params="{entryList : requestHeaders}" data-bind="visible : showRequestHeaders"></entry-list>
           </div>
         </div>
         </div>
@@ -150,64 +150,6 @@
 
       </div>
     </div>
-   
-   
-<!-- ============================================================
-      ENTRY LIST WIDGET 
-     ============================================================ -->
-     
-    <template id="entry-list-widget-template">
-      <div data-bind="foreach: entryList">
-        <div class="row form-inline form-group">
-          <label>Name:</label><input type="text" class="form-control" data-bind="value: name"></input><label>Value:</label><input type="text" class="form-control" data-bind="value: value"></input>
-          <button type="button" class="btn btn-default" aria-label="Remove header" data-bind="click: $parent.remove">
-            <span class="glyphicon glyphicon-trash" aria-hidden="true"></span>
-          </button>
-        </div>
-      </div>
-      <div class="row form-inline form-group">
-          <label>Name:</label><input type="text" class="form-control" data-bind="value: entryName"></input><label>Value:</label><input type="text" class="form-control" data-bind="value: entryValue"></input>
-          <button type="button" class="btn btn-default" aria-label="Add header" data-bind="click: add">
-            <span class="glyphicon glyphicon-plus" aria-hidden="true"></span>
-          </button>
-      </div>
-    </template>
-    
-<!-- ============================================================
-      REQUEST BODY PANEL 
-     ============================================================ -->    
-     
-    <template id="request-body-template">
-      <div class="row">
-        <div class="form-horizontal">
-          <div class="form-group">
-             <label class="control-label col-md-2" for="body-type">Type</label>
-             <div class="col-md-10">
-               <select class="form-control" id="body-type" data-bind="value: bodyType">
-                <option>
-                  form-data
-                </option>
-                <option>
-                  x-www-form-urlencoded
-                </option>
-                <option>
-                  raw
-                </option>
-              </select>
-          </div>
-        </div>
-        </div>
-      </div>
-      <div class="row">
-        <div class="col-md-12">
-          <entry-list-widget params="{entryList : formDataParams}" data-bind="visible : bodyType() == 'form-data'"></entry-list-widget>
-          <entry-list-widget params="{entryList : formEncodedParams}" data-bind="visible : bodyType() == 'x-www-form-urlencoded'"></entry-list-widget>
-          <div class="form-group" data-bind="visible : bodyType() == 'raw'">
-            <textarea class="form-control" rows="20" data-bind="value: rawBody"></textarea>
-          </div>
-        </div>
-      </div>
-    </template>
     
   <div id="save-bookmark-dialog" class="panel panel-primary dialog" data-bind="visible: showBookmarkDialog">
     <div class="panel-heading">
@@ -225,19 +167,7 @@
     <p>Addon icon made by <a href="http://www.freepik.com" target="_blank">Freepik</a> from <a href="http://www.flaticon.com" target="_blank">www.flaticon.com</a></p>
   </footer>    
     
-    
-
-<script src="js/jquery-2.2.4.min.js" type="text/javascript">
-</script>
-     <script src="js/bootstrap.min.js" type="text/javascript">
-     </script> 
-     <script src="js/knockout-3.4.2.js" type="text/javascript">
-    </script>
-    <script src="js/localforage.nopromises.min.js" type="text/javascript">
-    </script>
-    
-    <script src="js/highlight.pack.js"></script>
-    <script src="js/app.js" type="text/javascript"></script>
+    <script data-main="js/app" src="js/require.js"></script>
     
   </div>
 </body>

@@ -1,0 +1,31 @@
+<html>
+  <div class="row">
+    <div class="form-horizontal">
+      <div class="form-group">
+         <label class="control-label col-md-2" for="body-type">Type</label>
+         <div class="col-md-10">
+           <select class="form-control" id="body-type" data-bind="value: bodyType">
+            <option>
+              form-data
+            </option>
+            <option>
+              x-www-form-urlencoded
+            </option>
+            <option>
+              raw
+            </option>
+          </select>
+      </div>
+    </div>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-md-12">
+      <entry-list params="{entryList : formDataParams}" data-bind="visible : bodyType() == 'form-data'"></entry-list>
+      <entry-list params="{entryList : formEncodedParams}" data-bind="visible : bodyType() == 'x-www-form-urlencoded'"></entry-list>
+      <div class="form-group" data-bind="visible : bodyType() == 'raw'">
+        <textarea class="form-control" rows="20" data-bind="value: rawBody"></textarea>
+      </div>
+    </div>
+  </div>
+</html>

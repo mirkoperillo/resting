@@ -1,0 +1,16 @@
+<html>
+<div data-bind="foreach: entryList">
+    <div class="row form-inline form-group">
+      <label>Name:</label><input type="text" class="form-control" data-bind="value: name"></input><label>Value:</label><input type="text" class="form-control" data-bind="value: value"></input>
+      <button type="button" class="btn btn-default" aria-label="Remove header" data-bind="click: $parent.remove">
+        <span class="glyphicon glyphicon-trash" aria-hidden="true"></span>
+      </button>
+    </div>
+</div>
+<div class="row form-inline form-group">
+    <label>Name:</label><input type="text" class="form-control" data-bind="value: entryName"></input><label>Value:</label><input type="text" class="form-control" data-bind="value: entryValue"></input>
+    <button type="button" class="btn btn-default" aria-label="Add header" data-bind="click: add">
+      <span class="glyphicon glyphicon-plus" aria-hidden="true"></span>
+    </button>
+</div>
+</html>

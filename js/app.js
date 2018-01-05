@@ -1,9 +1,15 @@
-(($, localforage, ko) => {
-  const makeBookmark = (id, request, name) => ({ id, request, name });
+requirejs.config({
+    paths: {
+        'jquery': 'jquery-2.2.4.min',
+        'knockout': 'knockout-3.4.2',
+        'localforage': 'localforage.nopromises.min',
+        'hjls': 'highlight.pack'
+    }
+});
 
-  const makeRequest = (method, url, headers, bodyType, body) =>
-    ({ method, url, headers, bodyType, body });
-    
+requirejs(['jquery','localforage','knockout','hjls','request'], function($,localforage,ko,hjls,request) {
+
+  const makeBookmark = (id, request, name) => ({ id, request, name });
 
   function AppViewModel() {
     const Resting = {
@@ -31,12 +37,6 @@
       bookmarkName: ko.observable(),
       showBookmarkDialog: ko.observable(false),
       methods: ko.observableArray(['GET','POST','PUT','DELETE','HEAD','OPTIONS','CONNECT','TRACE','PATCH'])
-    };
-
-    const contentTypesFromBodyTypes = {
-      'form-data': 'multipart/form-data',
-      'x-www-form-urlencoded': 'application/x-www-form-urlencoded',
-      'raw': 'application/json',
     };
 
     localforage.config({
@@ -127,12 +127,12 @@
     };
 
     const saveBookmark = () => {
-      const request = makeRequest(
+      const req = request.makeRequest(
         Resting.requestMethod(), Resting.requestUrl(),
         Resting.requestHeaders(), Resting.bodyType(),
         body(Resting.bodyType()));
       const bookmarkId = Resting.bookmarkLoaded ? Resting.bookmarkLoaded : new Date().toString(); 
-      const bookmark = makeBookmark(bookmarkId, request, validateBookmarkName(Resting.bookmarkName()));
+      const bookmark = makeBookmark(bookmarkId, req, validateBookmarkName(Resting.bookmarkName()));
       localforage.setItem(bookmark.id, JSON.stringify(bookmark));
       if(!Resting.bookmarkLoaded) {
         Resting.bookmarks.push(bookmark);
@@ -147,12 +147,6 @@
         .then(() =>
           Resting.bookmarks.remove(bookmark));
 
-    const parseHeaders = headers =>
-      headers.trim().split('\n')
-        .map(header =>
-          header.split(':')
-            .map(h => h.trim()))
-        .map(headerFields => ({ name: headerFields[0], value: headerFields[1] }));
 
     const convertToHeaderObj = headersList =>
       headersList.reduce((acc, header) => {
@@ -160,43 +154,22 @@
         return acc;
       }, {});
 
+
+    const displayResponse = (response) => {
+      Resting.callDuration(`${response.duration}ms`);
+      Resting.callStatus(response.status);
+      response.headers.forEach(header => Resting.responseHeaders.push(header));
+      Resting.responseContent = response.content;
+      if(Resting.useFormattedResponseBody()) {
+        Resting.responseBody(JSON.stringify(response.content,null,2));
+        highlight();
+      } else {
+        Resting.responseBody(JSON.stringify(response.content));
+      }
+    };
+
     const send = () => {
-      const serviceUrl = Resting.requestUrl();
-      const serviceMethod = Resting.requestMethod();
-
-      console.log('send', serviceMethod, '--', serviceUrl);
-
-      const startCall = new Date().getTime();
-
-      $.ajax({
-        method: serviceMethod,
-        url: serviceUrl,
-        headers: convertToHeaderObj(Resting.requestHeaders()),
-        processData: (Resting.bodyType() === 'form-data'),
-        cache: false,
-        crossDomain: true,
-        contentType: contentTypesFromBodyTypes[Resting.bodyType()],
-        data: Resting.dataToSend(),
-        success: (data, status, jqXHR) => {
-          const endCall = new Date().getTime();
-          const callDuration = endCall - startCall;
-          Resting.responseContent = data;
-          if(Resting.useFormattedResponseBody()) {
-            Resting.responseBody(JSON.stringify(data,null,2));
-            highlight();
-          } else {
-            Resting.responseBody(JSON.stringify(data));
-          }
-          Resting.callDuration(`${callDuration}ms`);
-          Resting.callStatus(jqXHR.status);
-          parseHeaders(jqXHR.getAllResponseHeaders())
-            .forEach(header =>
-              Resting.responseHeaders.push(header));
-        },
-        error: (jqXHR) => {
-          Resting.callStatus(jqXHR.status);
-        },
-      });
+      const response = request.execute(Resting.requestMethod(),Resting.requestUrl(),convertToHeaderObj(Resting.requestHeaders()),Resting.bodyType(),Resting.dataToSend(),displayResponse);
     };
 
     const requestHeadersPanel = () => {
@@ -275,55 +248,17 @@
     return Resting;
   }
 
-  function EntryListViewModel(params) {
-    const EntryList = {
-      entryList: params.entryList,
-      entryName: ko.observable(),
-      entryValue: ko.observable(),
-    };
-
-    const checkValidEntry = (name, value) =>
-      name.trim().length > 0 && value.trim().length > 0;
-
-    const add = () => {
-      if (!checkValidEntry(EntryList.entryName(), EntryList.entryValue())) return false;
-
-      EntryList.entryList.push({ name: EntryList.entryName(), value: EntryList.entryValue() });
-      EntryList.entryName('');
-      EntryList.entryValue('');
-
-      return true;
-    };
-
-    const remove = entry =>
-      EntryList.entryList.remove(entry);
-
-    EntryList.add = add;
-    EntryList.remove = remove;
-
-    return EntryList;
-  }
-
-  function RequestBodyViewModel(params) {
-    const self = this;
-
-    self.bodyType = params.bodyType;
-    self.formDataParams = params.formDataParams;
-    self.formEncodedParams = params.formEncodedParams;
-    self.rawBody = params.rawBody;
-  }
-
-  // Activates knockout.js
+  // init application
   $(() => {
     // seems that this below must be the last instructions to permit component to be registered
-    ko.components.register('entry-list-widget', {
-      viewModel: EntryListViewModel,
-      template: { element: 'entry-list-widget-template' },
+    ko.components.register('entry-list', {
+      viewModel: { require: 'components/entry-list/component' },
+      template: { require: 'text!components/entry-list/view.html' }
     });
 
     ko.components.register('request-body', {
-      viewModel: RequestBodyViewModel,
-      template: { element: 'request-body-template' },
+      viewModel: { require: 'components/request-body/component' },
+      template: { require: 'text!components/request-body/template.html' }
     });
 
     ko.applyBindings(new AppViewModel());
@@ -333,4 +268,4 @@
     $('div.dialog').css('left', dialogLeftPosition+'px');
     
   });
-})($, localforage, ko);
+});
