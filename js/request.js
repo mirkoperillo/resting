@@ -10,11 +10,20 @@ define(['jquery','response'],function($,response){
       'raw': 'application/json',
   };
 
+  const prefixProtocol = (url) => {
+    const validator = new RegExp('^(http|https)://');
+    if(!validator.test(url)) {
+      return "http://" + url;
+    } else {
+      return url;
+    }
+  }; 
+
   const execute = (method, url, headers, bodyType, body, onResponse) => {
     const startCall = new Date().getTime();
      $.ajax({
       method: method,
-      url: url,
+      url: prefixProtocol(url),
       headers: headers,
       processData: (bodyType === 'form-data'),
       cache: false,
