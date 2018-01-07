@@ -168,8 +168,15 @@ requirejs(['jquery','localforage','knockout','hjls','request'], function($,local
       }
     };
 
+    const callOnEnter = (callback, data,event) => {
+      const enter = 13;
+      if(event.keyCode === enter) {
+        callback();
+      }
+    };
+
     const send = () => {
-      const response = request.execute(Resting.requestMethod(),Resting.requestUrl(),convertToHeaderObj(Resting.requestHeaders()),Resting.bodyType(),Resting.dataToSend(),displayResponse);
+      request.execute(Resting.requestMethod(),Resting.requestUrl(),convertToHeaderObj(Resting.requestHeaders()),Resting.bodyType(),Resting.dataToSend(),displayResponse);
     };
 
     const requestHeadersPanel = () => {
@@ -233,6 +240,7 @@ requirejs(['jquery','localforage','knockout','hjls','request'], function($,local
     Resting.parseRequest = parseRequest;
     Resting.dataToSend = dataToSend;
     Resting.send = send;
+    Resting.callOnEnter = callOnEnter;
     Resting.saveBookmark = saveBookmark;
     Resting.loadBookmark = loadBookmark;
     Resting.deleteBookmark = deleteBookmark;
@@ -261,6 +269,7 @@ requirejs(['jquery','localforage','knockout','hjls','request'], function($,local
       template: { require: 'text!components/request-body/template.html' }
     });
 
+    
     ko.applyBindings(new AppViewModel());
     
     const screenWidth = screen.width;

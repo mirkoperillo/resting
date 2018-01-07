@@ -38,7 +38,7 @@
 
       <div class="col-md-8">
         <div class="form-group">
-          <input type="text" class="form-control" placeholder="http://" data-bind="value: requestUrl">
+          <input type="text" class="form-control" placeholder="http://" data-bind="value: requestUrl, event: { keyup: function(data,event) { callOnEnter(send,data,event)}}">
         </div>
       </div>
 
