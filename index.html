@@ -59,20 +59,39 @@
       <div class="col-md-3">
          <div class="panel panel-default">
           <div class="panel-heading">
-            Bookmarks
+              Bookmarks 
+              <button type="button" style="margin-left: 2px;" class="btn btn-default" aria-label="Add folder" data-bind="click: folderDialog" title="Add folder">
+                <span class="glyphicon glyphicon-plus" aria-hidden="true"></span>
+              </button>
           </div>
           <div class="panel-body">
             <div class="list-group" data-bind="foreach: bookmarks">
-              <a class="list-group-item clearfix" data-bind="click: function() {$parent.loadBookmark($index)} ">
-              <span data-bind="text: name && name.length > 0 ? name : request.method +' ' + request.url"></span>
-              <span class="pull-right">
-                <button class="btn btn-xs btn-danger" data-bind="click: $parent.deleteBookmark, clickBubble: false"><span class="glyphicon glyphicon-trash" aria-hidden="true"></span></button> 
-              </span>
-              </a>
+                <div style="margin-bottom: 5px;">
+                <a class="list-group-item clearfix" data-toggle="collapse" href="#" data-bind="visible: isFolder, attr: {'data-target' : '#folderContent' + $index() }">
+                  <span data-bind="text: name"></span>
+                </a>
+                <div class="collapse" data-bind="if: isFolder, attr: {'id' : 'folderContent' + $index() }">
+                   <div data-bind="foreach: bookmarks">
+                      <a class="list-group-item clearfix" data-bind="visible: !isFolder,click: $parents[1].loadBookmarkObj" style="margin-bottom: 5px;">
+                        <span data-bind="text: name && name.length > 0 ? name : request.method +' ' + request.url"></span>
+                        <span class="pull-right">
+                          <button class="btn btn-xs btn-danger" data-bind="click: $parents[1].deleteBookmark, clickBubble: false"><span class="glyphicon glyphicon-trash" aria-hidden="true"></span></button> 
+                        </span>
+                      </a>
+                  </div>
+                </div>
+                </div>
+                <a class="list-group-item clearfix" data-bind="visible: !isFolder,click: function() {$parent.loadBookmark($index)}" style="margin-bottom: 5px;">
+                  <span data-bind="text: name && name.length > 0 ? name : request.method +' ' + request.url"></span>
+                  <span class="pull-right">
+                    <button class="btn btn-xs btn-danger" data-bind="click: $parent.deleteBookmark, clickBubble: false"><span class="glyphicon glyphicon-trash" aria-hidden="true"></span></button> 
+                  </span>
+                </a>
             </div>
             </div>
           </div>
       </div>
+      
       <div class="col-md-9">
         <div class="row"> 
         <ul class="nav nav-pills">
@@ -150,16 +169,41 @@
 
       </div>
     </div>
+  
+  <!-- **********************************************************************
+  
+  DIALOGS 
+  
+  *************************************************************************** -->
+  
     
   <div id="save-bookmark-dialog" class="panel panel-primary dialog" data-bind="visible: showBookmarkDialog">
     <div class="panel-heading">
       Save Bookmark
     </div>
     <div class="panel-body">
-      Name: <input type="text" class="form-control" data-bind="value: bookmarkName"></input>
+      <div class="form-group">
+        Name <input type="text" class="form-control" data-bind="value: bookmarkName"></input>
+      </div>
+      <div class="form-group">
+        Folder <select class="form-control" data-bind="options: folders, optionsText: 'name', optionsValue: 'id', optionsCaption: 'None', value: folderSelected"></select>
+      </div>
     </div>
     <div class="panel-footer">
       <button class="btn btn-default" data-bind="click: function() {saveBookmark(); dismissSaveBookmarkDialog();}">Save</button><button class="btn btn-default" data-bind="click: dismissSaveBookmarkDialog">Cancel</button> 
+    </div>      
+  </div>  
+  
+  
+  <div id="folder-dialog" class="panel panel-primary dialog" data-bind="visible: showFolderDialog">
+    <div class="panel-heading">
+      Add Folder
+    </div>
+    <div class="panel-body">
+      Name: <input type="text" class="form-control" data-bind="value: folderName"></input>
+    </div>
+    <div class="panel-footer">
+      <button class="btn btn-default" data-bind="click: function() {addFolder(); dismissFolderDialog();}">Save</button><button class="btn btn-default" data-bind="click: dismissFolderDialog">Cancel</button> 
     </div>      
   </div>  
     
