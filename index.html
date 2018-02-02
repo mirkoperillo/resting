@@ -38,7 +38,7 @@
 
       <div class="col-md-8">
         <div class="form-group">
-          <input type="text" class="form-control" placeholder="http://" data-bind="value: requestUrl, event: { keyup: function(data,event) { callOnEnter(send,data,event)}}">
+          <input type="text" class="form-control" placeholder="http://" data-bind="value: requestUrl, event: { keyup: callSendOnEnter}">
         </div>
       </div>
 
@@ -73,7 +73,7 @@
                 <div class="collapse" data-bind="if: isFolder, attr: {'id' : 'folderContent' + $index() }">
                    <div data-bind="foreach: bookmarks">
                       <a class="list-group-item clearfix" data-bind="visible: !isFolder,click: $parents[1].loadBookmarkObj" style="margin-bottom: 5px;">
-                        <span data-bind="text: name && name.length > 0 ? name : request.method +' ' + request.url"></span>
+                        <span data-bind="text: viewName()"></span>
                         <span class="pull-right">
                           <button class="btn btn-xs btn-danger" data-bind="click: $parents[1].deleteBookmark, clickBubble: false"><span class="glyphicon glyphicon-trash" aria-hidden="true"></span></button> 
                         </span>
@@ -81,8 +81,8 @@
                   </div>
                 </div>
                 </div>
-                <a class="list-group-item clearfix" data-bind="visible: !isFolder,click: function() {$parent.loadBookmark($index)}" style="margin-bottom: 5px;">
-                  <span data-bind="text: name && name.length > 0 ? name : request.method +' ' + request.url"></span>
+                <a class="list-group-item clearfix" data-bind="visible: !isFolder,click: $parent.loadBookmarkObj" style="margin-bottom: 5px;">
+                  <span data-bind="text: viewName()"></span>
                   <span class="pull-right">
                     <button class="btn btn-xs btn-danger" data-bind="click: $parent.deleteBookmark, clickBubble: false"><span class="glyphicon glyphicon-trash" aria-hidden="true"></span></button> 
                   </span>
@@ -102,8 +102,8 @@
 
         <div class="panel panel-default">
           <div class="panel-body">
-            <request-body params="{bodyType: bodyType, formDataParams : formDataParams, formEncodedParams : formEncodedParams, rawBody : rawBody}" data-bind="visible : showRequestBody"></request-body>
-            <entry-list params="{entryList : requestHeaders}" data-bind="visible : showRequestHeaders"></entry-list>
+            <request-body params="bodyType: bodyType, formDataParams : formDataParams, formEncodedParams : formEncodedParams, rawBody : rawBody" data-bind="visible : showRequestBody"></request-body>
+            <entry-list params="entryList : requestHeaders" data-bind="visible : showRequestHeaders"></entry-list>
           </div>
         </div>
         </div>
@@ -190,7 +190,7 @@
       </div>
     </div>
     <div class="panel-footer">
-      <button class="btn btn-default" data-bind="click: function() {saveBookmark(); dismissSaveBookmarkDialog();}">Save</button><button class="btn btn-default" data-bind="click: dismissSaveBookmarkDialog">Cancel</button> 
+      <button class="btn btn-default" data-bind="click: saveBookmark">Save</button><button class="btn btn-default" data-bind="click: dismissSaveBookmarkDialog">Cancel</button> 
     </div>      
   </div>  
   
@@ -203,7 +203,7 @@
       Name: <input type="text" class="form-control" data-bind="value: folderName"></input>
     </div>
     <div class="panel-footer">
-      <button class="btn btn-default" data-bind="click: function() {addFolder(); dismissFolderDialog();}">Save</button><button class="btn btn-default" data-bind="click: dismissFolderDialog">Cancel</button> 
+      <button class="btn btn-default" data-bind="click: addFolder">Save</button><button class="btn btn-default" data-bind="click: dismissFolderDialog">Cancel</button> 
     </div>      
   </div>  
     
