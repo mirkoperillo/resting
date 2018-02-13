@@ -8,8 +8,7 @@ requirejs.config({
     }
 });
 
-// togliere il blocco che visualizza il nome del bookmark e spostarlo in app.js
-requirejs(['jquery','localforage','knockout','knockout-secure-binding','hjls','request','bookmark','bootstrap'], function($,localforage,ko,ksb,hjls,request,bookmark,bootstrap) {
+requirejs(['jquery','storage','knockout','knockout-secure-binding','hjls','request','bookmark','bootstrap'], function($,storage,ko,ksb,hjls,request,bookmark,bootstrap) {
   
   function BookmarkViewModel(bookmark) {
     const self = this;
@@ -60,12 +59,6 @@ requirejs(['jquery','localforage','knockout','knockout-secure-binding','hjls','r
       methods: ko.observableArray(['GET','POST','PUT','DELETE','HEAD','OPTIONS','CONNECT','TRACE','PATCH'])
     };
 
-    localforage.config({
-      name: 'resting',
-      storeName: 'bookmarks',
-    });
-    
-
     const convertToFormData = (data = []) =>
       data.reduce((acc, record) => {
         acc[record.name] = record.value;
@@ -73,47 +66,27 @@ requirejs(['jquery','localforage','knockout','knockout-secure-binding','hjls','r
       }, {});
 
     const loadBookmarks = () =>
-      localforage.iterate(function(value,key,iterationNumber) { 
+      storage.iterate(value => {
         const bookmarkObj = bookmark.fromJson(value);
-        Resting.bookmarks.push(bookmarkObj); 
-        if(bookmarkObj.isFolder) {
-          Resting.folders.push(bookmarkObj);
-        }
+          Resting.bookmarks.push(bookmarkObj); 
+          if(bookmarkObj.isFolder) {
+            Resting.folders.push(bookmarkObj);
+          }
       });
       
     const loadBookmarksNewFormat = () =>
-      localforage.iterate(function(value,key,iterationNumber) { 
+      storage.iterate( value => {
         Resting.bookmarks.push(new BookmarkViewModel(value)); 
         if(value.isFolder) {
           Resting.folders.push(value);
         }
-    });
-
-    // define the storage format conversion
-    const storageConversion = () => {
-      localforage.iterate(function(value,key,iterationNumber) { 
-        try{
-         const bookmarkObj = bookmark.fromJson(value);
-         localforage.setItem(bookmarkObj.id,bookmarkObj);
-        } catch(e) {
-          console.log('bookmark/folder already converted in new format');
-        }
-      }, function(err, success) {
-        if(!err) {
-          loadBookmarksNewFormat();
-        }
       });
-    };
 
     const serializeBookmark = (bookmarkObj) => {
-      //return JSON.stringify(bookmark);
       return bookmark.fromJson(JSON.stringify(bookmarkObj));
     }
     
-    // this function converts format of bookmarks to the new version
-    // consider to maintain the call until version <= 0.6.0 of web-extentsion for compatibility goal
-    storageConversion();
-    
+   
     const convertToUrlEncoded = (data = []) =>
       data.map( param => `${param.name}=${param.value}`).join('&');
 
@@ -196,7 +169,7 @@ requirejs(['jquery','localforage','knockout','knockout-secure-binding','hjls','r
 
     const addFolder = () => {
       const folder = bookmark.makeFolder(new Date().toString(), Resting.folderName());
-      localforage.setItem(folder.id, serializeBookmark(folder));
+      storage.save(serializeBookmark(folder));
       Resting.bookmarks.push(new BookmarkViewModel(folder));
       Resting.folders.push(folder);
       Resting.folderName('');
@@ -219,7 +192,7 @@ requirejs(['jquery','localforage','knockout','knockout-secure-binding','hjls','r
           if(oldFolder == bookmarkObj.folder) { // folderA to folderA
             let folderObj = Resting.bookmarks().find(b => b.id === bookmarkObj.folder);
             const modifiedFolder = bookmark.replaceBookmark(folderObj, new BookmarkViewModel(bookmarkObj)); 
-            localforage.setItem(folderObj.id, serializeBookmark(modifiedFolder));
+            storage.save(serializeBookmark(modifiedFolder));
             Resting.bookmarks.replace(folderObj, modifiedFolder);
           } else if(!oldFolder) { //from no-folder to folderA
             const oldBookmark = Resting.bookmarks().find(b => b.id == bookmarkObj.id); // I need the ref to bookmark saved in observable array 
@@ -227,13 +200,13 @@ requirejs(['jquery','localforage','knockout','knockout-secure-binding','hjls','r
             deleteBookmark(oldBookmark);
             let folderObj = Resting.bookmarks().find(b => b.id === bookmarkObj.folder);
             const modifiedFolder = bookmark.replaceBookmark(folderObj, new BookmarkViewModel(bookmarkObj)); 
-            localforage.setItem(folderObj.id, serializeBookmark(modifiedFolder));
+            storage.save(serializeBookmark(modifiedFolder));
             Resting.bookmarks.replace(folderObj, modifiedFolder);
           } else if( oldFolder != bookmarkObj.folder) { // from folderA to folderB
             deleteBookmark(Resting.bookmarkCopy);
             let folderObj = Resting.bookmarks().find(b => b.id === bookmarkObj.folder);
             const modifiedFolder = bookmark.replaceBookmark(folderObj, new BookmarkViewModel(bookmarkObj)); 
-            localforage.setItem(folderObj.id, serializeBookmark(modifiedFolder));
+            storage.save(serializeBookmark(modifiedFolder));
             Resting.bookmarks.replace(folderObj, modifiedFolder);
           }
         } else {  
@@ -244,7 +217,7 @@ requirejs(['jquery','localforage','knockout','knockout-secure-binding','hjls','r
             const oldBookmark = Resting.bookmarks().find(b => b.id === bookmarkObj.id);
             Resting.bookmarks.replace(oldBookmark, new BookmarkViewModel(bookmarkObj));
           }
-          localforage.setItem(bookmarkObj.id, serializeBookmark(bookmarkObj));
+          storage.save(serializeBookmark(bookmarkObj));
         }
       
         Resting.bookmarkCopy = null;   
@@ -255,10 +228,10 @@ requirejs(['jquery','localforage','knockout','knockout-secure-binding','hjls','r
         if(bookmarkObj.folder) {
           let folderObj = Resting.bookmarks().find(b => b.id === bookmarkObj.folder);
           const modifiedFolder = bookmark.addBookmarks(folderObj, new BookmarkViewModel(bookmarkObj));
-          localforage.setItem(folderObj.id, serializeBookmark(modifiedFolder));
+          storage.save(serializeBookmark(modifiedFolder));
           Resting.bookmarks.replace(folderObj, modifiedFolder);
         } else {
-           localforage.setItem(bookmarkObj.id, serializeBookmark(bookmarkObj));
+           storage.save(serializeBookmark(bookmarkObj));
            Resting.bookmarks.push(new BookmarkViewModel(bookmarkObj));
         }
       }
@@ -272,14 +245,12 @@ requirejs(['jquery','localforage','knockout','knockout-secure-binding','hjls','r
         const containerFolder = Resting.bookmarks().find( b => b.id === bookmark.folder);
         let modifiedFolder = Object.assign({},containerFolder);
         modifiedFolder.bookmarks = containerFolder.bookmarks.filter(b => b.id !== bookmark.id);
-        localforage.setItem(modifiedFolder.id, serializeBookmark(modifiedFolder));
+        storage.save(serializeBookmark(modifiedFolder));
         Resting.bookmarks.replace(containerFolder,modifiedFolder);
       } else {
-        localforage.removeItem(bookmark.id)
-          .then(() =>
-            Resting.bookmarks.remove(bookmark))
-        };
-      }
+        storage.deleteById(bookmark.id, () => Resting.bookmarks.remove(bookmark));
+        }
+      };
 
     const convertToHeaderObj = headersList =>
       headersList.reduce((acc, header) => {
@@ -377,6 +348,26 @@ requirejs(['jquery','localforage','knockout','knockout-secure-binding','hjls','r
       }
     };
     
+    
+    
+    // define the storage format conversion
+    // this function converts format of bookmarks to the new version
+    // consider to maintain the call until version <= 0.6.0 of web-extentsion for compatibility goal
+    (() => {
+      storage.iterate( value => {
+        try {
+         const bookmarkObj = bookmark.fromJson(value);
+         storage.save(bookmarkObj);
+        } catch(e) {
+          console.log('bookmark/folder already converted in new format');
+        }
+      }, (err,success) => {
+        if(!err) {
+          loadBookmarksNewFormat();
+        }
+      });
+    })();
+    
     Resting.parseRequest = parseRequest;
     Resting.dataToSend = dataToSend;
     Resting.send = send;
@@ -427,10 +418,7 @@ requirejs(['jquery','localforage','knockout','knockout-secure-binding','hjls','r
    };
 
    ko.bindingProvider.instance = new ksb(options);
-    
-    
+   
    ko.applyBindings(new AppViewModel());
-    
-    
   });
 });
