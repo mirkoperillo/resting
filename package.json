@@ -4,13 +4,15 @@
   "description": "rest client web extension",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "jasmine --config=test/config/jasmine.json"
   },
   "author": "",
   "license": "ISC",
   "devDependencies": {
+    "eslint": "4.3.0",
     "eslint-config-airbnb-base": "11.3.1",
     "eslint-plugin-import": "2.7.0",
-    "eslint": "4.3.0"
+    "jasmine": "~3.0.0",
+    "requirejs": "~2.3.5"
   }
 }
