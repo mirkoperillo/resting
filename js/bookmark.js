@@ -52,13 +52,17 @@ define(function() {
     return Object.assign({},bookmark);
   };
 
-  return {
-    makeBookmark : makeBookmark,
-    makeFolder : makeFolder,
-    fromJson : fromJson,
-    addBookmarks : addBookmarks,
-    removeBookmarks : removeBookmarks,
-    copyBookmark : copyBookmark,
-    replaceBookmark : replaceBookmark,
+
+  return function(storageProvider) {
+      return {
+        makeBookmark : makeBookmark,
+        makeFolder : makeFolder,
+        fromJson : fromJson,
+        addBookmarks : addBookmarks,
+        removeBookmarks : removeBookmarks,
+        copyBookmark : copyBookmark,
+        replaceBookmark : replaceBookmark,
+        save : bookmark => storageProvider.save(bookmark)
+      };
   };
 });

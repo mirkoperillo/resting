@@ -8,7 +8,7 @@ requirejs.config({
     }
 });
 
-requirejs(['jquery','storage','knockout','knockout-secure-binding','hjls','request','bookmark','bootstrap'], function($,storage,ko,ksb,hjls,request,bookmark,bootstrap) {
+requirejs(['jquery','storage','knockout','knockout-secure-binding','hjls','request','bookmark','bootstrap'], function($,storage,ko,ksb,hjls,request,makeBookmarkProvider ,bootstrap) {
   
   function BookmarkViewModel(bookmark) {
     const self = this;
@@ -59,6 +59,8 @@ requirejs(['jquery','storage','knockout','knockout-secure-binding','hjls','reque
       methods: ko.observableArray(['GET','POST','PUT','DELETE','HEAD','OPTIONS','CONNECT','TRACE','PATCH'])
     };
 
+    const bookmarkProvider = makeBookmarkProvider(storage);
+
     const convertToFormData = (data = []) =>
       data.reduce((acc, record) => {
         acc[record.name] = record.value;
@@ -67,7 +69,7 @@ requirejs(['jquery','storage','knockout','knockout-secure-binding','hjls','reque
 
     const loadBookmarks = () =>
       storage.iterate(value => {
-        const bookmarkObj = bookmark.fromJson(value);
+        const bookmarkObj = bookmarkProvider.fromJson(value);
           Resting.bookmarks.push(bookmarkObj); 
           if(bookmarkObj.isFolder) {
             Resting.folders.push(bookmarkObj);
@@ -83,7 +85,7 @@ requirejs(['jquery','storage','knockout','knockout-secure-binding','hjls','reque
       });
 
     const serializeBookmark = (bookmarkObj) => {
-      return bookmark.fromJson(JSON.stringify(bookmarkObj));
+      return bookmarkProvider.fromJson(JSON.stringify(bookmarkObj));
     }
     
    
@@ -126,7 +128,7 @@ requirejs(['jquery','storage','knockout','knockout-secure-binding','hjls','reque
     const loadBookmark = (bookmarkIdx) => {
       const selectedBookmark = Resting.bookmarks()[bookmarkIdx()];
       if (!selectedBookmark) return false;
-      Resting.bookmarkCopy = bookmark.copyBookmark(selectedBookmark);
+      Resting.bookmarkCopy = bookmarkProvider.copyBookmark(selectedBookmark);
       Resting.bookmarkLoadedIdx = bookmarkIdx();
       Resting.folderSelected(selectedBookmark.folder);
       return loadBookmarkData(selectedBookmark);
@@ -135,7 +137,7 @@ requirejs(['jquery','storage','knockout','knockout-secure-binding','hjls','reque
     // duplication..to improve putting two load function together
      const loadBookmarkObj = (bookmarkObj) => {
       Resting.bookmarkLoadedIdx = bookmarkObj.id;
-      Resting.bookmarkCopy = bookmark.copyBookmark(bookmarkObj);
+      Resting.bookmarkCopy = bookmarkProvider.copyBookmark(bookmarkObj);
       Resting.folderSelected(bookmarkObj.folder);
       return loadBookmarkData(bookmarkObj);
     };
@@ -168,7 +170,7 @@ requirejs(['jquery','storage','knockout','knockout-secure-binding','hjls','reque
     };
 
     const addFolder = () => {
-      const folder = bookmark.makeFolder(new Date().toString(), Resting.folderName());
+      const folder = bookmarkProvider.makeFolder(new Date().toString(), Resting.folderName());
       storage.save(serializeBookmark(folder));
       Resting.bookmarks.push(new BookmarkViewModel(folder));
       Resting.folders.push(folder);
@@ -184,29 +186,29 @@ requirejs(['jquery','storage','knockout','knockout-secure-binding','hjls','reque
         Resting.requestHeaders(), Resting.bodyType(),
         body(Resting.bodyType()));
       const bookmarkId = Resting.bookmarkLoaded ? Resting.bookmarkLoaded : new Date().toString(); 
-      const bookmarkObj = bookmark.makeBookmark(bookmarkId, req, validateBookmarkName(Resting.bookmarkName()), Resting.folderSelected());
+      const bookmarkObj = bookmarkProvider.makeBookmark(bookmarkId, req, validateBookmarkName(Resting.bookmarkName()), Resting.folderSelected());
       // if edit a bookmark
       if(Resting.bookmarkLoaded) {
         if(bookmarkObj.folder) {
           const oldFolder = Resting.bookmarkCopy.folder;
           if(oldFolder == bookmarkObj.folder) { // folderA to folderA
             let folderObj = Resting.bookmarks().find(b => b.id === bookmarkObj.folder);
-            const modifiedFolder = bookmark.replaceBookmark(folderObj, new BookmarkViewModel(bookmarkObj)); 
-            storage.save(serializeBookmark(modifiedFolder));
+            const modifiedFolder = bookmarkProvider.replaceBookmark(folderObj, new BookmarkViewModel(bookmarkObj)); 
+            bookmarkProvider.save(serializeBookmark(modifiedFolder));
             Resting.bookmarks.replace(folderObj, modifiedFolder);
           } else if(!oldFolder) { //from no-folder to folderA
             const oldBookmark = Resting.bookmarks().find(b => b.id == bookmarkObj.id); // I need the ref to bookmark saved in observable array 
                                                                                       //  either it is not removed from it
             deleteBookmark(oldBookmark);
             let folderObj = Resting.bookmarks().find(b => b.id === bookmarkObj.folder);
-            const modifiedFolder = bookmark.replaceBookmark(folderObj, new BookmarkViewModel(bookmarkObj)); 
-            storage.save(serializeBookmark(modifiedFolder));
+            const modifiedFolder = bookmarkProvider.replaceBookmark(folderObj, new BookmarkViewModel(bookmarkObj)); 
+            bookmarkProvider.save(serializeBookmark(modifiedFolder));
             Resting.bookmarks.replace(folderObj, modifiedFolder);
           } else if( oldFolder != bookmarkObj.folder) { // from folderA to folderB
             deleteBookmark(Resting.bookmarkCopy);
             let folderObj = Resting.bookmarks().find(b => b.id === bookmarkObj.folder);
-            const modifiedFolder = bookmark.replaceBookmark(folderObj, new BookmarkViewModel(bookmarkObj)); 
-            storage.save(serializeBookmark(modifiedFolder));
+            const modifiedFolder = bookmarkProvider.replaceBookmark(folderObj, new BookmarkViewModel(bookmarkObj)); 
+            bookmarkProvider.save(serializeBookmark(modifiedFolder));
             Resting.bookmarks.replace(folderObj, modifiedFolder);
           }
         } else {  
@@ -217,7 +219,7 @@ requirejs(['jquery','storage','knockout','knockout-secure-binding','hjls','reque
             const oldBookmark = Resting.bookmarks().find(b => b.id === bookmarkObj.id);
             Resting.bookmarks.replace(oldBookmark, new BookmarkViewModel(bookmarkObj));
           }
-          storage.save(serializeBookmark(bookmarkObj));
+          bookmarkProvider.save(serializeBookmark(bookmarkObj));
         }
       
         Resting.bookmarkCopy = null;   
@@ -227,11 +229,11 @@ requirejs(['jquery','storage','knockout','knockout-secure-binding','hjls','reque
       } else { // if new bookmark
         if(bookmarkObj.folder) {
           let folderObj = Resting.bookmarks().find(b => b.id === bookmarkObj.folder);
-          const modifiedFolder = bookmark.addBookmarks(folderObj, new BookmarkViewModel(bookmarkObj));
-          storage.save(serializeBookmark(modifiedFolder));
+          const modifiedFolder = bookmarkProvider.addBookmarks(folderObj, new BookmarkViewModel(bookmarkObj));
+          bookmarkProvider.save(serializeBookmark(modifiedFolder));
           Resting.bookmarks.replace(folderObj, modifiedFolder);
         } else {
-           storage.save(serializeBookmark(bookmarkObj));
+           bookmarkProvider.save(serializeBookmark(bookmarkObj));
            Resting.bookmarks.push(new BookmarkViewModel(bookmarkObj));
         }
       }
@@ -245,12 +247,12 @@ requirejs(['jquery','storage','knockout','knockout-secure-binding','hjls','reque
         const containerFolder = Resting.bookmarks().find( b => b.id === bookmark.folder);
         let modifiedFolder = Object.assign({},containerFolder);
         modifiedFolder.bookmarks = containerFolder.bookmarks.filter(b => b.id !== bookmark.id);
-        storage.save(serializeBookmark(modifiedFolder));
+        bookmarkProvider.save(serializeBookmark(modifiedFolder));
         Resting.bookmarks.replace(containerFolder,modifiedFolder);
       } else {
         storage.deleteById(bookmark.id, () => Resting.bookmarks.remove(bookmark));
         }
-      };
+    };
 
     const convertToHeaderObj = headersList =>
       headersList.reduce((acc, header) => {
@@ -356,8 +358,8 @@ requirejs(['jquery','storage','knockout','knockout-secure-binding','hjls','reque
     (() => {
       storage.iterate( value => {
         try {
-         const bookmarkObj = bookmark.fromJson(value);
-         storage.save(bookmarkObj);
+         const bookmarkObj = bookmarkProvider.fromJson(value);
+         bookmarkProvider.save(bookmarkObj);
         } catch(e) {
           console.log('bookmark/folder already converted in new format');
         }
@@ -409,7 +411,7 @@ requirejs(['jquery','storage','knockout','knockout-secure-binding','hjls','reque
     });
 
     
-      // Show all options, more restricted setup than the Knockout regular binding.
+   // Show all options, more restricted setup than the Knockout regular binding.
    var options = {
      attribute: "data-bind",        // default "data-sbind"
      globals: window,               // default {}

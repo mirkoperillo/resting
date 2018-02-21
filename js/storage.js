@@ -27,7 +27,7 @@ define(['localforage'],function(localforage){
           callback(value);
        }, callbackResult);
       };
-    }
+    };
     
     return {
       save : save,

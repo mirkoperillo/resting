@@ -1,9 +1,16 @@
 const requirejs = require('requirejs');
 
-const bookmark = requirejs("js/bookmark.js");
+const makeBookmarkProvider = requirejs("js/bookmark.js");
 
-describe("Save a call", function() {
-  it("xxxx", function() {
-    expect(true).toBe(false);
+const mockStorageProvider = {
+  save : (bookmark) => ({result: 'OK', message : ''})
+};
+
+describe("Save bookmarks", function() {
+  it("save the first bookmark", function() {
+    const bookmark = { id : '1', request : {}, name : 'new bookmark' , isFolder: false};
+    const bookmarkProvider = makeBookmarkProvider(mockStorageProvider);
+    const response = bookmarkProvider.save(bookmark);
+    expect('OK').toBe(response.result);
   });
 });
