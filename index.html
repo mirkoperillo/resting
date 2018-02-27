@@ -75,7 +75,7 @@
                       <a class="list-group-item clearfix" data-bind="visible: !isFolder,click: $parents[1].loadBookmarkObj" style="margin-bottom: 5px;">
                         <span data-bind="text: viewName()"></span>
                         <span class="pull-right">
-                          <button class="btn btn-xs btn-danger" data-bind="click: $parents[1].deleteBookmark, clickBubble: false"><span class="glyphicon glyphicon-trash" aria-hidden="true"></span></button> 
+                          <button class="btn btn-xs btn-danger" data-bind="click: $parents[1].confirmDelete, clickBubble: false"><span class="glyphicon glyphicon-trash" aria-hidden="true"></span></button> 
                         </span>
                       </a>
                   </div>
@@ -84,7 +84,7 @@
                 <a class="list-group-item clearfix" data-bind="visible: !isFolder,click: $parent.loadBookmarkObj" style="margin-bottom: 5px;">
                   <span data-bind="text: viewName()"></span>
                   <span class="pull-right">
-                    <button class="btn btn-xs btn-danger" data-bind="click: $parent.deleteBookmark, clickBubble: false"><span class="glyphicon glyphicon-trash" aria-hidden="true"></span></button> 
+                    <button class="btn btn-xs btn-danger" data-bind="click: $parent.confirmDelete, clickBubble: false"><span class="glyphicon glyphicon-trash" aria-hidden="true"></span></button> 
                   </span>
                 </a>
             </div>
@@ -204,6 +204,21 @@
     </div>
     <div class="panel-footer">
       <button class="btn btn-default" data-bind="click: addFolder">Save</button><button class="btn btn-default" data-bind="click: dismissFolderDialog">Cancel</button> 
+    </div>      
+  </div>  
+  
+  
+   <div id="confirm-bookmark-delete-dialog" class="panel panel-primary dialog" data-bind="visible: showBookmarkDeleteDialog">
+    <div class="panel-heading">
+      Confirm      
+    </div>
+    <div class="panel-body">
+      <p>
+        Confirm to delete <strong><span data-bind="text: bookmarkToDeleteName"></span></strong> ?
+      </p>
+    </div>
+    <div class="panel-footer">
+      <button class="btn btn-default" data-bind="click: deleteBookmarkFromView">Yes</button><button class="btn btn-default" data-bind="click: dismissDeleteBookmarkDialog">No</button> 
     </div>      
   </div>  
     

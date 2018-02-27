@@ -32,6 +32,8 @@ requirejs(['jquery','storage','knockout','knockout-secure-binding','hjls','reque
       bookmarkCopy: null,   // copy of bookmark object to use in edit comparison TO IMPROVE !!!!
       bookmarkLoaded: null, // this is the id of bookmark..bookmarkLoadedIdx duplication ??
       bookmarkLoadedIdx: -1,
+      bookmarkToDelete: null,
+      bookmarkToDeleteName : ko.observable(),
       requestMethod: ko.observable(),
       requestUrl: ko.observable(),
       responseBody: ko.observable(),
@@ -56,7 +58,8 @@ requirejs(['jquery','storage','knockout','knockout-secure-binding','hjls','reque
       showFolderDialog: ko.observable(false),
       folderName: ko.observable(),
       folderSelected: ko.observable(),
-      methods: ko.observableArray(['GET','POST','PUT','DELETE','HEAD','OPTIONS','CONNECT','TRACE','PATCH'])
+      methods: ko.observableArray(['GET','POST','PUT','DELETE','HEAD','OPTIONS','CONNECT','TRACE','PATCH']),
+      showBookmarkDeleteDialog: ko.observable(false)
     };
 
     const bookmarkProvider = makeBookmarkProvider(storage);
@@ -242,6 +245,22 @@ requirejs(['jquery','storage','knockout','knockout-secure-binding','hjls','reque
       dismissSaveBookmarkDialog();
     };
 
+    const confirmDelete = bookmark => {
+      Resting.bookmarkToDelete = bookmark;
+      Resting.bookmarkToDeleteName(bookmark.name);
+      Resting.showBookmarkDeleteDialog(true);
+    };
+    
+    
+    const dismissDeleteBookmarkDialog = () => {
+      Resting.showBookmarkDeleteDialog(false);
+    }
+
+    const deleteBookmarkFromView = () => {
+      deleteBookmark(Resting.bookmarkToDelete);
+      dismissDeleteBookmarkDialog();
+    }
+
     const deleteBookmark = bookmark => {
       if(bookmark.folder) {
         const containerFolder = Resting.bookmarks().find( b => b.id === bookmark.folder);
@@ -251,7 +270,7 @@ requirejs(['jquery','storage','knockout','knockout-secure-binding','hjls','reque
         Resting.bookmarks.replace(containerFolder,modifiedFolder);
       } else {
         storage.deleteById(bookmark.id, () => Resting.bookmarks.remove(bookmark));
-        }
+      }
     };
 
     const convertToHeaderObj = headersList =>
@@ -389,7 +408,9 @@ requirejs(['jquery','storage','knockout','knockout-secure-binding','hjls','reque
     Resting.dismissFolderDialog = dismissFolderDialog;
     Resting.addFolder = addFolder;
     Resting.callSendOnEnter = callSendOnEnter;
-
+    Resting.confirmDelete = confirmDelete;
+    Resting.dismissDeleteBookmarkDialog = dismissDeleteBookmarkDialog;
+    Resting.deleteBookmarkFromView = deleteBookmarkFromView;
     return Resting;
   }
 
