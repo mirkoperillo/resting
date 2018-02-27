@@ -281,6 +281,7 @@ requirejs(['jquery','storage','knockout','knockout-secure-binding','hjls','reque
 
 
     const displayResponse = (response) => {
+      Resting.responseHeaders.removeAll();
       Resting.callDuration(`${response.duration}ms`);
       Resting.callStatus(response.status);
       response.headers.forEach(header => Resting.responseHeaders.push(header));
