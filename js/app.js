@@ -253,7 +253,7 @@ requirejs(['jquery','storage','knockout','knockout-secure-binding','hjls','reque
 
     const confirmDelete = bookmark => {
       Resting.bookmarkToDelete = bookmark;
-      Resting.bookmarkToDeleteName(bookmark.name);
+      Resting.bookmarkToDeleteName(bookmark.viewName());
       Resting.tryToDeleteFolder(bookmark.isFolder);
       Resting.showBookmarkDeleteDialog(true);
     };
