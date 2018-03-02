@@ -34,6 +34,8 @@ requirejs(['jquery','storage','knockout','knockout-secure-binding','hjls','reque
       bookmarkLoadedIdx: -1,
       bookmarkToDelete: null,
       bookmarkToDeleteName : ko.observable(),
+      tryToDeleteFolder: ko.observable(false),
+      deleteChildrenBookmarks: ko.observable(false),
       requestMethod: ko.observable(),
       requestUrl: ko.observable(),
       responseBody: ko.observable(),
@@ -183,6 +185,59 @@ requirejs(['jquery','storage','knockout','knockout-secure-binding','hjls','reque
       dismissFolderDialog();
     };
 
+    const _saveBookmark = bookmark => {
+       if(Resting.bookmarkLoaded) {
+          // if edit a bookmark
+          if(bookmark.folder) {
+            const oldFolder = Resting.bookmarkCopy.folder;
+            if(oldFolder == bookmark.folder) { // folderA to folderA
+              let folderObj = Resting.bookmarks().find(b => b.id === bookmark.folder);
+              const modifiedFolder = bookmarkProvider.replaceBookmark(folderObj, new BookmarkViewModel(bookmark)); 
+              bookmarkProvider.save(serializeBookmark(modifiedFolder));
+              Resting.bookmarks.replace(folderObj, modifiedFolder);
+            } else if(!oldFolder) { //from no-folder to folderA
+              const oldBookmark = Resting.bookmarks().find(b => b.id == bookmark.id); // I need the ref to bookmark saved in observable array 
+                                                                                        //  either it is not removed from it
+              deleteBookmark(oldBookmark);
+              let folderObj = Resting.bookmarks().find(b => b.id === bookmark.folder);
+              const modifiedFolder = bookmarkProvider.replaceBookmark(folderObj, new BookmarkViewModel(bookmark)); 
+              bookmarkProvider.save(serializeBookmark(modifiedFolder));
+              Resting.bookmarks.replace(folderObj, modifiedFolder);
+            } else if( oldFolder != bookmark.folder) { // from folderA to folderB
+              deleteBookmark(Resting.bookmarkCopy);
+              let folderObj = Resting.bookmarks().find(b => b.id === bookmark.folder);
+              const modifiedFolder = bookmarkProvider.replaceBookmark(folderObj, new BookmarkViewModel(bookmark)); 
+              bookmarkProvider.save(serializeBookmark(modifiedFolder));
+              Resting.bookmarks.replace(folderObj, modifiedFolder);
+            }
+          } else {  
+            if(Resting.bookmarkCopy.folder) { // from folderA to no-folder
+              deleteBookmark(Resting.bookmarkCopy);
+              Resting.bookmarks.push(new BookmarkViewModel(bookmark));
+            } else { // from no-folder to no-folder 
+              const oldBookmark = Resting.bookmarks().find(b => b.id === bookmark.id);
+              Resting.bookmarks.replace(oldBookmark, new BookmarkViewModel(bookmark));
+            }
+            bookmarkProvider.save(serializeBookmark(bookmark));
+          }
+        
+          Resting.bookmarkCopy = null;   
+          Resting.bookmarkLoaded = null;
+          Resting.bookmarkLoadedIdx = -1;
+          Resting.folderSelected('');
+        } else { // if new bookmark
+          if(bookmark.folder) {
+            let folderObj = Resting.bookmarks().find(b => b.id === bookmark.folder);
+            const modifiedFolder = bookmarkProvider.addBookmarks(folderObj, new BookmarkViewModel(bookmark));
+            bookmarkProvider.save(serializeBookmark(modifiedFolder));
+            Resting.bookmarks.replace(folderObj, modifiedFolder);
+          } else {
+             bookmarkProvider.save(serializeBookmark(bookmark));
+             Resting.bookmarks.push(new BookmarkViewModel(bookmark));
+          }
+        }
+    };
+    
     const saveBookmark = () => {
       const req = request.makeRequest(
         Resting.requestMethod(), Resting.requestUrl(),
@@ -190,56 +245,7 @@ requirejs(['jquery','storage','knockout','knockout-secure-binding','hjls','reque
         body(Resting.bodyType()));
       const bookmarkId = Resting.bookmarkLoaded ? Resting.bookmarkLoaded : new Date().toString(); 
       const bookmarkObj = bookmarkProvider.makeBookmark(bookmarkId, req, validateBookmarkName(Resting.bookmarkName()), Resting.folderSelected());
-      // if edit a bookmark
-      if(Resting.bookmarkLoaded) {
-        if(bookmarkObj.folder) {
-          const oldFolder = Resting.bookmarkCopy.folder;
-          if(oldFolder == bookmarkObj.folder) { // folderA to folderA
-            let folderObj = Resting.bookmarks().find(b => b.id === bookmarkObj.folder);
-            const modifiedFolder = bookmarkProvider.replaceBookmark(folderObj, new BookmarkViewModel(bookmarkObj)); 
-            bookmarkProvider.save(serializeBookmark(modifiedFolder));
-            Resting.bookmarks.replace(folderObj, modifiedFolder);
-          } else if(!oldFolder) { //from no-folder to folderA
-            const oldBookmark = Resting.bookmarks().find(b => b.id == bookmarkObj.id); // I need the ref to bookmark saved in observable array 
-                                                                                      //  either it is not removed from it
-            deleteBookmark(oldBookmark);
-            let folderObj = Resting.bookmarks().find(b => b.id === bookmarkObj.folder);
-            const modifiedFolder = bookmarkProvider.replaceBookmark(folderObj, new BookmarkViewModel(bookmarkObj)); 
-            bookmarkProvider.save(serializeBookmark(modifiedFolder));
-            Resting.bookmarks.replace(folderObj, modifiedFolder);
-          } else if( oldFolder != bookmarkObj.folder) { // from folderA to folderB
-            deleteBookmark(Resting.bookmarkCopy);
-            let folderObj = Resting.bookmarks().find(b => b.id === bookmarkObj.folder);
-            const modifiedFolder = bookmarkProvider.replaceBookmark(folderObj, new BookmarkViewModel(bookmarkObj)); 
-            bookmarkProvider.save(serializeBookmark(modifiedFolder));
-            Resting.bookmarks.replace(folderObj, modifiedFolder);
-          }
-        } else {  
-          if(Resting.bookmarkCopy.folder) { // from folderA to no-folder
-            deleteBookmark(Resting.bookmarkCopy);
-            Resting.bookmarks.push(new BookmarkViewModel(bookmarkObj));
-          } else { // from no-folder to no-folder 
-            const oldBookmark = Resting.bookmarks().find(b => b.id === bookmarkObj.id);
-            Resting.bookmarks.replace(oldBookmark, new BookmarkViewModel(bookmarkObj));
-          }
-          bookmarkProvider.save(serializeBookmark(bookmarkObj));
-        }
-      
-        Resting.bookmarkCopy = null;   
-        Resting.bookmarkLoaded = null;
-        Resting.bookmarkLoadedIdx = -1;
-        Resting.folderSelected('');
-      } else { // if new bookmark
-        if(bookmarkObj.folder) {
-          let folderObj = Resting.bookmarks().find(b => b.id === bookmarkObj.folder);
-          const modifiedFolder = bookmarkProvider.addBookmarks(folderObj, new BookmarkViewModel(bookmarkObj));
-          bookmarkProvider.save(serializeBookmark(modifiedFolder));
-          Resting.bookmarks.replace(folderObj, modifiedFolder);
-        } else {
-           bookmarkProvider.save(serializeBookmark(bookmarkObj));
-           Resting.bookmarks.push(new BookmarkViewModel(bookmarkObj));
-        }
-      }
+      _saveBookmark(bookmarkObj);
       
       // close the dialog
       dismissSaveBookmarkDialog();
@@ -248,20 +254,24 @@ requirejs(['jquery','storage','knockout','knockout-secure-binding','hjls','reque
     const confirmDelete = bookmark => {
       Resting.bookmarkToDelete = bookmark;
       Resting.bookmarkToDeleteName(bookmark.name);
+      Resting.tryToDeleteFolder(bookmark.isFolder);
       Resting.showBookmarkDeleteDialog(true);
     };
     
     
     const dismissDeleteBookmarkDialog = () => {
       Resting.showBookmarkDeleteDialog(false);
+      Resting.deleteChildrenBookmarks(false);
     }
 
     const deleteBookmarkFromView = () => {
-      deleteBookmark(Resting.bookmarkToDelete);
+      deleteBookmark(Resting.bookmarkToDelete, Resting.deleteChildrenBookmarks());
+      Resting.folders.remove(folder => folder.id === Resting.bookmarkToDelete.id);
+      Resting.bookmarkToDelete = null;
       dismissDeleteBookmarkDialog();
     }
 
-    const deleteBookmark = bookmark => {
+    const deleteBookmark = (bookmark, deleteChildrenBookmarks) => {
       if(bookmark.folder) {
         const containerFolder = Resting.bookmarks().find( b => b.id === bookmark.folder);
         let modifiedFolder = Object.assign({},containerFolder);
@@ -269,6 +279,13 @@ requirejs(['jquery','storage','knockout','knockout-secure-binding','hjls','reque
         bookmarkProvider.save(serializeBookmark(modifiedFolder));
         Resting.bookmarks.replace(containerFolder,modifiedFolder);
       } else {
+        if(bookmark.isFolder && !deleteChildrenBookmarks) {
+          const childrenBookmarks = bookmark.bookmarks.map( child => {
+            child.folder=null;
+            return child;
+          });
+          childrenBookmarks.forEach(child => _saveBookmark(child));
+        }
         storage.deleteById(bookmark.id, () => Resting.bookmarks.remove(bookmark));
       }
     };

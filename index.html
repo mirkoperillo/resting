@@ -69,6 +69,9 @@
                 <div style="margin-bottom: 5px;">
                 <a class="list-group-item clearfix" data-toggle="collapse" href="#" data-bind="visible: isFolder, attr: {'data-target' : '#folderContent' + $index() }">
                   <span data-bind="text: name"></span>
+                  <span class="pull-right">
+                    <button class="btn btn-xs btn-danger" data-bind="click: $parent.confirmDelete, clickBubble: false"><span class="glyphicon glyphicon-trash" aria-hidden="true"></span></button> 
+                  </span>
                 </a>
                 <div class="collapse" data-bind="if: isFolder, attr: {'id' : 'folderContent' + $index() }">
                    <div data-bind="foreach: bookmarks">
@@ -216,6 +219,11 @@
       <p>
         Confirm to delete <strong><span data-bind="text: bookmarkToDeleteName"></span></strong> ?
       </p>
+      <div class="checkbox" data-bind="if: tryToDeleteFolder">
+        <label>
+          <input type="checkbox" data-bind="checked: deleteChildrenBookmarks"> Delete bookmarks in the folder
+        </label>
+      </div>
     </div>
     <div class="panel-footer">
       <button class="btn btn-default" data-bind="click: deleteBookmarkFromView">Yes</button><button class="btn btn-default" data-bind="click: dismissDeleteBookmarkDialog">No</button> 
