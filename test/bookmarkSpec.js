@@ -1,6 +1,6 @@
 const requirejs = require('requirejs');
 
-const makeBookmarkProvider = requirejs("js/bookmark.js");
+const makeBookmarkProvider = requirejs("src/js/app/bookmark.js");
 
 const mockStorageProvider = {
   save : (bookmark) => ({result: 'OK', message : ''})
