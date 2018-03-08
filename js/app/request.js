@@ -1,4 +1,4 @@
-define(['jquery','response'],function($,response){
+define(['jquery','app/response'],function($,response){
 
   const makeRequest = (method, url, headers, bodyType, body) =>
     ({ method, url, headers, bodyType, body });

@@ -1,5 +1,7 @@
 requirejs.config({
+    baseUrl: 'js/vendor',
     paths: {
+         app : '../app',
         'jquery': 'jquery-2.2.4.min',
         'knockout': 'knockout-3.4.2',
         'knockout-secure-binding': 'knockout-secure-binding',
@@ -8,7 +10,7 @@ requirejs.config({
     }
 });
 
-requirejs(['jquery','storage','knockout','knockout-secure-binding','hjls','request','bookmark','bootstrap'], function($,storage,ko,ksb,hjls,request,makeBookmarkProvider ,bootstrap) {
+requirejs(['jquery','app/storage','knockout','knockout-secure-binding','hjls','app/request','app/bookmark','bootstrap'], function($,storage,ko,ksb,hjls,request,makeBookmarkProvider ,bootstrap) {
   
   function BookmarkViewModel(bookmark) {
     const self = this;
@@ -440,13 +442,13 @@ requirejs(['jquery','storage','knockout','knockout-secure-binding','hjls','reque
 
     // seems that this below must be the last instructions to permit component to be registered
     ko.components.register('entry-list', {
-      viewModel: { require: 'components/entry-list/component' },
-      template: { require: 'text!components/entry-list/view.html' }
+      viewModel: { require: 'app/components/entry-list/component' },
+      template: { require: 'text!app/components/entry-list/view.html' }
     });
 
     ko.components.register('request-body', {
-      viewModel: { require: 'components/request-body/component' },
-      template: { require: 'text!components/request-body/template.html' }
+      viewModel: { require: 'app/components/request-body/component' },
+      template: { require: 'text!app/components/request-body/template.html' }
     });
 
     
