@@ -1,10 +1,12 @@
 <html>
   <div class="row">
-    <div class="form-horizontal">
+    <div class="form-inline">
       <div class="form-group">
-         <label class="control-label col-md-2" for="body-type">Type</label>
+         <label for="body-type">Type</label>
+<!--
          <div class="col-md-10">
-           <select class="form-control" id="body-type" data-bind="value: bodyType">
+-->
+           <select class="form-control" style="margin-left: 10px;" id="body-type" data-bind="value: bodyType">
             <option>
               form-data
             </option>
@@ -15,11 +17,13 @@
               raw
             </option>
           </select>
+<!--
       </div>
+-->
     </div>
     </div>
   </div>
-  <div class="row">
+  <div class="row" style="margin-top: 10px;">
     <div class="col-md-12">
       <entry-list params="entryList : formDataParams" data-bind="visible : bodyType() == 'form-data'"></entry-list>
       <entry-list params="entryList : formEncodedParams" data-bind="visible : bodyType() == 'x-www-form-urlencoded'"></entry-list>

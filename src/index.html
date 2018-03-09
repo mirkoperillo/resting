@@ -103,7 +103,7 @@
           <li role="presentation" data-bind="css: {active : showRequestBody()}"><a href="#" data-bind="click: requestBodyPanel">Body</a></li>
         </ul>
 
-        <div class="panel panel-default">
+        <div class="panel panel-default" style="padding: 10px;">
           <div class="panel-body">
             <request-body params="bodyType: bodyType, formDataParams : formDataParams, formEncodedParams : formEncodedParams, rawBody : rawBody" data-bind="visible : showRequestBody"></request-body>
             <entry-list params="entryList : requestHeaders" data-bind="visible : showRequestHeaders"></entry-list>
@@ -155,7 +155,7 @@
                 <table class="table table-striped">
                   <tbody data-bind="foreach: responseHeaders">
                     <tr>
-                      <td data-bind="text: name"></td>
+                      <td><strong><span data-bind="text: name"></span></strong></td>
                       <td data-bind="text: value"></td>
                     </tr>
                   </tbody>
