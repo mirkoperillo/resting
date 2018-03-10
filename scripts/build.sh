@@ -6,5 +6,5 @@ then
 fi
 
 
-
-tar czvf ../dist/resting.tgz ../src/*
+cd ../src
+tar czvf ../dist/resting.tgz * ../LICENSE ../README.md
