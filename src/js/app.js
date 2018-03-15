@@ -45,8 +45,10 @@ requirejs(['jquery','app/storage','knockout','knockout-secure-binding','hjls','a
       callStatus: ko.observable('-'),
       responseHeaders: ko.observableArray(),
       requestHeaders: ko.observableArray(),
+      querystring: ko.observableArray(),
       showRequestHeaders: ko.observable(true),
       showRequestBody: ko.observable(false),
+      showQuerystring: ko.observable(false),
       showResponseHeaders: ko.observable(false),
       showResponseBody: ko.observable(true),
       useFormattedResponseBody: ko.observable(true),
@@ -116,6 +118,7 @@ requirejs(['jquery','app/storage','knockout','knockout-secure-binding','hjls','a
       Resting.requestUrl(req.url);
       Resting.bodyType(req.bodyType);
       Resting.requestHeaders(req.headers);
+      Resting.querystring(req.querystring);
       updateBody(req.bodyType, req.body);
     };
 
@@ -243,7 +246,7 @@ requirejs(['jquery','app/storage','knockout','knockout-secure-binding','hjls','a
     const saveBookmark = () => {
       const req = request.makeRequest(
         Resting.requestMethod(), Resting.requestUrl(),
-        Resting.requestHeaders(), Resting.bodyType(),
+        Resting.requestHeaders(), Resting.querystring(), Resting.bodyType(),
         body(Resting.bodyType()));
       const bookmarkId = Resting.bookmarkLoaded ? Resting.bookmarkLoaded : new Date().toString(); 
       const bookmarkObj = bookmarkProvider.makeBookmark(bookmarkId, req, validateBookmarkName(Resting.bookmarkName()), Resting.folderSelected());
@@ -314,19 +317,27 @@ requirejs(['jquery','app/storage','knockout','knockout-secure-binding','hjls','a
     };
 
     const send = () => {
-      request.execute(Resting.requestMethod(),Resting.requestUrl(),convertToHeaderObj(Resting.requestHeaders()),Resting.bodyType(),Resting.dataToSend(),displayResponse);
+      request.execute(Resting.requestMethod(),Resting.requestUrl(),convertToHeaderObj(Resting.requestHeaders()), Resting.querystring(), Resting.bodyType(),Resting.dataToSend(),displayResponse);
     };
 
     const requestHeadersPanel = () => {
       Resting.showRequestHeaders(true);
       Resting.showRequestBody(false);
+      Resting.showQuerystring(false);
     };
 
     const requestBodyPanel = () => {
       Resting.showRequestHeaders(false);
       Resting.showRequestBody(true);
+      Resting.showQuerystring(false);
     };
 
+    const querystringPanel = () => {
+      Resting.showRequestHeaders(false);
+      Resting.showRequestBody(false);
+      Resting.showQuerystring(true);
+    };
+    
     const responseHeadersPanel = () => {
       Resting.showResponseHeaders(true);
       Resting.showResponseBody(false);
@@ -427,6 +438,7 @@ requirejs(['jquery','app/storage','knockout','knockout-secure-binding','hjls','a
     Resting.formattedResponseBody = formattedResponseBody;
     Resting.requestHeadersPanel = requestHeadersPanel;
     Resting.responseHeadersPanel = responseHeadersPanel;
+    Resting.querystringPanel = querystringPanel;
     Resting.rawResponseBody = rawResponseBody;
     Resting.saveBookmarkDialog = saveBookmarkDialog;
     Resting.dismissSaveBookmarkDialog = dismissSaveBookmarkDialog;

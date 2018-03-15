@@ -1,7 +1,7 @@
 define(['jquery','app/response'],function($,response){
 
-  const makeRequest = (method, url, headers, bodyType, body) =>
-    ({ method, url, headers, bodyType, body });
+  const makeRequest = (method, url, headers, querystring, bodyType, body) =>
+    ({ method, url, headers, querystring, bodyType, body });
 
 
   const contentTypesFromBodyTypes = {
@@ -19,11 +19,19 @@ define(['jquery','app/response'],function($,response){
     }
   }; 
 
-  const execute = (method, url, headers, bodyType, body, onResponse) => {
+  const _appendQuerystring = (url,querystring = []) => {
+    const containsParams = url.indexOf("?") !== -1;
+    const convertParams = querystring.map(({name,value}) => `${name}=${value}`);
+    const params = convertParams.join('&');
+    return params.length > 0 ? (url + (containsParams ? "&" : "?") + params) : url;
+  };
+  
+  const execute = (method, url, headers, querystring, bodyType, body, onResponse) => {
     const startCall = new Date().getTime();
+    const requestUrl = _appendQuerystring(prefixProtocol(url),querystring);
      $.ajax({
       method: method,
-      url: prefixProtocol(url),
+      url: requestUrl,
       headers: headers,
       processData: (bodyType === 'form-data'),
       cache: false,
