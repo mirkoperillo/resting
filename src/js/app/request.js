@@ -1,7 +1,7 @@
 define(['jquery','app/response'],function($,response){
 
-  const makeRequest = (method, url, headers, querystring, bodyType, body) =>
-    ({ method, url, headers, querystring, bodyType, body });
+  const makeRequest = (method, url, headers, querystring, bodyType, body, authentication) =>
+    ({ method, url, headers, querystring, bodyType, body, authentication });
 
 
   const contentTypesFromBodyTypes = {
@@ -26,7 +26,7 @@ define(['jquery','app/response'],function($,response){
     return params.length > 0 ? (url + (containsParams ? "&" : "?") + params) : url;
   };
   
-  const execute = (method, url, headers, querystring, bodyType, body, onResponse) => {
+  const execute = (method, url, headers, querystring, bodyType, body, authentication, onResponse) => {
     const startCall = new Date().getTime();
     const requestUrl = _appendQuerystring(prefixProtocol(url),querystring);
      $.ajax({
@@ -38,6 +38,11 @@ define(['jquery','app/response'],function($,response){
       crossDomain: true,
       contentType: contentTypesFromBodyTypes[bodyType],
       data: body,
+      beforeSend: function(xhr) {
+        if( authentication.type === 'Basic') {
+          xhr.setRequestHeader('Authorization', 'Basic ' + btoa(authentication.username+':'+authentication.password));
+        }
+      },
       success: (data, status, jqXHR) => {
         const endCall = new Date().getTime();
         const callDuration = endCall - startCall;
@@ -50,6 +55,7 @@ define(['jquery','app/response'],function($,response){
       },
     });
   };
+  
 
   return {
     makeRequest: makeRequest,

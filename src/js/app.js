@@ -49,6 +49,7 @@ requirejs(['jquery','app/storage','knockout','knockout-secure-binding','hjls','a
       showRequestHeaders: ko.observable(true),
       showRequestBody: ko.observable(false),
       showQuerystring: ko.observable(false),
+      showAuthentication: ko.observable(false),
       showResponseHeaders: ko.observable(false),
       showResponseBody: ko.observable(true),
       useFormattedResponseBody: ko.observable(true),
@@ -57,6 +58,9 @@ requirejs(['jquery','app/storage','knockout','knockout-secure-binding','hjls','a
       formDataParams: ko.observableArray(),
       formEncodedParams: ko.observableArray(),
       rawBody: ko.observable(),
+      authenticationType: ko.observable(),
+      username: ko.observable(),
+      password: ko.observable(),
       bookmarks: ko.observableArray(),
       folders: ko.observableArray(),
       bookmarkName: ko.observable(),
@@ -119,9 +123,16 @@ requirejs(['jquery','app/storage','knockout','knockout-secure-binding','hjls','a
       Resting.bodyType(req.bodyType);
       Resting.requestHeaders(req.headers);
       Resting.querystring(req.querystring);
+      _updateAuthentication(req.authentication);
       updateBody(req.bodyType, req.body);
     };
 
+    const _updateAuthentication = authentication => {
+      Resting.authenticationType(authentication.type);
+      Resting.username(authentication.username);
+      Resting.password(authentication.password);
+    };
+    
     const dataToSend = () => {
       if (Resting.bodyType() === 'form-data') {
         return convertToFormData(Resting.formDataParams());
@@ -134,7 +145,8 @@ requirejs(['jquery','app/storage','knockout','knockout-secure-binding','hjls','a
       return Resting.rawBody().trim();
     };
 
-  
+    const _authentication = () => ({type: Resting.authenticationType(), username: Resting.username(), password: Resting.password()});
+
     const loadBookmark = (bookmarkIdx) => {
       const selectedBookmark = Resting.bookmarks()[bookmarkIdx()];
       if (!selectedBookmark) return false;
@@ -247,7 +259,7 @@ requirejs(['jquery','app/storage','knockout','knockout-secure-binding','hjls','a
       const req = request.makeRequest(
         Resting.requestMethod(), Resting.requestUrl(),
         Resting.requestHeaders(), Resting.querystring(), Resting.bodyType(),
-        body(Resting.bodyType()));
+        body(Resting.bodyType()),_authentication());
       const bookmarkId = Resting.bookmarkLoaded ? Resting.bookmarkLoaded : new Date().toString(); 
       const bookmarkObj = bookmarkProvider.makeBookmark(bookmarkId, req, validateBookmarkName(Resting.bookmarkName()), Resting.folderSelected());
       _saveBookmark(bookmarkObj);
@@ -317,25 +329,36 @@ requirejs(['jquery','app/storage','knockout','knockout-secure-binding','hjls','a
     };
 
     const send = () => {
-      request.execute(Resting.requestMethod(),Resting.requestUrl(),convertToHeaderObj(Resting.requestHeaders()), Resting.querystring(), Resting.bodyType(),Resting.dataToSend(),displayResponse);
+      request.execute(Resting.requestMethod(),Resting.requestUrl(),convertToHeaderObj(Resting.requestHeaders()), Resting.querystring(), Resting.bodyType(),Resting.dataToSend(), 
+      _authentication(),displayResponse);
     };
 
     const requestHeadersPanel = () => {
       Resting.showRequestHeaders(true);
       Resting.showRequestBody(false);
       Resting.showQuerystring(false);
+      Resting.showAuthentication(false);
     };
 
     const requestBodyPanel = () => {
       Resting.showRequestHeaders(false);
       Resting.showRequestBody(true);
       Resting.showQuerystring(false);
+      Resting.showAuthentication(false);
     };
 
     const querystringPanel = () => {
       Resting.showRequestHeaders(false);
       Resting.showRequestBody(false);
       Resting.showQuerystring(true);
+      Resting.showAuthentication(false);
+    };
+    
+    const authenticationPanel = () => {
+      Resting.showRequestHeaders(false);
+      Resting.showRequestBody(false);
+      Resting.showQuerystring(false);
+      Resting.showAuthentication(true);
     };
     
     const responseHeadersPanel = () => {
@@ -439,6 +462,7 @@ requirejs(['jquery','app/storage','knockout','knockout-secure-binding','hjls','a
     Resting.requestHeadersPanel = requestHeadersPanel;
     Resting.responseHeadersPanel = responseHeadersPanel;
     Resting.querystringPanel = querystringPanel;
+    Resting.authenticationPanel = authenticationPanel;
     Resting.rawResponseBody = rawResponseBody;
     Resting.saveBookmarkDialog = saveBookmarkDialog;
     Resting.dismissSaveBookmarkDialog = dismissSaveBookmarkDialog;
@@ -468,6 +492,11 @@ requirejs(['jquery','app/storage','knockout','knockout-secure-binding','hjls','a
     ko.components.register('request-body', {
       viewModel: { require: 'app/components/request-body/component' },
       template: { require: 'text!app/components/request-body/template.html' }
+    });
+    
+    ko.components.register('authentication', {
+      viewModel: { require: 'app/components/authentication/component' },
+      template: { require: 'text!app/components/authentication/view.html' }
     });
 
     

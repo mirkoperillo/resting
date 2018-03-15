@@ -101,6 +101,7 @@
           <li role="presentation" data-bind="css: {active : showRequestHeaders()}"><a href="#" data-bind="click: requestHeadersPanel">Headers</a></li>
           <li role="presentation" data-bind="css: {active : showRequestBody()}"><a href="#" data-bind="click: requestBodyPanel">Body</a></li>
           <li role="presentation" data-bind="css: {active : showQuerystring()}"><a href="#" data-bind="click: querystringPanel">Querystring</a></li>
+          <li role="presentation" data-bind="css: {active : showAuthentication()}"><a href="#" data-bind="click: authenticationPanel">Authentication</a></li>
         </ul>
 
         <div class="panel panel-default" style="padding: 10px;">
@@ -108,6 +109,7 @@
             <request-body params="bodyType: bodyType, formDataParams : formDataParams, formEncodedParams : formEncodedParams, rawBody : rawBody" data-bind="visible : showRequestBody"></request-body>
             <entry-list params="entryList : requestHeaders" data-bind="visible : showRequestHeaders"></entry-list>
             <entry-list params="entryList : querystring" data-bind="visible : showQuerystring"></entry-list>
+            <authentication params="authenticationType: authenticationType, username: username, password: password" data-bind="visible : showAuthentication"></authentication>
           </div>
         </div>
         </div>
