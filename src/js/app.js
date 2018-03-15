@@ -389,6 +389,12 @@ requirejs(['jquery','app/storage','knockout','knockout-secure-binding','hjls','a
       }
     };
     
+    const addFolderOnEnter = (data,event) => {
+      const enter = 13;
+      if(event.keyCode === enter) {
+        addFolder();
+      }
+    }
     
     
     // define the storage format conversion
@@ -431,6 +437,7 @@ requirejs(['jquery','app/storage','knockout','knockout-secure-binding','hjls','a
     Resting.confirmDelete = confirmDelete;
     Resting.dismissDeleteBookmarkDialog = dismissDeleteBookmarkDialog;
     Resting.deleteBookmarkFromView = deleteBookmarkFromView;
+    Resting.addFolderOnEnter = addFolderOnEnter;
     return Resting;
   }
 

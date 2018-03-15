@@ -203,7 +203,7 @@
       Add Folder
     </div>
     <div class="panel-body">
-      Name: <input type="text" class="form-control" data-bind="value: folderName"></input>
+      Name: <input type="text" class="form-control" data-bind="value: folderName, event: { keyup: addFolderOnEnter}"></input>
     </div>
     <div class="panel-footer">
       <button class="btn btn-default" data-bind="click: addFolder">Save</button><button class="btn btn-default" data-bind="click: dismissFolderDialog">Cancel</button> 
