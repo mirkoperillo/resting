@@ -8,7 +8,7 @@
     </div>
 </div>
 <div class="row form-inline form-group">
-    <label>Name</label><input type="text" style="margin-left: 10px;" class="form-control" data-bind="value: entryName"></input><label style="margin-left: 5px;">Value</label><input type="text" style="margin-left: 10px;" class="form-control" data-bind="value: entryValue"></input>
+    <label>Name</label><input type="text" style="margin-left: 10px;" class="form-control" data-bind="value: entryName, hasFocus: focusToNameField"></input><label style="margin-left: 5px;">Value</label><input type="text" style="margin-left: 10px;" class="form-control" data-bind="value: entryValue, event: { keyup: addOnEnter}"></input>
     <button type="button" class="btn btn-default" aria-label="Add header" data-bind="click: add">
       <span class="glyphicon glyphicon-plus" aria-hidden="true"></span>
     </button>

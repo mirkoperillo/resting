@@ -5,6 +5,15 @@ define(['knockout'],function(ko) {
       entryList: params.entryList,
       entryName: ko.observable(),
       entryValue: ko.observable(),
+      focusToNameField: ko.observable(true),
+    };
+
+    const addOnEnter = (data, event) => {
+      const enter = 13;
+      if(event.keyCode === enter) {
+        add();
+        EntryList.focusToNameField(true);
+      }
     };
 
     const checkValidEntry = (name, value) =>
@@ -25,6 +34,7 @@ define(['knockout'],function(ko) {
 
     EntryList.add = add;
     EntryList.remove = remove;
+    EntryList.addOnEnter = addOnEnter;
 
     return EntryList;
   }
