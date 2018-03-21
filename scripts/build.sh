@@ -5,6 +5,12 @@ then
   mkdir ../dist
 fi
 
+if [ -e ../dist/resting.xpi ]
+then
+ rm ../dist/resting.xpi
+fi
 
 cd ../src
-tar czvf ../dist/resting.tgz * ../LICENSE ../README.md
+zip -r ../dist/resting.xpi *
+cd ..
+zip dist/resting.xpi LICENSE README.md
