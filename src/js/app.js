@@ -122,15 +122,17 @@ requirejs(['jquery','app/storage','knockout','knockout-secure-binding','hjls','a
       Resting.requestUrl(req.url);
       Resting.bodyType(req.bodyType);
       Resting.requestHeaders(req.headers);
-      Resting.querystring(req.querystring);
+      Resting.querystring(req.querystring ?  req.querystring : []);
       _updateAuthentication(req.authentication);
       updateBody(req.bodyType, req.body);
     };
 
     const _updateAuthentication = authentication => {
-      Resting.authenticationType(authentication.type);
-      Resting.username(authentication.username);
-      Resting.password(authentication.password);
+     if(authentication) {
+        Resting.authenticationType(authentication.type);
+        Resting.username(authentication.username);
+        Resting.password(authentication.password);
+      }
     };
     
     const dataToSend = () => {
