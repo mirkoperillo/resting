@@ -2,7 +2,7 @@ Resting is a rest client WebExtension actually tested in Firefox.
 
 It is a very young project under an heavy developement.
 
-Extension is officially released at https://addons.mozilla.org/en-US/firefox/addon/resting/
+Extension is officially released [here](https://addons.mozilla.org/en-US/firefox/addon/resting?src=external-github)
 
 Give it a chance
 
