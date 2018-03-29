@@ -10,7 +10,7 @@ requirejs.config({
     }
 });
 
-requirejs(['jquery','app/storage','knockout','knockout-secure-binding','hjls','app/request','app/bookmark','bootstrap'], function($,storage,ko,ksb,hjls,request,makeBookmarkProvider ,bootstrap) {
+requirejs(['jquery','app/storage','knockout','knockout-secure-binding','hjls','app/request','app/bookmark','bootstrap'], function($,storage,ko,ksb,hjls,request,makeBookmarkProvider, bootstrap) {
   
   function BookmarkViewModel(bookmark) {
     const self = this;
@@ -72,6 +72,7 @@ requirejs(['jquery','app/storage','knockout','knockout-secure-binding','hjls','a
       showBookmarkDeleteDialog: ko.observable(false)
     };
 
+    
     const bookmarkProvider = makeBookmarkProvider(storage);
 
     const convertToFormData = (data = []) =>
@@ -79,23 +80,6 @@ requirejs(['jquery','app/storage','knockout','knockout-secure-binding','hjls','a
         acc[record.name] = record.value;
         return acc;
       }, {});
-
-    const loadBookmarks = () =>
-      storage.iterate(value => {
-        const bookmarkObj = bookmarkProvider.fromJson(value);
-          Resting.bookmarks.push(bookmarkObj); 
-          if(bookmarkObj.isFolder) {
-            Resting.folders.push(bookmarkObj);
-          }
-      });
-      
-    const loadBookmarksNewFormat = () =>
-      storage.iterate( value => {
-        Resting.bookmarks.push(new BookmarkViewModel(value)); 
-        if(value.isFolder) {
-          Resting.folders.push(value);
-        }
-      });
 
     const serializeBookmark = (bookmarkObj) => {
       return bookmarkProvider.fromJson(JSON.stringify(bookmarkObj));
@@ -149,29 +133,6 @@ requirejs(['jquery','app/storage','knockout','knockout-secure-binding','hjls','a
 
     const _authentication = () => ({type: Resting.authenticationType(), username: Resting.username(), password: Resting.password()});
 
-    const loadBookmark = (bookmarkIdx) => {
-      const selectedBookmark = Resting.bookmarks()[bookmarkIdx()];
-      if (!selectedBookmark) return false;
-      Resting.bookmarkCopy = bookmarkProvider.copyBookmark(selectedBookmark);
-      Resting.bookmarkLoadedIdx = bookmarkIdx();
-      Resting.folderSelected(selectedBookmark.folder);
-      return loadBookmarkData(selectedBookmark);
-    };
-    
-    // duplication..to improve putting two load function together
-     const loadBookmarkObj = (bookmarkObj) => {
-      Resting.bookmarkLoadedIdx = bookmarkObj.id;
-      Resting.bookmarkCopy = bookmarkProvider.copyBookmark(bookmarkObj);
-      Resting.folderSelected(bookmarkObj.folder);
-      return loadBookmarkData(bookmarkObj);
-    };
-    
-    const loadBookmarkData = (bookmark) => {
-      Resting.bookmarkLoaded = bookmark.id;
-      Resting.parseRequest(bookmark.request);
-      Resting.bookmarkName(bookmark.name);
-    };
-
     const body = (bodyType) => {
       if (bodyType === 'form-data') {
         return Resting.formDataParams();
@@ -191,17 +152,6 @@ requirejs(['jquery','app/storage','knockout','knockout-secure-binding','hjls','a
       } else {
         return;
       }
-    };
-
-    const addFolder = () => {
-      const folder = bookmarkProvider.makeFolder(new Date().toString(), Resting.folderName());
-      storage.save(serializeBookmark(folder));
-      Resting.bookmarks.push(new BookmarkViewModel(folder));
-      Resting.folders.push(folder);
-      Resting.folderName('');
-      
-      // close the dialog
-      dismissFolderDialog();
     };
 
     const _saveBookmark = bookmark => {
@@ -269,26 +219,6 @@ requirejs(['jquery','app/storage','knockout','knockout-secure-binding','hjls','a
       // close the dialog
       dismissSaveBookmarkDialog();
     };
-
-    const confirmDelete = bookmark => {
-      Resting.bookmarkToDelete = bookmark;
-      Resting.bookmarkToDeleteName(bookmark.viewName());
-      Resting.tryToDeleteFolder(bookmark.isFolder);
-      Resting.showBookmarkDeleteDialog(true);
-    };
-    
-    
-    const dismissDeleteBookmarkDialog = () => {
-      Resting.showBookmarkDeleteDialog(false);
-      Resting.deleteChildrenBookmarks(false);
-    }
-
-    const deleteBookmarkFromView = () => {
-      deleteBookmark(Resting.bookmarkToDelete, Resting.deleteChildrenBookmarks());
-      Resting.folders.remove(folder => folder.id === Resting.bookmarkToDelete.id);
-      Resting.bookmarkToDelete = null;
-      dismissDeleteBookmarkDialog();
-    }
 
     const deleteBookmark = (bookmark, deleteChildrenBookmarks) => {
       if(bookmark.folder) {
@@ -394,19 +324,10 @@ requirejs(['jquery','app/storage','knockout','knockout-secure-binding','hjls','a
       Resting.showBookmarkDialog(true);
     };
     
-    const folderDialog = () => {
-      Resting.showFolderDialog(true);
-    };
-    
     const dismissSaveBookmarkDialog = () => {
       Resting.showBookmarkDialog(false);
       Resting.bookmarkName('');
     };
-    
-    const dismissFolderDialog = () => {
-      Resting.showFolderDialog(false);
-    };
-    
     
     const unhighlight = () => {
       $('#highlighted-response').removeClass('hljs');
@@ -425,38 +346,10 @@ requirejs(['jquery','app/storage','knockout','knockout-secure-binding','hjls','a
       }
     };
     
-    const addFolderOnEnter = (data,event) => {
-      const enter = 13;
-      if(event.keyCode === enter) {
-        addFolder();
-      }
-    }
-    
-    
-    // define the storage format conversion
-    // this function converts format of bookmarks to the new version
-    // consider to maintain the call until version <= 0.6.0 of web-extentsion for compatibility goal
-    (() => {
-      storage.iterate( value => {
-        try {
-         const bookmarkObj = bookmarkProvider.fromJson(value);
-         bookmarkProvider.save(bookmarkObj);
-        } catch(e) {
-          console.log('bookmark/folder already converted in new format');
-        }
-      }, (err,success) => {
-        if(!err) {
-          loadBookmarksNewFormat();
-        }
-      });
-    })();
-    
     Resting.parseRequest = parseRequest;
     Resting.dataToSend = dataToSend;
     Resting.send = send;
     Resting.saveBookmark = saveBookmark;
-    Resting.loadBookmark = loadBookmark;
-    Resting.loadBookmarkObj = loadBookmarkObj;
     Resting.deleteBookmark = deleteBookmark;
     Resting.requestBodyPanel = requestBodyPanel;
     Resting.responseBodyPanel = responseBodyPanel;
@@ -468,14 +361,10 @@ requirejs(['jquery','app/storage','knockout','knockout-secure-binding','hjls','a
     Resting.rawResponseBody = rawResponseBody;
     Resting.saveBookmarkDialog = saveBookmarkDialog;
     Resting.dismissSaveBookmarkDialog = dismissSaveBookmarkDialog;
-    Resting.folderDialog = folderDialog;
-    Resting.dismissFolderDialog = dismissFolderDialog;
-    Resting.addFolder = addFolder;
     Resting.callSendOnEnter = callSendOnEnter;
-    Resting.confirmDelete = confirmDelete;
-    Resting.dismissDeleteBookmarkDialog = dismissDeleteBookmarkDialog;
-    Resting.deleteBookmarkFromView = deleteBookmarkFromView;
-    Resting.addFolderOnEnter = addFolderOnEnter;
+    
+    // FIXME: not good to expose this internal function
+    Resting._saveBookmark = _saveBookmark;
     return Resting;
   }
 
@@ -496,11 +385,16 @@ requirejs(['jquery','app/storage','knockout','knockout-secure-binding','hjls','a
       template: { require: 'text!app/components/request-body/template.html' }
     });
     
+     ko.components.register('bookmarks', {
+      viewModel: { require: 'app/components/bookmarks/component' },
+      template: { require: 'text!app/components/bookmarks/view.html' }
+    });
+    
     ko.components.register('authentication', {
       viewModel: { require: 'app/components/authentication/component' },
       template: { require: 'text!app/components/authentication/view.html' }
     });
-
+    
     
    // Show all options, more restricted setup than the Knockout regular binding.
    var options = {
