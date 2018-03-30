@@ -32,8 +32,7 @@ requirejs(['jquery','app/storage','knockout','knockout-secure-binding','hjls','a
   function AppViewModel() {
     const Resting = {
       responseContent : {},
-      bookmarkCopy: null,   // copy of bookmark object to use in edit comparison TO IMPROVE !!!!
-      bookmarkLoaded: null,
+      bookmarkCopy: null,   // copy of bookmark object loaded
       bookmarkToDelete: null,
       bookmarkToDeleteName : ko.observable(),
       tryToDeleteFolder: ko.observable(false),
@@ -155,7 +154,7 @@ requirejs(['jquery','app/storage','knockout','knockout-secure-binding','hjls','a
     };
 
     const _saveBookmark = bookmark => {
-       if(Resting.bookmarkLoaded) {
+       if(Resting.bookmarkCopy) {
           // if edit a bookmark
           if(bookmark.folder) {
             const oldFolder = Resting.bookmarkCopy.folder;
@@ -191,7 +190,6 @@ requirejs(['jquery','app/storage','knockout','knockout-secure-binding','hjls','a
           }
         
           Resting.bookmarkCopy = null;   
-          Resting.bookmarkLoaded = null;
           Resting.folderSelected('');
         } else { // if new bookmark
           if(bookmark.folder) {
@@ -211,7 +209,7 @@ requirejs(['jquery','app/storage','knockout','knockout-secure-binding','hjls','a
         Resting.requestMethod(), Resting.requestUrl(),
         Resting.requestHeaders(), Resting.querystring(), Resting.bodyType(),
         body(Resting.bodyType()),_authentication());
-      const bookmarkId = Resting.bookmarkLoaded ? Resting.bookmarkLoaded : new Date().toString(); 
+      const bookmarkId = Resting.bookmarkCopy ? Resting.bookmarkCopy.id : new Date().toString(); 
       const bookmarkObj = bookmarkProvider.makeBookmark(bookmarkId, req, validateBookmarkName(Resting.bookmarkName()), Resting.folderSelected());
       _saveBookmark(bookmarkObj);
       

@@ -22,7 +22,6 @@
     const appVm = params.appVm;
     
     let bookmarkCopy = null;   // copy of bookmark object to use in edit comparison TO IMPROVE !!!!
-    let bookmarkLoadedIdx = -1;
     let bookmarkToDelete = null;
     const bookmarkToDeleteName = ko.observable();
     const tryToDeleteFolder = ko.observable(false);
@@ -124,7 +123,6 @@
     
     // FIXME direct interaction with appVm fields
      const loadBookmarkObj = (bookmarkObj) => {
-      appVm.bookmarkLoadedIdx = bookmarkObj.id;
       appVm.bookmarkCopy = bookmarkProvider.copyBookmark(bookmarkObj);
       appVm.folderSelected(bookmarkObj.folder);
       return loadBookmarkData(bookmarkObj);
@@ -132,7 +130,6 @@
     
     // FIXME direct interaction with appVm fields
     const loadBookmarkData = (bookmark) => {
-      appVm.bookmarkLoaded = bookmark.id;
       appVm.parseRequest(bookmark.request);
       appVm.bookmarkName(bookmark.name);
     };
