@@ -21,7 +21,6 @@
 
     const appVm = params.appVm;
     
-    let bookmarkCopy = null;   // copy of bookmark object to use in edit comparison TO IMPROVE !!!!
     let bookmarkToDelete = null;
     const bookmarkToDeleteName = ko.observable();
     const tryToDeleteFolder = ko.observable(false);
