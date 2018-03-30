@@ -379,7 +379,7 @@ requirejs(['jquery','app/storage','knockout','knockout-secure-binding','hjls','a
 
     ko.components.register('request-body', {
       viewModel: { require: 'app/components/request-body/component' },
-      template: { require: 'text!app/components/request-body/template.html' }
+      template: { require: 'text!app/components/request-body/view.html' }
     });
     
      ko.components.register('bookmarks', {
