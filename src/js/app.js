@@ -12,6 +12,7 @@ requirejs.config({
 
 requirejs(['jquery','app/storage','knockout','knockout-secure-binding','hjls','app/request','app/bookmark','bootstrap'], function($,storage,ko,ksb,hjls,request,makeBookmarkProvider, bootstrap) {
   
+  // FIXME: duplication of this VM used by save functionality and bookmarks component
   function BookmarkViewModel(bookmark) {
     const self = this;
     this.id = bookmark.id;
@@ -32,8 +33,7 @@ requirejs(['jquery','app/storage','knockout','knockout-secure-binding','hjls','a
     const Resting = {
       responseContent : {},
       bookmarkCopy: null,   // copy of bookmark object to use in edit comparison TO IMPROVE !!!!
-      bookmarkLoaded: null, // this is the id of bookmark..bookmarkLoadedIdx duplication ??
-      bookmarkLoadedIdx: -1,
+      bookmarkLoaded: null,
       bookmarkToDelete: null,
       bookmarkToDeleteName : ko.observable(),
       tryToDeleteFolder: ko.observable(false),
@@ -192,7 +192,6 @@ requirejs(['jquery','app/storage','knockout','knockout-secure-binding','hjls','a
         
           Resting.bookmarkCopy = null;   
           Resting.bookmarkLoaded = null;
-          Resting.bookmarkLoadedIdx = -1;
           Resting.folderSelected('');
         } else { // if new bookmark
           if(bookmark.folder) {
