@@ -31,3 +31,46 @@
  width: 400px;
  z-index: 100;
 }
+
+.bookmark {
+ display: block;
+ padding: 10px 15px;
+ cursor: pointer; 
+}
+
+.folder {
+  display: block;
+  cursor: pointer;
+  margin-bottom: 5px !important;
+}
+
+a.bookmark, a.folder {
+ text-decoration: none;
+ color: #4e4d4d;
+}
+
+a.folder:hover, a.bookmark:hover, .folder .panel-heading:hover {
+ background-color: #337ab7; 
+ color: #fff;
+}
+
+.folder .panel-heading:hover > a {
+ color: #fff;
+}
+
+
+.element {
+ border: 1px solid transparent;
+ border-color: #ddd;
+ border-radius: 4px;
+ margin-bottom: 5px;
+}
+
+.folder .panel-heading {
+ background-color: #fff;
+}
+
+.folder .panel {
+ background-color: #ccc;
+}
+

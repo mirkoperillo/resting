@@ -7,31 +7,36 @@
               </button>
           </div>
           <div class="panel-body">
-            <div class="list-group" data-bind="foreach: bookmarks">
-                <div style="margin-bottom: 5px;">
-                <a class="list-group-item clearfix" data-toggle="collapse" href="#" data-bind="visible: isFolder, attr: {'data-target' : '#folderContent' + $index() }">
-                  <span data-bind="text: name"></span>
-                  <span class="pull-right">
-                    <button class="btn btn-xs btn-danger" data-bind="click: $parent.confirmDelete, clickBubble: false"><span class="glyphicon glyphicon-trash" aria-hidden="true"></span></button> 
-                  </span>
-                </a>
-                <div class="collapse" data-bind="if: isFolder, attr: {'id' : 'folderContent' + $index() }">
-                   <div data-bind="foreach: bookmarks">
-                      <a class="list-group-item clearfix" data-bind="visible: !isFolder,click: $parents[1].loadBookmarkObj" style="margin-bottom: 5px;">
+            <div data-bind="foreach: bookmarks">
+                <div class="folder panel panel-default" data-bind="visible: isFolder">
+                  <div class="panel-heading">
+                    <a class="folder clearfix" data-toggle="collapse" href="#" data-bind="attr: {'data-target' : '#folderContent' + $index() }">
+                      <span class="glyphicon glyphicon-folder-close" aria-hidden="true"></span>
+                      <span data-bind="text: name"></span>
+                      <span class="pull-right">
+                        <button class="btn btn-xs btn-danger" data-bind="click: $parent.confirmDelete, clickBubble: false"><span class="glyphicon glyphicon-trash" aria-hidden="true"></span></button> 
+                      </span>
+                    </a>
+                  </div>
+                  <div class="collapse" data-bind="if: isFolder, attr: {'id' : 'folderContent' + $index() }">
+                    <div data-bind="foreach: bookmarks">
+                      <a class="bookmark clearfix" data-bind="visible: !isFolder,click: $parents[1].loadBookmarkObj">
                         <span data-bind="text: viewName()"></span>
                         <span class="pull-right">
                           <button class="btn btn-xs btn-danger" data-bind="click: $parents[1].confirmDelete, clickBubble: false"><span class="glyphicon glyphicon-trash" aria-hidden="true"></span></button> 
                         </span>
                       </a>
+                   </div>
                   </div>
                 </div>
+                <div class="element" data-bind="visible: !isFolder">
+                  <a class="bookmark clearfix" data-bind="click: $parent.loadBookmarkObj">
+                    <span data-bind="text: viewName()"></span>
+                    <span class="pull-right">
+                      <button class="btn btn-xs btn-danger" data-bind="click: $parent.confirmDelete, clickBubble: false"><span class="glyphicon glyphicon-trash" aria-hidden="true"></span></button> 
+                    </span>
+                  </a>
                 </div>
-                <a class="list-group-item clearfix" data-bind="visible: !isFolder,click: $parent.loadBookmarkObj" style="margin-bottom: 5px;">
-                  <span data-bind="text: viewName()"></span>
-                  <span class="pull-right">
-                    <button class="btn btn-xs btn-danger" data-bind="click: $parent.confirmDelete, clickBubble: false"><span class="glyphicon glyphicon-trash" aria-hidden="true"></span></button> 
-                  </span>
-                </a>
             </div>
             </div>
           </div>
