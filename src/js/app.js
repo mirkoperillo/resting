@@ -258,8 +258,10 @@ requirejs(['jquery','app/storage','knockout','knockout-secure-binding','hjls','a
     };
 
     const send = () => {
-      request.execute(Resting.requestMethod(),Resting.requestUrl(),convertToHeaderObj(Resting.requestHeaders()), Resting.querystring(), Resting.bodyType(),Resting.dataToSend(), 
-      _authentication(),displayResponse);
+      if(Resting.requestUrl() && Resting.requestUrl().trim().length > 0) {
+        request.execute(Resting.requestMethod(),Resting.requestUrl(),convertToHeaderObj(Resting.requestHeaders()), Resting.querystring(), Resting.bodyType(),Resting.dataToSend(), 
+        _authentication(),displayResponse);
+      }
     };
 
     const requestHeadersPanel = () => {
