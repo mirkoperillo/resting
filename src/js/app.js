@@ -89,6 +89,7 @@ requirejs(['jquery','app/storage','knockout','knockout-secure-binding','hjls','a
       data.map( param => `${param.name}=${param.value}`).join('&');
 
     const updateBody = (bodyType, body) => {
+      clearRequestBody();
       if (bodyType === 'form-data') {
         return Resting.formDataParams(body);
       }
@@ -100,6 +101,11 @@ requirejs(['jquery','app/storage','knockout','knockout-secure-binding','hjls','a
       return Resting.rawBody(body);
     };
     
+    const clearRequestBody = () => {
+      Resting.formDataParams.removeAll();
+      Resting.formEncodedParams.removeAll();
+      Resting.rawBody('');
+    };
     const clearResponse = () => {
       Resting.responseHeaders.removeAll();
       Resting.responseBody('');
