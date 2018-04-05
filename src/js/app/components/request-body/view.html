@@ -3,23 +3,7 @@
     <div class="form-inline">
       <div class="form-group">
          <label for="body-type">Type</label>
-<!--
-         <div class="col-md-10">
--->
-           <select class="form-control" style="margin-left: 10px;" id="body-type" data-bind="value: bodyType">
-            <option>
-              form-data
-            </option>
-            <option>
-              x-www-form-urlencoded
-            </option>
-            <option>
-              raw
-            </option>
-          </select>
-<!--
-      </div>
--->
+           <select class="form-control" style="margin-left: 10px;" id="body-type" data-bind="options: types, optionsCaption: 'None', value: bodyType"></select>
     </div>
     </div>
   </div>

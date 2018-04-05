@@ -135,13 +135,11 @@ requirejs(['jquery','app/storage','knockout','knockout-secure-binding','hjls','a
     const dataToSend = () => {
       if (Resting.bodyType() === 'form-data') {
         return convertToFormData(Resting.formDataParams());
-      }
-
-      if (Resting.bodyType() === 'x-www-form-urlencoded') {
+      } else if (Resting.bodyType() === 'x-www-form-urlencoded') {
         return convertToUrlEncoded(Resting.formEncodedParams());
+      } else if (Resting.bodyType() === 'raw') {
+        return Resting.rawBody().trim();
       }
-
-      return Resting.rawBody().trim();
     };
 
     const _authentication = () => ({type: Resting.authenticationType(), username: Resting.username(), password: Resting.password()});
@@ -154,8 +152,12 @@ requirejs(['jquery','app/storage','knockout','knockout-secure-binding','hjls','a
       if (bodyType === 'x-www-form-urlencoded') {
         return Resting.formEncodedParams();
       }
-
-      return Resting.rawBody();
+      
+      if (bodyType === 'raw') {
+        return Resting.rawBody();
+      }
+      
+      return undefined;
     };
 
 
