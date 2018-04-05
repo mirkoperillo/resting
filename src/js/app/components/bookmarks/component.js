@@ -124,6 +124,7 @@
      const loadBookmarkObj = (bookmarkObj) => {
       appVm.bookmarkCopy = bookmarkProvider.copyBookmark(bookmarkObj);
       appVm.folderSelected(bookmarkObj.folder);
+      appVm.clearResponse();
       return loadBookmarkData(bookmarkObj);
     };
     

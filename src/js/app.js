@@ -99,6 +99,13 @@ requirejs(['jquery','app/storage','knockout','knockout-secure-binding','hjls','a
 
       return Resting.rawBody(body);
     };
+    
+    const clearResponse = () => {
+      Resting.responseHeaders.removeAll();
+      Resting.responseBody('');
+      Resting.callDuration('-');
+      Resting.callStatus('-');
+    };
 
     const parseRequest = (req) => {
       Resting.requestMethod(req.method);
@@ -361,6 +368,7 @@ requirejs(['jquery','app/storage','knockout','knockout-secure-binding','hjls','a
     Resting.saveBookmarkDialog = saveBookmarkDialog;
     Resting.dismissSaveBookmarkDialog = dismissSaveBookmarkDialog;
     Resting.callSendOnEnter = callSendOnEnter;
+    Resting.clearResponse = clearResponse;
     
     // FIXME: not good to expose this internal function
     Resting._saveBookmark = _saveBookmark;
