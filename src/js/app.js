@@ -218,8 +218,6 @@ requirejs(['jquery','app/storage','knockout','knockout-secure-binding','hjls','a
             bookmarkProvider.save(serializeBookmark(bookmark));
           }
           Resting.bookmarkLoadedName(new BookmarkViewModel(bookmark).viewName());
-          Resting.bookmarkCopy = null;   
-          Resting.folderSelected('');
         } else { // if new bookmark
           if(bookmark.folder) {
             let folderObj = Resting.bookmarks().find(b => b.id === bookmark.folder);
@@ -243,7 +241,7 @@ requirejs(['jquery','app/storage','knockout','knockout-secure-binding','hjls','a
       _saveBookmark(bookmarkObj);
       
       // close the dialog
-      dismissSaveBookmarkDialog();
+      Resting.showBookmarkDialog(false);
     };
 
     const reset = () => {
@@ -365,7 +363,10 @@ requirejs(['jquery','app/storage','knockout','knockout-secure-binding','hjls','a
     
     const dismissSaveBookmarkDialog = () => {
       Resting.showBookmarkDialog(false);
-      Resting.bookmarkName('');
+      if(Resting.bookmarkCopy == null) {
+        Resting.bookmarkName('');
+        Resting.folderSelected('');
+      }
     };
     
     const unhighlight = () => {
