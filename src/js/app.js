@@ -106,6 +106,18 @@ requirejs(['jquery','app/storage','knockout','knockout-secure-binding','hjls','a
       Resting.formDataParams.removeAll();
       Resting.formEncodedParams.removeAll();
       Resting.rawBody('');
+      Resting.bodyType('');
+    };
+    
+    const clearRequest = () => {
+      clearRequestBody();
+      Resting.requestHeaders.removeAll();
+      Resting.querystring.removeAll();
+      Resting.authenticationType('');
+      Resting.username('');
+      Resting.password('');
+      Resting.requestMethod('GET');
+      Resting.requestUrl('');
     };
     
     const clearResponse = () => {
@@ -234,6 +246,16 @@ requirejs(['jquery','app/storage','knockout','knockout-secure-binding','hjls','a
       dismissSaveBookmarkDialog();
     };
 
+    const reset = () => {
+      Resting.bookmarkCopy = null;
+      Resting.folderSelected('');
+      Resting.folderName('');
+      Resting.bookmarkLoadedName('');
+      Resting.bookmarkName('');
+      clearRequest();
+      clearResponse();
+    };
+    
     const deleteBookmark = (bookmark, deleteChildrenBookmarks) => {
       if(bookmark.folder) {
         const containerFolder = Resting.bookmarks().find( b => b.id === bookmark.folder);
@@ -380,6 +402,7 @@ requirejs(['jquery','app/storage','knockout','knockout-secure-binding','hjls','a
     Resting.dismissSaveBookmarkDialog = dismissSaveBookmarkDialog;
     Resting.callSendOnEnter = callSendOnEnter;
     Resting.clearResponse = clearResponse;
+    Resting.reset = reset;
     
     // FIXME: not good to expose this internal function
     Resting._saveBookmark = _saveBookmark;
