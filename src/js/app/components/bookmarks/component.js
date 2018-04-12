@@ -123,6 +123,7 @@
     // FIXME direct interaction with appVm fields
      const loadBookmarkObj = (bookmarkObj) => {
       appVm.bookmarkCopy = bookmarkProvider.copyBookmark(bookmarkObj);
+      appVm.bookmarkLoadedName(bookmarkObj.viewName());
       appVm.folderSelected(bookmarkObj.folder);
       appVm.clearResponse();
       return loadBookmarkData(bookmarkObj);

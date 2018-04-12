@@ -63,6 +63,13 @@
       </div>
       
       <div class="col-md-9">
+      <div class="row" data-bind="if: bookmarkLoadedName">
+       <div class="panel panel-default">
+        <div class="panel-body">
+          <strong>Loaded</strong> <span data-bind="text: bookmarkLoadedName"></span>
+        </div>
+      </div>
+      </div>
         <div class="row"> 
         <ul class="nav nav-pills">
           <li role="presentation" data-bind="css: {active : showRequestHeaders()}"><a href="#" data-bind="click: requestHeadersPanel">Headers</a></li>
