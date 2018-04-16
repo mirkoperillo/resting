@@ -105,7 +105,7 @@
         const containerFolder = bookmarks().find( b => b.id === bookmark.folder);
         let modifiedFolder = Object.assign({},containerFolder);
         modifiedFolder.bookmarks = containerFolder.bookmarks.filter(b => b.id !== bookmark.id);
-        bookmarkProvider.save(serializeBookmark(modifiedFolder));
+        bookmarkProvider.save(_serializeBookmark(modifiedFolder));
         bookmarks.replace(containerFolder,modifiedFolder);
       } else {
         if(bookmark.isFolder && !deleteChildrenBookmarks) {
