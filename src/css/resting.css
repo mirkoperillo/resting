@@ -1,3 +1,7 @@
+body {
+  padding-top: 10px;
+}
+
 .response-metric, .response-metric-value {
   font-size: 0.9em;
 }

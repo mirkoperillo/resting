@@ -69,7 +69,9 @@ requirejs(['jquery','app/storage','knockout','knockout-secure-binding','hjls','a
       folderName: ko.observable(),
       folderSelected: ko.observable(),
       methods: ko.observableArray(['GET','POST','PUT','DELETE','HEAD','OPTIONS','CONNECT','TRACE','PATCH']),
-      showBookmarkDeleteDialog: ko.observable(false)
+      showBookmarkDeleteDialog: ko.observable(false),
+      showAboutDialog: ko.observable(false),
+      showCreditsDialog: ko.observable(false),
     };
 
     
@@ -85,6 +87,21 @@ requirejs(['jquery','app/storage','knockout','knockout-secure-binding','hjls','a
       return bookmarkProvider.fromJson(JSON.stringify(bookmarkObj));
     }
     
+    const aboutDialog = () => {
+      Resting.showAboutDialog(true);
+    };
+    
+    const creditsDialog = () => {
+      Resting.showCreditsDialog(true);
+    };
+    
+    const dismissCreditsDialog = () => {
+      Resting.showCreditsDialog(false);
+    };
+    
+    const dismissAboutDialog = () => {
+      Resting.showAboutDialog(false);
+    };
    
     const convertToUrlEncoded = (data = []) =>
       data.map( param => `${param.name}=${param.value}`).join('&');
@@ -404,6 +421,10 @@ requirejs(['jquery','app/storage','knockout','knockout-secure-binding','hjls','a
     Resting.callSendOnEnter = callSendOnEnter;
     Resting.clearResponse = clearResponse;
     Resting.reset = reset;
+    Resting.aboutDialog = aboutDialog;
+    Resting.creditsDialog = creditsDialog;
+    Resting.dismissCreditsDialog = dismissCreditsDialog;
+    Resting.dismissAboutDialog = dismissAboutDialog;
     
     // FIXME: not good to expose this internal function
     Resting._saveBookmark = _saveBookmark;
