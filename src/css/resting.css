@@ -78,3 +78,7 @@ a.folder:hover, a.bookmark:hover, .folder .panel-heading:hover {
  background-color: #ccc;
 }
 
+label.disabled {
+  color: gray;
+}
+

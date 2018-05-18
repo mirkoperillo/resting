@@ -28,7 +28,13 @@ requirejs(['jquery','app/storage','knockout','knockout-secure-binding','hjls','a
         return self.name && self.name.length > 0 ? self.name :  self.requestMethod +' ' + self.requestUrl;
     };
   }
-
+  // FIXME: duplication of this VM
+  function EntryItemViewModel(name, value, enabled) {
+    this.name = ko.observable(name);
+    this.value = ko.observable(value);
+    this.enabled = ko.observable(enabled);
+  }
+  
   function AppViewModel() {
     const Resting = {
       responseContent : {},
@@ -74,12 +80,11 @@ requirejs(['jquery','app/storage','knockout','knockout-secure-binding','hjls','a
       showCreditsDialog: ko.observable(false),
     };
 
-    
     const bookmarkProvider = makeBookmarkProvider(storage);
 
     const convertToFormData = (data = []) =>
-      data.reduce((acc, record) => {
-        acc[record.name] = record.value;
+      data.filter(param => param.enabled()).reduce((acc, record) => {
+        acc[record.name()] = record.value();
         return acc;
       }, {});
 
@@ -104,16 +109,16 @@ requirejs(['jquery','app/storage','knockout','knockout-secure-binding','hjls','a
     };
    
     const convertToUrlEncoded = (data = []) =>
-      data.map( param => `${param.name}=${param.value}`).join('&');
+      data.filter(param => param.enabled()).map( param => `${param.name()}=${param.value()}`).join('&');
 
     const updateBody = (bodyType, body) => {
       clearRequestBody();
       if (bodyType === 'form-data') {
-        return Resting.formDataParams(body);
+        return Resting.formDataParams(_convertToEntryItemVM(body));
       }
 
       if (bodyType === 'x-www-form-urlencoded') {
-        return Resting.formEncodedParams(body);
+        return Resting.formEncodedParams(_convertToEntryItemVM(body));
       }
 
       return Resting.rawBody(body);
@@ -144,12 +149,20 @@ requirejs(['jquery','app/storage','knockout','knockout-secure-binding','hjls','a
       Resting.callStatus('-');
     };
 
+    const _convertToEntryItemVM = (items = []) => items.map(item => {
+      // enable values by default when the field is missing.
+      // The field has been introduced in v0.7.0
+      // maintain it for compatibility purposes
+      const enabled = item.enabled === undefined ? true : item.enabled;
+      return new EntryItemViewModel(item.name,item.value, enabled);
+    });
+
     const parseRequest = (req) => {
       Resting.requestMethod(req.method);
       Resting.requestUrl(req.url);
       Resting.bodyType(req.bodyType);
-      Resting.requestHeaders(req.headers);
-      Resting.querystring(req.querystring ?  req.querystring : []);
+      Resting.requestHeaders(_convertToEntryItemVM(req.headers));
+      Resting.querystring(req.querystring ?  _convertToEntryItemVM(req.querystring) : []);
       _updateAuthentication(req.authentication);
       updateBody(req.bodyType, req.body);
     };
@@ -176,11 +189,11 @@ requirejs(['jquery','app/storage','knockout','knockout-secure-binding','hjls','a
 
     const body = (bodyType) => {
       if (bodyType === 'form-data') {
-        return Resting.formDataParams();
+        return _extractModelFromVM(Resting.formDataParams());
       }
 
       if (bodyType === 'x-www-form-urlencoded') {
-        return Resting.formEncodedParams();
+        return _extractModelFromVM(Resting.formEncodedParams());
       }
       
       if (bodyType === 'raw') {
@@ -248,10 +261,15 @@ requirejs(['jquery','app/storage','knockout','knockout-secure-binding','hjls','a
         }
     };
     
+    const _extractModelFromVM = (items = []) => {
+      return items.map(item => ({name: item.name(),value: item.value(),enabled: item.enabled()}))
+    };
+    
+    
     const saveBookmark = () => {
       const req = request.makeRequest(
         Resting.requestMethod(), Resting.requestUrl(),
-        Resting.requestHeaders(), Resting.querystring(), Resting.bodyType(),
+        _extractModelFromVM(Resting.requestHeaders()), _extractModelFromVM(Resting.querystring()), Resting.bodyType(),
         body(Resting.bodyType()),_authentication());
       const bookmarkId = Resting.bookmarkCopy ? Resting.bookmarkCopy.id : new Date().toString(); 
       const bookmarkObj = bookmarkProvider.makeBookmark(bookmarkId, req, validateBookmarkName(Resting.bookmarkName()), Resting.folderSelected());
@@ -291,8 +309,8 @@ requirejs(['jquery','app/storage','knockout','knockout-secure-binding','hjls','a
     };
 
     const convertToHeaderObj = headersList =>
-      headersList.reduce((acc, header) => {
-        acc[header.name] = header.value;
+      headersList.filter(header => header.enabled()).reduce((acc, header) => {
+        acc[header.name()] = header.value();
         return acc;
       }, {});
 
@@ -311,10 +329,14 @@ requirejs(['jquery','app/storage','knockout','knockout-secure-binding','hjls','a
       }
     };
 
+    const _convertToQueryString = (params = []) => {
+      return params.filter(param => param.enabled()).map( param => ({name: param.name(), value: param.value()}));
+    };
+
     const send = () => {
       if(Resting.requestUrl() && Resting.requestUrl().trim().length > 0) {
         clearResponse();
-        request.execute(Resting.requestMethod(),Resting.requestUrl(),convertToHeaderObj(Resting.requestHeaders()), Resting.querystring(), Resting.bodyType(),Resting.dataToSend(), 
+        request.execute(Resting.requestMethod(),Resting.requestUrl(),convertToHeaderObj(Resting.requestHeaders()), _convertToQueryString(Resting.querystring()), Resting.bodyType(),Resting.dataToSend(), 
         _authentication(),displayResponse);
       }
     };
