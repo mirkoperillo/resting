@@ -461,8 +461,8 @@ requirejs(['jquery','app/storage','knockout','knockout-secure-binding','hjls','a
 
     // seems that this below must be the last instructions to permit component to be registered
     ko.components.register('entry-list', {
-      viewModel: { require: 'app/components/entry-list/component' },
-      template: { require: 'text!app/components/entry-list/view.html' }
+      viewModel: { require: 'app/components/entry-list/entryListVm' },
+      template: { require: 'text!app/components/entry-list/entryList_view.html' }
     });
 
     ko.components.register('request-body', {
