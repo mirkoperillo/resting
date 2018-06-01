@@ -133,6 +133,7 @@
     const loadBookmarkData = (bookmark) => {
       appVm.parseRequest(bookmark.request);
       appVm.bookmarkName(bookmark.name);
+      appVm.loadBookmarkInView(bookmark);
     };
     
     $(() => {

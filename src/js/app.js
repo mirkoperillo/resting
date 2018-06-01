@@ -12,6 +12,18 @@ requirejs.config({
 
 requirejs(['jquery','app/storage','knockout','knockout-secure-binding','hjls','app/request','app/bookmark','bootstrap'], function($,storage,ko,ksb,hjls,request,makeBookmarkProvider, bootstrap) {
   
+  function RequestVm(request = {}) {
+    const self = this;
+    this.method = ko.observable('');
+    this.url = ko.observable('');
+  }
+  
+  function BookmarkSelectedVm(bookmark = {}) {
+    const self = this;
+    this.id = ko.observable('');
+    this.name = ko.observable('');
+  }
+  
   // FIXME: duplication of this VM used by save functionality and bookmarks component
   function BookmarkViewModel(bookmark) {
     const self = this;
@@ -37,6 +49,8 @@ requirejs(['jquery','app/storage','knockout','knockout-secure-binding','hjls','a
   
   function AppViewModel() {
     const Resting = {
+      bookmarkSelected : new BookmarkSelectedVm(),
+      requestSelected : new RequestVm(),
       responseContent : {},
       bookmarkCopy: null,   // copy of bookmark object loaded
       bookmarkLoadedName: ko.observable(),
@@ -44,8 +58,8 @@ requirejs(['jquery','app/storage','knockout','knockout-secure-binding','hjls','a
       bookmarkToDeleteName : ko.observable(),
       tryToDeleteFolder: ko.observable(false),
       deleteChildrenBookmarks: ko.observable(false),
-      requestMethod: ko.observable(),
-      requestUrl: ko.observable(),
+      requestMethod: ko.observable(), // try to replace
+      requestUrl: ko.observable(), // try to replace
       responseBody: ko.observable(),
       callDuration: ko.observable('-'),
       callStatus: ko.observable('-'),
@@ -69,7 +83,7 @@ requirejs(['jquery','app/storage','knockout','knockout-secure-binding','hjls','a
       password: ko.observable(),
       bookmarks: ko.observableArray(),
       folders: ko.observableArray(),
-      bookmarkName: ko.observable(),
+      bookmarkName: ko.observable(), // try to replace
       showBookmarkDialog: ko.observable(false),
       showFolderDialog: ko.observable(false),
       folderName: ko.observable(),
@@ -157,6 +171,11 @@ requirejs(['jquery','app/storage','knockout','knockout-secure-binding','hjls','a
       return new EntryItemViewModel(item.name,item.value, enabled);
     });
 
+
+    const bookmarkScreenName = () => {
+      return Resting.bookmarkSelected.name() && Resting.bookmarkSelected.name().length > 0 ? Resting.bookmarkSelected.name() : Resting.requestSelected.method() + ' ' + Resting.requestSelected.url();
+    }; 
+    
     const parseRequest = (req) => {
       Resting.requestMethod(req.method);
       Resting.requestUrl(req.url);
@@ -212,6 +231,9 @@ requirejs(['jquery','app/storage','knockout','knockout-secure-binding','hjls','a
       }
     };
 
+    const isBookmarkLoaded = () => {
+      return Resting.bookmarkSelected.id().length > 0;
+    }
     const _saveBookmark = bookmark => {
        if(Resting.bookmarkCopy) {
           // if edit a bookmark
@@ -268,11 +290,12 @@ requirejs(['jquery','app/storage','knockout','knockout-secure-binding','hjls','a
     
     const saveBookmark = () => {
       const req = request.makeRequest(
-        Resting.requestMethod(), Resting.requestUrl(),
+        Resting.requestSelected.method(), Resting.requestSelected.url(),
         _extractModelFromVM(Resting.requestHeaders()), _extractModelFromVM(Resting.querystring()), Resting.bodyType(),
-        body(Resting.bodyType()),_authentication());
+        body(Resting.bodyType()),_authentication());  
+        
       const bookmarkId = Resting.bookmarkCopy ? Resting.bookmarkCopy.id : new Date().toString(); 
-      const bookmarkObj = bookmarkProvider.makeBookmark(bookmarkId, req, validateBookmarkName(Resting.bookmarkName()), Resting.folderSelected());
+      const bookmarkObj = bookmarkProvider.makeBookmark(bookmarkId, req, validateBookmarkName(Resting.bookmarkSelected.name()), Resting.folderSelected());
       _saveBookmark(bookmarkObj);
       
       // close the dialog
@@ -285,6 +308,12 @@ requirejs(['jquery','app/storage','knockout','knockout-secure-binding','hjls','a
       Resting.folderName('');
       Resting.bookmarkLoadedName('');
       Resting.bookmarkName('');
+      
+      Resting.bookmarkSelected.name('');
+      Resting.bookmarkSelected.id('');
+      Resting.requestSelected.method('GET');
+      Resting.requestSelected.url('');
+      
       clearRequest();
       clearResponse();
     };
@@ -341,6 +370,13 @@ requirejs(['jquery','app/storage','knockout','knockout-secure-binding','hjls','a
       }
     };
 
+    const loadBookmarkInView = (bookmark = {}) => {
+      Resting.bookmarkSelected.id(bookmark.id);
+      Resting.bookmarkSelected.name(bookmark.name);
+      Resting.requestSelected.method(bookmark.request.method);
+      Resting.requestSelected.url(bookmark.request.url);
+    };
+    
     const requestHeadersPanel = () => {
       Resting.showRequestHeaders(true);
       Resting.showRequestBody(false);
@@ -404,6 +440,7 @@ requirejs(['jquery','app/storage','knockout','knockout-secure-binding','hjls','a
       Resting.showBookmarkDialog(false);
       if(Resting.bookmarkCopy == null) {
         Resting.bookmarkName('');
+        Resting.bookmarkSelected.name('');
         Resting.folderSelected('');
       }
     };
@@ -450,6 +487,10 @@ requirejs(['jquery','app/storage','knockout','knockout-secure-binding','hjls','a
     
     // FIXME: not good to expose this internal function
     Resting._saveBookmark = _saveBookmark;
+    
+    Resting.loadBookmarkInView = loadBookmarkInView;
+    Resting.isBookmarkLoaded = isBookmarkLoaded;
+    Resting.bookmarkScreenName = bookmarkScreenName;
     return Resting;
   }
 

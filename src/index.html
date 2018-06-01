@@ -51,13 +51,13 @@
 
     <div class="row" style="margin-top: 20px;">
       <div class="col-md-2">
-        <select class="form-control" id="sel1" data-bind="options: methods, value: requestMethod">
+        <select class="form-control" id="sel1" data-bind="options: methods, value: requestSelected.method">
         </select>
       </div>
 
       <div class="col-md-8">
         <div class="form-group">
-          <input type="text" class="form-control" placeholder="http://" data-bind="value: requestUrl, event: { keyup: callSendOnEnter}">
+          <input type="text" class="form-control" placeholder="http://" data-bind="value: requestSelected.url, event: { keyup: callSendOnEnter}">
         </div>
       </div>
 
@@ -82,10 +82,10 @@
       </div>
       
       <div class="col-md-9">
-      <div class="row" data-bind="if: bookmarkLoadedName">
+      <div class="row" data-bind="if: isBookmarkLoaded()">
        <div class="panel panel-default">
         <div class="panel-body">
-          <strong>Loaded</strong> <span data-bind="text: bookmarkLoadedName"></span>
+          <strong>Loaded</strong> <span data-bind="text: bookmarkScreenName()"></span>
         </div>
       </div>
       </div>
@@ -180,7 +180,7 @@
     </div>
     <div class="panel-body">
       <div class="form-group">
-        Name <input type="text" class="form-control" data-bind="value: bookmarkName"></input>
+        Name <input type="text" class="form-control" data-bind="value: bookmarkSelected.name"></input>
       </div>
       <div class="form-group">
         Folder <select class="form-control" data-bind="options: folders, optionsText: 'name', optionsValue: 'id', optionsCaption: 'None', value: folderSelected"></select>
