@@ -118,6 +118,18 @@
         }
         storage.deleteById(bookmark.id, () => bookmarks.remove(bookmark));
       }
+      
+       if( bookmark.id == appVm.bookmarkSelected.id()) { 
+      
+         appVm.bookmarkCopy = null;
+         appVm.folderSelected('');
+         appVm.folderName('');
+         appVm.bookmarkLoadedName('');
+         appVm.bookmarkName('');
+      
+         appVm.bookmarkSelected.id('');
+         appVm.bookmarkSelected.name('');
+      }
     };
     
     // FIXME direct interaction with appVm fields

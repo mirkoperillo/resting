@@ -322,6 +322,7 @@ requirejs(['jquery','app/storage','knockout','knockout-secure-binding','hjls','a
       clearResponse();
     };
     
+    // dead function ????
     const deleteBookmark = (bookmark, deleteChildrenBookmarks) => {
       if(bookmark.folder) {
         const containerFolder = Resting.bookmarks().find( b => b.id === bookmark.folder);
@@ -332,7 +333,7 @@ requirejs(['jquery','app/storage','knockout','knockout-secure-binding','hjls','a
       } else {
         if(bookmark.isFolder && !deleteChildrenBookmarks) {
           const childrenBookmarks = bookmark.bookmarks.map( child => {
-            child.folder=null;
+            child.folder = null;
             return child;
           });
           childrenBookmarks.forEach(child => _saveBookmark(child));
