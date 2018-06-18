@@ -271,6 +271,7 @@ requirejs(['jquery','app/storage','knockout','knockout-secure-binding','hjls','a
             bookmarkProvider.save(serializeBookmark(bookmark));
           }
           Resting.bookmarkLoadedName(new BookmarkViewModel(bookmark).viewName());
+          Resting.bookmarkCopy = bookmarkProvider.copyBookmark(bookmark);
         } else { // if new bookmark
           if(bookmark.folder) {
             let folderObj = Resting.bookmarks().find(b => b.id === bookmark.folder);
