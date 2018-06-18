@@ -83,13 +83,15 @@
       
       <div class="col-md-9">
       <div class="row" data-bind="if: isBookmarkLoaded()">
-       <div class="panel panel-default">
-        <div class="panel-body">
-          <strong>Loaded</strong> <span data-bind="text: bookmarkScreenName()"></span>
+        <div class="col-md-12">
+         <div class="panel panel-default">
+          <div class="panel-body">
+            <strong>Loaded</strong> <span data-bind="text: bookmarkScreenName()"></span>
+          </div>
+         </div>
         </div>
       </div>
-      </div>
-        <div class="row"> 
+      <div class="row"> 
         <div class="col-md-12">
         <ul class="nav nav-pills">
           <li role="presentation" data-bind="css: {active : showRequestHeaders()}"><a href="#" data-bind="click: requestHeadersPanel">Headers</a></li>
