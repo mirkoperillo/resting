@@ -127,6 +127,7 @@ requirejs(['jquery','app/storage','knockout','knockout-secure-binding','hjls','a
 
     const updateBody = (bodyType, body) => {
       clearRequestBody();
+      Resting.bodyType(bodyType);
       if (bodyType === 'form-data') {
         return Resting.formDataParams(_convertToEntryItemVM(body));
       }
@@ -134,7 +135,7 @@ requirejs(['jquery','app/storage','knockout','knockout-secure-binding','hjls','a
       if (bodyType === 'x-www-form-urlencoded') {
         return Resting.formEncodedParams(_convertToEntryItemVM(body));
       }
-
+      
       return Resting.rawBody(body);
     };
     
