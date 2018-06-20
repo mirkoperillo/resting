@@ -179,7 +179,9 @@ requirejs(['jquery','app/storage','knockout','knockout-secure-binding','hjls','a
     
     const parseRequest = (req) => {
       Resting.requestMethod(req.method);
+      Resting.requestSelected.method(req.method);
       Resting.requestUrl(req.url);
+      Resting.requestSelected.url(req.url);
       Resting.bodyType(req.bodyType);
       Resting.requestHeaders(_convertToEntryItemVM(req.headers));
       Resting.querystring(req.querystring ?  _convertToEntryItemVM(req.querystring) : []);
@@ -370,9 +372,9 @@ requirejs(['jquery','app/storage','knockout','knockout-secure-binding','hjls','a
     };
 
     const send = () => {
-      if(Resting.requestUrl() && Resting.requestUrl().trim().length > 0) {
+      if(Resting.requestSelected.url() && Resting.requestSelected.url().trim().length > 0) {
         clearResponse();
-        request.execute(Resting.requestMethod(),Resting.requestUrl(),convertToHeaderObj(Resting.requestHeaders()), _convertToQueryString(Resting.querystring()), Resting.bodyType(),Resting.dataToSend(), 
+        request.execute(Resting.requestSelected.method(),Resting.requestSelected.url(),convertToHeaderObj(Resting.requestHeaders()), _convertToQueryString(Resting.querystring()), Resting.bodyType(),Resting.dataToSend(), 
         _authentication(),displayResponse);
       }
     };
