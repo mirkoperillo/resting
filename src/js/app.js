@@ -2,7 +2,7 @@ requirejs.config({
     baseUrl: 'js/vendor',
     paths: {
          app : '../app',
-        'jquery': 'jquery-2.2.4.min',
+        'jquery': 'jquery-3.3.1.min',
         'knockout': 'knockout-3.4.2',
         'knockout-secure-binding': 'knockout-secure-binding',
         'localforage': 'localforage.nopromises.min',
@@ -11,19 +11,19 @@ requirejs.config({
 });
 
 requirejs(['jquery','app/storage','knockout','knockout-secure-binding','hjls','app/request','app/bookmark','bootstrap'], function($,storage,ko,ksb,hjls,request,makeBookmarkProvider, bootstrap) {
-  
+
   function RequestVm(request = {}) {
     const self = this;
     this.method = ko.observable('');
     this.url = ko.observable('');
   }
-  
+
   function BookmarkSelectedVm(bookmark = {}) {
     const self = this;
     this.id = ko.observable('');
     this.name = ko.observable('');
   }
-  
+
   // FIXME: duplication of this VM used by save functionality and bookmarks component
   function BookmarkViewModel(bookmark) {
     const self = this;
@@ -34,7 +34,7 @@ requirejs(['jquery','app/storage','knockout','knockout-secure-binding','hjls','a
     this.requestMethod = bookmark.request ? bookmark.request.method : null;
     this.requestUrl = bookmark.request ? bookmark.request.url : null;
     this.bookmarks = bookmark.bookmarks ? bookmark.bookmarks.map( b => new BookmarkViewModel(b)) : undefined;
-    
+
     this.request = bookmark.request;
     this.viewName = function() {
         return self.name && self.name.length > 0 ? self.name :  self.requestMethod +' ' + self.requestUrl;
@@ -46,7 +46,7 @@ requirejs(['jquery','app/storage','knockout','knockout-secure-binding','hjls','a
     this.value = ko.observable(value);
     this.enabled = ko.observable(enabled);
   }
-  
+
   function AppViewModel() {
     const Resting = {
       bookmarkSelected : new BookmarkSelectedVm(),
@@ -105,23 +105,23 @@ requirejs(['jquery','app/storage','knockout','knockout-secure-binding','hjls','a
     const serializeBookmark = (bookmarkObj) => {
       return bookmarkProvider.fromJson(JSON.stringify(bookmarkObj));
     }
-    
+
     const aboutDialog = () => {
       Resting.showAboutDialog(true);
     };
-    
+
     const creditsDialog = () => {
       Resting.showCreditsDialog(true);
     };
-    
+
     const dismissCreditsDialog = () => {
       Resting.showCreditsDialog(false);
     };
-    
+
     const dismissAboutDialog = () => {
       Resting.showAboutDialog(false);
     };
-   
+
     const convertToUrlEncoded = (data = []) =>
       data.filter(param => param.enabled()).map( param => `${param.name()}=${param.value()}`).join('&');
 
@@ -135,17 +135,17 @@ requirejs(['jquery','app/storage','knockout','knockout-secure-binding','hjls','a
       if (bodyType === 'x-www-form-urlencoded') {
         return Resting.formEncodedParams(_convertToEntryItemVM(body));
       }
-      
+
       return Resting.rawBody(body);
     };
-    
+
     const clearRequestBody = () => {
       Resting.formDataParams.removeAll();
       Resting.formEncodedParams.removeAll();
       Resting.rawBody('');
       Resting.bodyType('');
     };
-    
+
     const clearRequest = () => {
       clearRequestBody();
       Resting.requestHeaders.removeAll();
@@ -156,7 +156,7 @@ requirejs(['jquery','app/storage','knockout','knockout-secure-binding','hjls','a
       Resting.requestMethod('GET');
       Resting.requestUrl('');
     };
-    
+
     const clearResponse = () => {
       Resting.responseHeaders.removeAll();
       Resting.responseBody('');
@@ -175,8 +175,8 @@ requirejs(['jquery','app/storage','knockout','knockout-secure-binding','hjls','a
 
     const bookmarkScreenName = () => {
       return Resting.bookmarkSelected.name() && Resting.bookmarkSelected.name().length > 0 ? Resting.bookmarkSelected.name() : Resting.requestSelected.method() + ' ' + Resting.requestSelected.url();
-    }; 
-    
+    };
+
     const parseRequest = (req) => {
       Resting.requestMethod(req.method);
       Resting.requestSelected.method(req.method);
@@ -196,7 +196,7 @@ requirejs(['jquery','app/storage','knockout','knockout-secure-binding','hjls','a
         Resting.password(authentication.password);
       }
     };
-    
+
     const dataToSend = () => {
       if (Resting.bodyType() === 'form-data') {
         return convertToFormData(Resting.formDataParams());
@@ -217,11 +217,11 @@ requirejs(['jquery','app/storage','knockout','knockout-secure-binding','hjls','a
       if (bodyType === 'x-www-form-urlencoded') {
         return _extractModelFromVM(Resting.formEncodedParams());
       }
-      
+
       if (bodyType === 'raw') {
         return Resting.rawBody();
       }
-      
+
       return undefined;
     };
 
@@ -237,7 +237,7 @@ requirejs(['jquery','app/storage','knockout','knockout-secure-binding','hjls','a
     const isBookmarkLoaded = () => {
       return Resting.bookmarkSelected.id().length > 0;
     }
-    
+
     const _saveBookmark = bookmark => {
        if(Resting.bookmarkCopy) {
           // if edit a bookmark
@@ -245,29 +245,29 @@ requirejs(['jquery','app/storage','knockout','knockout-secure-binding','hjls','a
             const oldFolder = Resting.bookmarkCopy.folder;
             if(oldFolder == bookmark.folder) { // folderA to folderA
               let folderObj = Resting.bookmarks().find(b => b.id === bookmark.folder);
-              const modifiedFolder = bookmarkProvider.replaceBookmark(folderObj, new BookmarkViewModel(bookmark)); 
+              const modifiedFolder = bookmarkProvider.replaceBookmark(folderObj, new BookmarkViewModel(bookmark));
               bookmarkProvider.save(serializeBookmark(modifiedFolder));
               Resting.bookmarks.replace(folderObj, modifiedFolder);
             } else if(!oldFolder) { //from no-folder to folderA
-              const oldBookmark = Resting.bookmarks().find(b => b.id == bookmark.id); // I need the ref to bookmark saved in observable array 
+              const oldBookmark = Resting.bookmarks().find(b => b.id == bookmark.id); // I need the ref to bookmark saved in observable array
                                                                                         //  either it is not removed from it
               deleteBookmark(oldBookmark);
               let folderObj = Resting.bookmarks().find(b => b.id === bookmark.folder);
-              const modifiedFolder = bookmarkProvider.replaceBookmark(folderObj, new BookmarkViewModel(bookmark)); 
+              const modifiedFolder = bookmarkProvider.replaceBookmark(folderObj, new BookmarkViewModel(bookmark));
               bookmarkProvider.save(serializeBookmark(modifiedFolder));
               Resting.bookmarks.replace(folderObj, modifiedFolder);
             } else if( oldFolder != bookmark.folder) { // from folderA to folderB
               deleteBookmark(Resting.bookmarkCopy);
               let folderObj = Resting.bookmarks().find(b => b.id === bookmark.folder);
-              const modifiedFolder = bookmarkProvider.replaceBookmark(folderObj, new BookmarkViewModel(bookmark)); 
+              const modifiedFolder = bookmarkProvider.replaceBookmark(folderObj, new BookmarkViewModel(bookmark));
               bookmarkProvider.save(serializeBookmark(modifiedFolder));
               Resting.bookmarks.replace(folderObj, modifiedFolder);
             }
-          } else {  
+          } else {
             if(Resting.bookmarkCopy.folder) { // from folderA to no-folder
               deleteBookmark(Resting.bookmarkCopy);
               Resting.bookmarks.push(new BookmarkViewModel(bookmark));
-            } else { // from no-folder to no-folder 
+            } else { // from no-folder to no-folder
               const oldBookmark = Resting.bookmarks().find(b => b.id === bookmark.id);
               Resting.bookmarks.replace(oldBookmark, new BookmarkViewModel(bookmark));
             }
@@ -285,27 +285,27 @@ requirejs(['jquery','app/storage','knockout','knockout-secure-binding','hjls','a
              bookmarkProvider.save(serializeBookmark(bookmark));
              Resting.bookmarks.push(new BookmarkViewModel(bookmark));
           }
-          
+
           Resting.bookmarkSelected.id(bookmark.id);
           Resting.bookmarkCopy = bookmarkProvider.copyBookmark(bookmark);
         }
     };
-    
+
     const _extractModelFromVM = (items = []) => {
       return items.map(item => ({name: item.name(),value: item.value(),enabled: item.enabled()}))
     };
-    
-    
+
+
     const saveBookmark = () => {
       const req = request.makeRequest(
         Resting.requestSelected.method(), Resting.requestSelected.url(),
         _extractModelFromVM(Resting.requestHeaders()), _extractModelFromVM(Resting.querystring()), Resting.bodyType(),
-        body(Resting.bodyType()),_authentication());  
-        
-      const bookmarkId = Resting.bookmarkCopy ? Resting.bookmarkCopy.id : new Date().toString(); 
+        body(Resting.bodyType()),_authentication());
+
+      const bookmarkId = Resting.bookmarkCopy ? Resting.bookmarkCopy.id : new Date().toString();
       const bookmarkObj = bookmarkProvider.makeBookmark(bookmarkId, req, validateBookmarkName(Resting.bookmarkSelected.name()), Resting.folderSelected());
       _saveBookmark(bookmarkObj);
-      
+
       // close the dialog
       Resting.showBookmarkDialog(false);
     };
@@ -316,16 +316,16 @@ requirejs(['jquery','app/storage','knockout','knockout-secure-binding','hjls','a
       Resting.folderName('');
       Resting.bookmarkLoadedName('');
       Resting.bookmarkName('');
-      
+
       Resting.bookmarkSelected.name('');
       Resting.bookmarkSelected.id('');
       Resting.requestSelected.method('GET');
       Resting.requestSelected.url('');
-      
+
       clearRequest();
       clearResponse();
     };
-    
+
     // dead function ????
     const deleteBookmark = (bookmark, deleteChildrenBookmarks) => {
       if(bookmark.folder) {
@@ -374,7 +374,7 @@ requirejs(['jquery','app/storage','knockout','knockout-secure-binding','hjls','a
     const send = () => {
       if(Resting.requestSelected.url() && Resting.requestSelected.url().trim().length > 0) {
         clearResponse();
-        request.execute(Resting.requestSelected.method(),Resting.requestSelected.url(),convertToHeaderObj(Resting.requestHeaders()), _convertToQueryString(Resting.querystring()), Resting.bodyType(),Resting.dataToSend(), 
+        request.execute(Resting.requestSelected.method(),Resting.requestSelected.url(),convertToHeaderObj(Resting.requestHeaders()), _convertToQueryString(Resting.querystring()), Resting.bodyType(),Resting.dataToSend(),
         _authentication(),displayResponse);
       }
     };
@@ -385,7 +385,7 @@ requirejs(['jquery','app/storage','knockout','knockout-secure-binding','hjls','a
       Resting.requestSelected.method(bookmark.request.method);
       Resting.requestSelected.url(bookmark.request.url);
     };
-    
+
     const requestHeadersPanel = () => {
       Resting.showRequestHeaders(true);
       Resting.showRequestBody(false);
@@ -406,14 +406,14 @@ requirejs(['jquery','app/storage','knockout','knockout-secure-binding','hjls','a
       Resting.showQuerystring(true);
       Resting.showAuthentication(false);
     };
-    
+
     const authenticationPanel = () => {
       Resting.showRequestHeaders(false);
       Resting.showRequestBody(false);
       Resting.showQuerystring(false);
       Resting.showAuthentication(true);
     };
-    
+
     const responseHeadersPanel = () => {
       Resting.showResponseHeaders(true);
       Resting.showResponseBody(false);
@@ -440,11 +440,11 @@ requirejs(['jquery','app/storage','knockout','knockout-secure-binding','hjls','a
       Resting.responseBody(JSON.stringify(Resting.responseContent));
       unhighlight();
     };
-    
+
     const saveBookmarkDialog = () => {
       Resting.showBookmarkDialog(true);
     };
-    
+
     const dismissSaveBookmarkDialog = () => {
       Resting.showBookmarkDialog(false);
       if(Resting.bookmarkCopy == null) {
@@ -453,24 +453,24 @@ requirejs(['jquery','app/storage','knockout','knockout-secure-binding','hjls','a
         Resting.folderSelected('');
       }
     };
-    
+
     const unhighlight = () => {
       $('#highlighted-response').removeClass('hljs');
     };
-    
+
     const highlight = () => {
       $('#highlighted-response').each(function(i, block) {
       hljs.highlightBlock(block);
       });
     };
-    
+
     const callSendOnEnter = (data, event) => {
       const enter = 13;
       if(event.keyCode === enter) {
         send();
       }
     };
-    
+
     Resting.parseRequest = parseRequest;
     Resting.dataToSend = dataToSend;
     Resting.send = send;
@@ -493,10 +493,10 @@ requirejs(['jquery','app/storage','knockout','knockout-secure-binding','hjls','a
     Resting.creditsDialog = creditsDialog;
     Resting.dismissCreditsDialog = dismissCreditsDialog;
     Resting.dismissAboutDialog = dismissAboutDialog;
-    
+
     // FIXME: not good to expose this internal function
     Resting._saveBookmark = _saveBookmark;
-    
+
     Resting.loadBookmarkInView = loadBookmarkInView;
     Resting.isBookmarkLoaded = isBookmarkLoaded;
     Resting.bookmarkScreenName = bookmarkScreenName;
@@ -519,18 +519,18 @@ requirejs(['jquery','app/storage','knockout','knockout-secure-binding','hjls','a
       viewModel: { require: 'app/components/request-body/component' },
       template: { require: 'text!app/components/request-body/view.html' }
     });
-    
+
      ko.components.register('bookmarks', {
       viewModel: { require: 'app/components/bookmarks/component' },
       template: { require: 'text!app/components/bookmarks/view.html' }
     });
-    
+
     ko.components.register('authentication', {
       viewModel: { require: 'app/components/authentication/component' },
       template: { require: 'text!app/components/authentication/view.html' }
     });
-    
-    
+
+
    // Show all options, more restricted setup than the Knockout regular binding.
    var options = {
      attribute: "data-bind",        // default "data-sbind"
@@ -540,7 +540,7 @@ requirejs(['jquery','app/storage','knockout','knockout-secure-binding','hjls','a
    };
 
    ko.bindingProvider.instance = new ksb(options);
-   
+
    ko.applyBindings(new AppViewModel());
   });
 });
