@@ -12,6 +12,13 @@ requirejs.config({
 
 requirejs(['jquery','app/storage','knockout','knockout-secure-binding','hjls','app/request','app/bookmark','bootstrap'], function($,storage,ko,ksb,hjls,request,makeBookmarkProvider, bootstrap) {
 
+  function ContextVm(createDefault) {
+    const self = this;
+    this.name = ko.observable(createDefault ? 'default' : '');
+    this.variables = ko.observableArray();
+    this.isDefault = createDefault;
+  };
+
   function RequestVm(request = {}) {
     const self = this;
     this.method = ko.observable('');
@@ -49,6 +56,8 @@ requirejs(['jquery','app/storage','knockout','knockout-secure-binding','hjls','a
 
   function AppViewModel() {
     const Resting = {
+      contexts : new ContextVm(true),
+
       bookmarkSelected : new BookmarkSelectedVm(),
       requestSelected : new RequestVm(),
       responseContent : {},
@@ -92,13 +101,14 @@ requirejs(['jquery','app/storage','knockout','knockout-secure-binding','hjls','a
       showBookmarkDeleteDialog: ko.observable(false),
       showAboutDialog: ko.observable(false),
       showCreditsDialog: ko.observable(false),
+      showContextDialog: ko.observable(false),
     };
 
     const bookmarkProvider = makeBookmarkProvider(storage);
 
-    const convertToFormData = (data = []) =>
+    const convertToFormData = (data = [], context = {}) =>
       data.filter(param => param.enabled()).reduce((acc, record) => {
-        acc[record.name()] = record.value();
+        acc[record.name()] = _applyContext(record.value(),context);
         return acc;
       }, {});
 
@@ -114,6 +124,10 @@ requirejs(['jquery','app/storage','knockout','knockout-secure-binding','hjls','a
       Resting.showCreditsDialog(true);
     };
 
+     const contextDialog = () => {
+      Resting.showContextDialog(true);
+    };
+
     const dismissCreditsDialog = () => {
       Resting.showCreditsDialog(false);
     };
@@ -122,8 +136,12 @@ requirejs(['jquery','app/storage','knockout','knockout-secure-binding','hjls','a
       Resting.showAboutDialog(false);
     };
 
-    const convertToUrlEncoded = (data = []) =>
-      data.filter(param => param.enabled()).map( param => `${param.name()}=${param.value()}`).join('&');
+    const dismissContextDialog = () => {
+      Resting.showContextDialog(false);
+    };
+
+    const convertToUrlEncoded = (data = [], context) =>
+      data.filter(param => param.enabled()).map( param => `${param.name()}=${_applyContext(param.value(),context)}`).join('&');
 
     const updateBody = (bodyType, body) => {
       clearRequestBody();
@@ -197,17 +215,20 @@ requirejs(['jquery','app/storage','knockout','knockout-secure-binding','hjls','a
       }
     };
 
-    const dataToSend = () => {
+    const dataToSend = (context) => {
       if (Resting.bodyType() === 'form-data') {
-        return convertToFormData(Resting.formDataParams());
+        return convertToFormData(Resting.formDataParams(),context);
       } else if (Resting.bodyType() === 'x-www-form-urlencoded') {
-        return convertToUrlEncoded(Resting.formEncodedParams());
+        return convertToUrlEncoded(Resting.formEncodedParams(), context);
       } else if (Resting.bodyType() === 'raw') {
-        return Resting.rawBody().trim();
+        return _applyContext(Resting.rawBody().trim(),context);
       }
     };
 
-    const _authentication = () => ({type: Resting.authenticationType(), username: Resting.username(), password: Resting.password()});
+    const _applyContextToArray = (a = [], context = {}) => {
+      return
+    };
+    const _authentication = (context = {}) => ({type: Resting.authenticationType(), username: _applyContext(Resting.username(),context), password: _applyContext(Resting.password(),context)});
 
     const body = (bodyType) => {
       if (bodyType === 'form-data') {
@@ -346,9 +367,9 @@ requirejs(['jquery','app/storage','knockout','knockout-secure-binding','hjls','a
       }
     };
 
-    const convertToHeaderObj = headersList =>
+    const convertToHeaderObj = (headersList = [], context = {}) =>
       headersList.filter(header => header.enabled()).reduce((acc, header) => {
-        acc[header.name()] = header.value();
+        acc[header.name()] = _applyContext(header.value(),context);
         return acc;
       }, {});
 
@@ -367,16 +388,44 @@ requirejs(['jquery','app/storage','knockout','knockout-secure-binding','hjls','a
       }
     };
 
-    const _convertToQueryString = (params = []) => {
-      return params.filter(param => param.enabled()).map( param => ({name: param.name(), value: param.value()}));
+    const _convertToQueryString = (params = [], context = {}) => {
+      return params.filter(param => param.enabled()).map( param => ({name: param.name(), value: _applyContext(param.value(), context)}));
     };
 
     const send = () => {
+      const mapping = _mapContext();
       if(Resting.requestSelected.url() && Resting.requestSelected.url().trim().length > 0) {
         clearResponse();
-        request.execute(Resting.requestSelected.method(),Resting.requestSelected.url(),convertToHeaderObj(Resting.requestHeaders()), _convertToQueryString(Resting.querystring()), Resting.bodyType(),Resting.dataToSend(),
-        _authentication(),displayResponse);
+        const url = _applyContext(Resting.requestSelected.url(),mapping);
+        request.execute(Resting.requestSelected.method(),url,convertToHeaderObj(Resting.requestHeaders(), mapping), _convertToQueryString(Resting.querystring(), mapping), Resting.bodyType(),Resting.dataToSend(mapping),
+        _authentication(mapping),displayResponse);
       }
+    };
+
+    const _mapContext = () => {
+      const mapping = {};
+      Resting.contexts.variables().filter(v => v.enabled()).forEach( v => mapping[v.name()] = v.value());
+      return mapping;
+    };
+
+    const _applyContext = (value = '',context = {}) => {
+      const tokens = _tokenize(value);
+      let computed = value.slice(0);
+      if(tokens) {
+        tokens.forEach(t => {
+          const contextVar = t.substring(1,t.length-1);
+          if(context[contextVar]) {
+            computed = computed.replace(t, context[contextVar]);
+          }
+        });
+      }
+      return computed;
+    };
+
+    const _tokenize = (v = '') => {
+      const varRegexp = /\{\w+\}/g;
+      const tokens = v.match(varRegexp);
+      return tokens;
     };
 
     const loadBookmarkInView = (bookmark = {}) => {
@@ -471,6 +520,19 @@ requirejs(['jquery','app/storage','knockout','knockout-secure-binding','hjls','a
       }
     };
 
+    const saveContext = () => {
+      storage.saveContext({name : Resting.contexts.name(), variables : _extractModelFromVM(Resting.contexts.variables()) });
+      dismissContextDialog();
+    };
+
+    const loadContexts = () => {
+      // load contexts
+      storage.loadContexts( ctx => {
+        Resting.contexts.variables(_convertToEntryItemVM(ctx.variables));
+      });
+    };
+
+
     Resting.parseRequest = parseRequest;
     Resting.dataToSend = dataToSend;
     Resting.send = send;
@@ -491,8 +553,11 @@ requirejs(['jquery','app/storage','knockout','knockout-secure-binding','hjls','a
     Resting.reset = reset;
     Resting.aboutDialog = aboutDialog;
     Resting.creditsDialog = creditsDialog;
+    Resting.contextDialog = contextDialog;
     Resting.dismissCreditsDialog = dismissCreditsDialog;
     Resting.dismissAboutDialog = dismissAboutDialog;
+    Resting.dismissContextDialog = dismissContextDialog;
+    Resting.saveContext = saveContext;
 
     // FIXME: not good to expose this internal function
     Resting._saveBookmark = _saveBookmark;
@@ -500,6 +565,8 @@ requirejs(['jquery','app/storage','knockout','knockout-secure-binding','hjls','a
     Resting.loadBookmarkInView = loadBookmarkInView;
     Resting.isBookmarkLoaded = isBookmarkLoaded;
     Resting.bookmarkScreenName = bookmarkScreenName;
+    Resting.loadContexts = loadContexts;
+
     return Resting;
   }
 
@@ -531,6 +598,7 @@ requirejs(['jquery','app/storage','knockout','knockout-secure-binding','hjls','a
     });
 
 
+
    // Show all options, more restricted setup than the Knockout regular binding.
    var options = {
      attribute: "data-bind",        // default "data-sbind"
@@ -541,6 +609,17 @@ requirejs(['jquery','app/storage','knockout','knockout-secure-binding','hjls','a
 
    ko.bindingProvider.instance = new ksb(options);
 
-   ko.applyBindings(new AppViewModel());
+   const appVM = new AppViewModel();
+   ko.applyBindings(appVM);
+
+  $('ul.dropdown-menu [data-toggle=dropdown]').on('click', function(event) {
+    event.preventDefault();
+    event.stopPropagation();
+    $(this).parent().siblings().removeClass('open');
+    $(this).parent().toggleClass('open');
+  });
+
+  appVM.loadContexts();
+
   });
 });
