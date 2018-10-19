@@ -24,9 +24,11 @@ define(function() {
     return newFolder;
   }
   
+  const bookmarkById = ({ id }) => b => (b.id === id);
+
   const replaceBookmark = (folder,bookmark) => {
     const newFolder = Object.assign({},folder);
-    const indexToReplace = folder.bookmarks.findIndex(b => b.id == bookmark.id);
+    const indexToReplace = folder.bookmarks.findIndex(bookmarkById(bookmark));
     newFolder.bookmarks = folder.bookmarks.slice();
     if(indexToReplace != -1) {
       newFolder.bookmarks.splice(indexToReplace,1);
