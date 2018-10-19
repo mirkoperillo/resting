@@ -49,7 +49,7 @@ define(function() {
     bookmarks = bookmarks.filter(b => bookmarksToRemoveIds.indexOf(b.id) === -1);
 
     return Object.assign({},folder,{bookmarks});
-  }
+  };
   
   const copyBookmark = (bookmark) => {
     return Object.assign({},bookmark);
