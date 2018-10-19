@@ -80,4 +80,51 @@ describe("Handling bookmarks", function() {
       expect(startFolder.bookmarks[2].request).not.toBe(emendedBookmark.request);
     });
   });
+
+  describe("removeBookmark should", function() {
+    it("remove an existing bookmark from a folder", function () {
+      const startFolder = bookmarkProvider.makeFolder(1, "my folder",[
+        bookmarkProvider.makeBookmark(1, "request", "bookmark name", null)
+      ]);
+      const updatedFolder = bookmarkProvider.removeBookmarks(startFolder, { id: 1 });
+
+      expect(updatedFolder.bookmarks.length).toBe(0);
+    });
+
+    it("remove existing bookmarks from a folder", function() {
+      const startFolder = bookmarkProvider.makeFolder(1, "my folder",[
+        bookmarkProvider.makeBookmark(1, "request", "bookmark name", null)
+      ]);
+      const updatedFolder = bookmarkProvider.removeBookmarks(startFolder, [{ id: 1 }]);
+
+      expect(updatedFolder.bookmarks.length).toBe(0);
+    });
+
+    it("remove all the bookmarks from a folder", function() {
+      const bookmarksToRemove = [
+        bookmarkProvider.makeBookmark(1, "request", "bookmark name", null),
+        bookmarkProvider.makeBookmark(2, "request", "bookmark name", null),
+        bookmarkProvider.makeBookmark(3, "request", "bookmark name", null),
+        bookmarkProvider.makeBookmark(4, "request", "bookmark name", null)
+      ];
+      const startFolder = bookmarkProvider.makeFolder(1, "my folder",bookmarksToRemove.slice());
+      const updatedFolder = bookmarkProvider.removeBookmarks(startFolder, bookmarksToRemove);
+
+      expect(updatedFolder.bookmarks.length).toBe(0);
+    });
+
+    it("remove the last bookmark from a folder", function() {
+      const bookmarksToRemove = [
+        bookmarkProvider.makeBookmark(1, "request", "bookmark name", null),
+        bookmarkProvider.makeBookmark(2, "request", "bookmark name", null),
+        bookmarkProvider.makeBookmark(3, "request", "bookmark name", null),
+        bookmarkProvider.makeBookmark(4, "request", "bookmark name", null)
+      ];
+      const startFolder = bookmarkProvider.makeFolder(1, "my folder",bookmarksToRemove.slice());
+      const updatedFolder = bookmarkProvider.removeBookmarks(startFolder, bookmarksToRemove[3]);
+
+      expect(updatedFolder.bookmarks.length).toBe(3);
+      expect(updatedFolder.bookmarks.findIndex(b => b.id === 4)).toBe(-1);
+    });
+  });
 });
