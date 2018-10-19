@@ -41,12 +41,13 @@ define(function() {
   const removeBookmarks = (folder,bookmarksToRemove = []) => {
     let bookmarks = folder.bookmarks.slice();
 
-    if(Array.isArray(bookmarksToRemove)) {
-      const bookmarksToRemoveIds = bookmarksToRemove.map(b => b.id);
-      bookmarks = bookmarks.filter(b => bookmarksToRemoveIds.indexOf(b.id) === -1);
-    } else {
-      bookmarks = bookmarks.filter(b => b.id != bookmarksToRemove.id);
-    }
+    const bookmarksToRemoveIds = (Array.isArray(bookmarksToRemove)
+      ? bookmarksToRemove
+      : [bookmarksToRemove])
+    .map(b => b.id);
+    
+    bookmarks = bookmarks.filter(b => bookmarksToRemoveIds.indexOf(b.id) === -1);
+
     return Object.assign({},folder,{bookmarks});
   }
   
