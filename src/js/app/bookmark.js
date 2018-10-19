@@ -27,15 +27,15 @@ define(function() {
   const bookmarkById = ({ id }) => b => (b.id === id);
 
   const replaceBookmark = (folder,bookmark) => {
-    const newFolder = Object.assign({},folder);
-    const indexToReplace = folder.bookmarks.findIndex(bookmarkById(bookmark));
-    newFolder.bookmarks = folder.bookmarks.slice();
+    const bookmarks = folder.bookmarks.slice();
+    const indexToReplace = bookmarks.findIndex(bookmarkById(bookmark));
     if(indexToReplace !== -1) {
-      newFolder.bookmarks.splice(indexToReplace,1, bookmark);
+      bookmarks.splice(indexToReplace,1, bookmark);
     } else {
-      newFolder.bookmarks.push(bookmark);    
+      bookmarks.push(bookmark);    
     }
-    return newFolder;
+
+    return Object.assign({}, folder, {bookmarks});
   };
   
   const removeBookmarks = (folder,bookmarks = []) => {
