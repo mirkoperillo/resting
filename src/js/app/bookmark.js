@@ -41,8 +41,8 @@ define(function() {
   const removeBookmarks = (folder,bookmarks = []) => {
     const newFolder = Object.assign({},folder);
     if(Array.isArray(bookmarks)) {
-      const bookmarksIds = folder.bookmarks.map(b => b.id);
-      newFolder.bookmarks = folder.bookmarks.filter(b => bookmarksIds.indexOf(b.id) != -1);
+      const bookmarksIds = bookmarks.map(b => b.id);
+      newFolder.bookmarks = folder.bookmarks.filter(b => bookmarksIds.indexOf(b.id) === -1);
     } else {
       newFolder.bookmarks = folder.bookmarks.filter(b => b.id != bookmarks.id);
     }
