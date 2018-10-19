@@ -38,15 +38,16 @@ define(function() {
     return Object.assign({}, folder, {bookmarks});
   };
   
-  const removeBookmarks = (folder,bookmarks = []) => {
-    const newFolder = Object.assign({},folder);
-    if(Array.isArray(bookmarks)) {
-      const bookmarksIds = bookmarks.map(b => b.id);
-      newFolder.bookmarks = folder.bookmarks.filter(b => bookmarksIds.indexOf(b.id) === -1);
+  const removeBookmarks = (folder,bookmarksToRemove = []) => {
+    let bookmarks = folder.bookmarks.slice();
+
+    if(Array.isArray(bookmarksToRemove)) {
+      const bookmarksToRemoveIds = bookmarksToRemove.map(b => b.id);
+      bookmarks = bookmarks.filter(b => bookmarksToRemoveIds.indexOf(b.id) === -1);
     } else {
-      newFolder.bookmarks = folder.bookmarks.filter(b => b.id != bookmarks.id);
+      bookmarks = bookmarks.filter(b => b.id != bookmarksToRemove.id);
     }
-    return newFolder;
+    return Object.assign({},folder,{bookmarks});
   }
   
   const copyBookmark = (bookmark) => {
