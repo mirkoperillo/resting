@@ -31,8 +31,7 @@ define(function() {
     const indexToReplace = folder.bookmarks.findIndex(bookmarkById(bookmark));
     newFolder.bookmarks = folder.bookmarks.slice();
     if(indexToReplace !== -1) {
-      newFolder.bookmarks.splice(indexToReplace,1);
-      newFolder.bookmarks.splice(indexToReplace,0, bookmark);
+      newFolder.bookmarks.splice(indexToReplace,1, bookmark);
     } else {
       newFolder.bookmarks.push(bookmark);    
     }
