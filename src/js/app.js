@@ -10,7 +10,7 @@ requirejs.config({
     }
 });
 
-requirejs(['jquery','app/storage','knockout','knockout-secure-binding','hjls','app/request','app/bookmark','bootstrap'], function($,storage,ko,ksb,hjls,request,makeBookmarkProvider, bootstrap) {
+requirejs(['jquery','app/storage','knockout','knockout-secure-binding','hjls','app/request','app/bookmark','app/clipboard','bootstrap'], function($,storage,ko,ksb,hjls,request,makeBookmarkProvider,clipboard,bootstrap) {
 
   function ContextVm(createDefault) {
     const self = this;
@@ -617,6 +617,13 @@ requirejs(['jquery','app/storage','knockout','knockout-secure-binding','hjls','a
     event.stopPropagation();
     $(this).parent().siblings().removeClass('open');
     $(this).parent().toggleClass('open');
+  });
+  
+  clipboard.bindOn('div.copy-n-paste');
+  clipboard.copyFrom('#highlighted-response');
+  clipboard.onCopy(function() {
+    $('.alert').removeClass('hide');
+    setTimeout(function () { $('.alert').addClass('hide'); }, 2000);
   });
 
   appVM.loadContexts();
