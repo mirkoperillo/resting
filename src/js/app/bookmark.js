@@ -24,29 +24,32 @@ define(function() {
     return newFolder;
   }
   
+  const bookmarkById = ({ id }) => b => (b.id === id);
+
   const replaceBookmark = (folder,bookmark) => {
-    const newFolder = Object.assign({},folder);
-    const indexToReplace = folder.bookmarks.findIndex(b => b.id == bookmark.id);
-    newFolder.bookmarks = folder.bookmarks.slice();
-    if(indexToReplace != -1) {
-      newFolder.bookmarks.splice(indexToReplace,1);
-      newFolder.bookmarks.splice(indexToReplace,0, bookmark);
+    const bookmarks = folder.bookmarks.slice();
+    const indexToReplace = bookmarks.findIndex(bookmarkById(bookmark));
+    if(indexToReplace !== -1) {
+      bookmarks.splice(indexToReplace,1, bookmark);
     } else {
-      newFolder.bookmarks.push(bookmark);    
+      bookmarks.push(bookmark);    
     }
-    return newFolder;
+
+    return Object.assign({}, folder, {bookmarks});
   };
   
-  const removeBookmarks = (folder,bookmarks = []) => {
-    const newFolder = Object.assign({},folder);
-    if(Array.isArray(bookmarks)) {
-      const bookmarksIds = folder.bookmarks.map(b => b.id);
-      newFolder.bookmarks = folder.bookmarks.filter(b => bookmarksIds.indexOf(b.id) != -1);
-    } else {
-      newFolder.bookmarks = folder.bookmarks.filter(b => b.id != bookmarks.id);
-    }
-    return newFolder;
-  }
+  const removeBookmarks = (folder,bookmarksToRemove = []) => {
+    let bookmarks = folder.bookmarks.slice();
+
+    const bookmarksToRemoveIds = (Array.isArray(bookmarksToRemove)
+      ? bookmarksToRemove
+      : [bookmarksToRemove])
+    .map(b => b.id);
+    
+    bookmarks = bookmarks.filter(b => bookmarksToRemoveIds.indexOf(b.id) === -1);
+
+    return Object.assign({},folder,{bookmarks});
+  };
   
   const copyBookmark = (bookmark) => {
     return Object.assign({},bookmark);
