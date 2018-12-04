@@ -57,7 +57,6 @@ requirejs(['jquery','app/storage','knockout','knockout-secure-binding','hjls','a
   function AppViewModel() {
     const Resting = {
       contexts : new ContextVm(true),
-
       bookmarkSelected : new BookmarkSelectedVm(),
       requestSelected : new RequestVm(),
       responseContent : {},
@@ -67,8 +66,6 @@ requirejs(['jquery','app/storage','knockout','knockout-secure-binding','hjls','a
       bookmarkToDeleteName : ko.observable(),
       tryToDeleteFolder: ko.observable(false),
       deleteChildrenBookmarks: ko.observable(false),
-      requestMethod: ko.observable(), // try to replace
-      requestUrl: ko.observable(), // try to replace
       responseBody: ko.observable(),
       callDuration: ko.observable('-'),
       callStatus: ko.observable('-'),
@@ -165,14 +162,14 @@ requirejs(['jquery','app/storage','knockout','knockout-secure-binding','hjls','a
     };
 
     const clearRequest = () => {
+      Resting.requestSelected.method('GET');
+      Resting.requestSelected.url('');
       clearRequestBody();
       Resting.requestHeaders.removeAll();
       Resting.querystring.removeAll();
       Resting.authenticationType('');
       Resting.username('');
       Resting.password('');
-      Resting.requestMethod('GET');
-      Resting.requestUrl('');
     };
 
     const clearResponse = () => {
@@ -196,9 +193,7 @@ requirejs(['jquery','app/storage','knockout','knockout-secure-binding','hjls','a
     };
 
     const parseRequest = (req) => {
-      Resting.requestMethod(req.method);
       Resting.requestSelected.method(req.method);
-      Resting.requestUrl(req.url);
       Resting.requestSelected.url(req.url);
       Resting.bodyType(req.bodyType);
       Resting.requestHeaders(_convertToEntryItemVM(req.headers));
@@ -340,8 +335,6 @@ requirejs(['jquery','app/storage','knockout','knockout-secure-binding','hjls','a
 
       Resting.bookmarkSelected.name('');
       Resting.bookmarkSelected.id('');
-      Resting.requestSelected.method('GET');
-      Resting.requestSelected.url('');
 
       clearRequest();
       clearResponse();
@@ -618,7 +611,7 @@ requirejs(['jquery','app/storage','knockout','knockout-secure-binding','hjls','a
     $(this).parent().siblings().removeClass('open');
     $(this).parent().toggleClass('open');
   });
-  
+
   clipboard.bindOn('div.copy-n-paste');
   clipboard.copyFrom('#highlighted-response');
   clipboard.onCopy(function() {
