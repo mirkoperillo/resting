@@ -43,20 +43,16 @@ requirejs(['jquery','app/storage','knockout','knockout-secure-binding','hjls','a
       bookmarkToDeleteName : ko.observable(),
       tryToDeleteFolder: ko.observable(false),
       deleteChildrenBookmarks: ko.observable(false),
+
+      // response fields
       responseBody: ko.observable(),
       callDuration: ko.observable('-'),
       callStatus: ko.observable('-'),
       responseHeaders: ko.observableArray(),
+
+      // request fields
       requestHeaders: ko.observableArray(),
       querystring: ko.observableArray(),
-      showRequestHeaders: ko.observable(true),
-      showRequestBody: ko.observable(false),
-      showQuerystring: ko.observable(false),
-      showAuthentication: ko.observable(false),
-      showResponseHeaders: ko.observable(false),
-      showResponseBody: ko.observable(true),
-      useFormattedResponseBody: ko.observable(true),
-      useRawResponseBody: ko.observable(false), // is it used ??
       bodyType: ko.observable(),
       formDataParams: ko.observableArray(),
       formEncodedParams: ko.observableArray(),
@@ -64,14 +60,30 @@ requirejs(['jquery','app/storage','knockout','knockout-secure-binding','hjls','a
       authenticationType: ko.observable(),
       username: ko.observable(),
       password: ko.observable(),
+      methods: ko.observableArray(['GET','POST','PUT','DELETE','HEAD','OPTIONS','CONNECT','TRACE','PATCH']),
+
+      // request panel flags
+      showRequestHeaders: ko.observable(true),
+      showRequestBody: ko.observable(false),
+      showQuerystring: ko.observable(false),
+      showAuthentication: ko.observable(false),
+
+      // response panel flags
+      showResponseHeaders: ko.observable(false),
+      showResponseBody: ko.observable(true),
+      useFormattedResponseBody: ko.observable(true),
+      useRawResponseBody: ko.observable(false),
+
+
       bookmarks: ko.observableArray(),
       folders: ko.observableArray(),
       bookmarkName: ko.observable(), // try to replace
-      showBookmarkDialog: ko.observable(false),
-      showFolderDialog: ko.observable(false),
       folderName: ko.observable(),
       folderSelected: ko.observable(),
-      methods: ko.observableArray(['GET','POST','PUT','DELETE','HEAD','OPTIONS','CONNECT','TRACE','PATCH']),
+
+      // Flags to show/hide dialogs
+      showBookmarkDialog: ko.observable(false),
+      showFolderDialog: ko.observable(false),
       showBookmarkDeleteDialog: ko.observable(false),
       showAboutDialog: ko.observable(false),
       showCreditsDialog: ko.observable(false),
