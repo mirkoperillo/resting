@@ -1,7 +1,7 @@
- define(['knockout', 'app/bookmark', 'app/storage'],function(ko, makeBookmarkProvider, storage) {
- 
+ define(['knockout', 'app/bookmark', 'app/storage', 'component/bookmarks/bookmarkVm'],function(ko, makeBookmarkProvider, storage, BookmarkViewModel) {
+
   // FIXME: duplication of this VM used by save functionality and this component
-   function BookmarkViewModel(bookmark) {
+  /* function BookmarkViewModel(bookmark) {
     const self = this;
     this.id = bookmark.id;
     this.name = bookmark.name;
@@ -10,37 +10,37 @@
     this.requestMethod = bookmark.request ? bookmark.request.method : null;
     this.requestUrl = bookmark.request ? bookmark.request.url : null;
     this.bookmarks = bookmark.bookmarks ? bookmark.bookmarks.map( b => new BookmarkViewModel(b)) : undefined;
-    
+
     this.request = bookmark.request;
     this.viewName = function() {
         return self.name && self.name.length > 0 ? self.name :  self.requestMethod +' ' + self.requestUrl;
     };
-  }
-  
+  }*/
+
   return function BookmarksViewModel(params) {
 
     const appVm = params.appVm;
-    
+
     let bookmarkToDelete = null;
     const bookmarkToDeleteName = ko.observable();
     const tryToDeleteFolder = ko.observable(false);
     const showBookmarkDeleteDialog = ko.observable(false);
     const showFolderDialog = ko.observable(false);
     const folderName = ko.observable();
-    
+
     // FIXME: direct ref to bookmarks in appVm
     const bookmarks = params.appVm.bookmarks;
-    
+
     const folders= ko.observableArray();
-    
+
     folders.subscribe( newValue => {
       appVm.folders.removeAll();
       newValue.forEach(folder => appVm.folders.push(folder));
     });
-    
+
     const deleteChildrenBookmarks = ko.observable();
-    
-    
+
+
     const bookmarkProvider = makeBookmarkProvider(storage);
 
     const confirmDelete = bookmark => {
@@ -49,57 +49,57 @@
       tryToDeleteFolder(bookmark.isFolder);
       showBookmarkDeleteDialog(true);
     };
-    
+
     const _serializeBookmark = (bookmarkObj) => {
       return bookmarkProvider.fromJson(JSON.stringify(bookmarkObj));
     }
-    
+
     const addFolder = () => {
       const folder = bookmarkProvider.makeFolder(new Date().toString(), folderName());
       storage.save(_serializeBookmark(folder));
       bookmarks.push(new BookmarkViewModel(folder));
       folders.push(folder);
       folderName('');
-      
+
       // close the dialog
       dismissFolderDialog();
     };
-    
+
     const folderDialog = () => {
       showFolderDialog(true);
     };
-    
+
     const dismissFolderDialog = () => {
       showFolderDialog(false);
     };
-    
+
     const addFolderOnEnter = (data,event) => {
       const enter = 13;
       if(event.keyCode === enter) {
         addFolder();
       }
     };
-    
+
     const _loadBookmarksNewFormat = () =>
       storage.iterate( value => {
-        bookmarks.push(new BookmarkViewModel(value)); 
+        bookmarks.push(new BookmarkViewModel(value));
         if(value.isFolder) {
           folders.push(value);
         }
     });
-    
+
     const deleteBookmarkFromView = () => {
       deleteBookmark(bookmarkToDelete, deleteChildrenBookmarks());
       folders.remove(folder => folder.id === bookmarkToDelete.id);
       bookmarkToDelete = null;
       dismissDeleteBookmarkDialog();
     }
-    
+
     const dismissDeleteBookmarkDialog = () => {
       showBookmarkDeleteDialog(false);
       deleteChildrenBookmarks(false);
     }
-    
+
     const deleteBookmark = (bookmark, deleteChildrenBookmarks) => {
       if(bookmark.folder) {
         const containerFolder = bookmarks().find( b => b.id === bookmark.folder);
@@ -118,20 +118,20 @@
         }
         storage.deleteById(bookmark.id, () => bookmarks.remove(bookmark));
       }
-      
-       if( bookmark.id == appVm.bookmarkSelected.id()) { 
-      
+
+       if( bookmark.id == appVm.bookmarkSelected.id()) {
+
          appVm.bookmarkCopy = null;
          appVm.folderSelected('');
          appVm.folderName('');
          appVm.bookmarkLoadedName('');
          appVm.bookmarkName('');
-      
+
          appVm.bookmarkSelected.id('');
          appVm.bookmarkSelected.name('');
       }
     };
-    
+
     // FIXME direct interaction with appVm fields
      const loadBookmarkObj = (bookmarkObj) => {
       appVm.bookmarkCopy = bookmarkProvider.copyBookmark(bookmarkObj);
@@ -140,20 +140,20 @@
       appVm.clearResponse();
       return loadBookmarkData(bookmarkObj);
     };
-    
+
     // FIXME direct interaction with appVm fields
     const loadBookmarkData = (bookmark) => {
       appVm.parseRequest(bookmark.request);
       appVm.bookmarkName(bookmark.name);
       appVm.loadBookmarkInView(bookmark);
     };
-    
+
     $(() => {
       const screenWidth = screen.width;
       const dialogLeftPosition = screenWidth / 2  - 200;
       $('div.dialog').css('left', dialogLeftPosition+'px');
     });
-    
+
     // define the storage format conversion
     // this function converts format of bookmarks to the new version
     // consider to maintain the call until version <= 0.6.0 of web-extentsion for compatibility goal
@@ -171,8 +171,8 @@
         }
       });
     })();
-    
-    
+
+
     return {
       showFolderDialog,
       folderName,
@@ -194,5 +194,5 @@
       loadBookmarkData,
     };
   }
-  
+
 });

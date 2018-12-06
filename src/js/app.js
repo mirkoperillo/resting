@@ -11,7 +11,7 @@ requirejs.config({
     }
 });
 
-requirejs(['jquery','app/storage','knockout','knockout-secure-binding','hjls','app/request','app/bookmark','app/clipboard','bootstrap','component/entry-list/entryItemVm'], function($,storage,ko,ksb,hjls,request,makeBookmarkProvider,clipboard,bootstrap, EntryItemViewModel) {
+requirejs(['jquery','app/storage','knockout','knockout-secure-binding','hjls','app/request','app/bookmark','app/clipboard','bootstrap','component/entry-list/entryItemVm', 'component/bookmarks/bookmarkVm'], function($,storage,ko,ksb,hjls,request,makeBookmarkProvider,clipboard,bootstrap, EntryItemViewModel, BookmarkViewModel) {
 
   function ContextVm(createDefault) {
     const self = this;
@@ -33,7 +33,7 @@ requirejs(['jquery','app/storage','knockout','knockout-secure-binding','hjls','a
   }
 
   // FIXME: duplication of this VM used by save functionality and bookmarks component
-  function BookmarkViewModel(bookmark) {
+  /*function BookmarkViewModel(bookmark) {
     const self = this;
     this.id = bookmark.id;
     this.name = bookmark.name;
@@ -47,7 +47,7 @@ requirejs(['jquery','app/storage','knockout','knockout-secure-binding','hjls','a
     this.viewName = function() {
         return self.name && self.name.length > 0 ? self.name :  self.requestMethod +' ' + self.requestUrl;
     };
-  }
+  }*/
   // FIXME: duplication of this VM
  /* function EntryItemViewModel(name, value, enabled) {
     this.name = ko.observable(name);
