@@ -1,22 +1,5 @@
  define(['knockout', 'app/bookmark', 'app/storage', 'component/bookmarks/bookmarkVm'],function(ko, makeBookmarkProvider, storage, BookmarkViewModel) {
 
-  // FIXME: duplication of this VM used by save functionality and this component
-  /* function BookmarkViewModel(bookmark) {
-    const self = this;
-    this.id = bookmark.id;
-    this.name = bookmark.name;
-    this.isFolder = bookmark.isFolder;
-    this.folder = bookmark.folder;
-    this.requestMethod = bookmark.request ? bookmark.request.method : null;
-    this.requestUrl = bookmark.request ? bookmark.request.url : null;
-    this.bookmarks = bookmark.bookmarks ? bookmark.bookmarks.map( b => new BookmarkViewModel(b)) : undefined;
-
-    this.request = bookmark.request;
-    this.viewName = function() {
-        return self.name && self.name.length > 0 ? self.name :  self.requestMethod +' ' + self.requestUrl;
-    };
-  }*/
-
   return function BookmarksViewModel(params) {
 
     const appVm = params.appVm;
@@ -124,7 +107,6 @@
          appVm.bookmarkCopy = null;
          appVm.folderSelected('');
          appVm.folderName('');
-         appVm.bookmarkLoadedName('');
          appVm.bookmarkName('');
 
          appVm.bookmarkSelected.id('');
@@ -135,7 +117,6 @@
     // FIXME direct interaction with appVm fields
      const loadBookmarkObj = (bookmarkObj) => {
       appVm.bookmarkCopy = bookmarkProvider.copyBookmark(bookmarkObj);
-      appVm.bookmarkLoadedName(bookmarkObj.viewName());
       appVm.folderSelected(bookmarkObj.folder);
       appVm.clearResponse();
       return loadBookmarkData(bookmarkObj);

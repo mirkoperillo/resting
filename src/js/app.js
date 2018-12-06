@@ -39,7 +39,6 @@ requirejs(['jquery','app/storage','knockout','knockout-secure-binding','hjls','a
       requestSelected : new RequestVm(),
       responseContent : {},
       bookmarkCopy: null,   // copy of bookmark object loaded
-      bookmarkLoadedName: ko.observable(),  // dead field ??
       bookmarkToDelete: null,
       bookmarkToDeleteName : ko.observable(),
       tryToDeleteFolder: ko.observable(false),
@@ -267,7 +266,6 @@ requirejs(['jquery','app/storage','knockout','knockout-secure-binding','hjls','a
             }
             bookmarkProvider.save(serializeBookmark(bookmark));
           }
-          Resting.bookmarkLoadedName(new BookmarkViewModel(bookmark).viewName());
           Resting.bookmarkCopy = bookmarkProvider.copyBookmark(bookmark);
         } else { // if new bookmark
           if(bookmark.folder) {
@@ -308,7 +306,6 @@ requirejs(['jquery','app/storage','knockout','knockout-secure-binding','hjls','a
       Resting.bookmarkCopy = null;
       Resting.folderSelected('');
       Resting.folderName('');
-      Resting.bookmarkLoadedName('');
       Resting.bookmarkName('');
 
       Resting.bookmarkSelected.name('');
