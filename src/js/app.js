@@ -32,29 +32,6 @@ requirejs(['jquery','app/storage','knockout','knockout-secure-binding','hjls','a
     this.name = ko.observable('');
   }
 
-  // FIXME: duplication of this VM used by save functionality and bookmarks component
-  /*function BookmarkViewModel(bookmark) {
-    const self = this;
-    this.id = bookmark.id;
-    this.name = bookmark.name;
-    this.isFolder = bookmark.isFolder;
-    this.folder = bookmark.folder;
-    this.requestMethod = bookmark.request ? bookmark.request.method : null;
-    this.requestUrl = bookmark.request ? bookmark.request.url : null;
-    this.bookmarks = bookmark.bookmarks ? bookmark.bookmarks.map( b => new BookmarkViewModel(b)) : undefined;
-
-    this.request = bookmark.request;
-    this.viewName = function() {
-        return self.name && self.name.length > 0 ? self.name :  self.requestMethod +' ' + self.requestUrl;
-    };
-  }*/
-  // FIXME: duplication of this VM
- /* function EntryItemViewModel(name, value, enabled) {
-    this.name = ko.observable(name);
-    this.value = ko.observable(value);
-    this.enabled = ko.observable(enabled);
-  }*/
-
   function AppViewModel() {
     const Resting = {
       contexts : new ContextVm(true),
