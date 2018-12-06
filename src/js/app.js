@@ -2,6 +2,7 @@ requirejs.config({
     baseUrl: 'js/vendor',
     paths: {
          app : '../app',
+         component : '../app/components',
         'jquery': 'jquery-3.3.1.min',
         'knockout': 'knockout-3.4.2',
         'knockout-secure-binding': 'knockout-secure-binding',
@@ -10,7 +11,7 @@ requirejs.config({
     }
 });
 
-requirejs(['jquery','app/storage','knockout','knockout-secure-binding','hjls','app/request','app/bookmark','app/clipboard','bootstrap'], function($,storage,ko,ksb,hjls,request,makeBookmarkProvider,clipboard,bootstrap) {
+requirejs(['jquery','app/storage','knockout','knockout-secure-binding','hjls','app/request','app/bookmark','app/clipboard','bootstrap','component/entry-list/entryItemVm'], function($,storage,ko,ksb,hjls,request,makeBookmarkProvider,clipboard,bootstrap, EntryItemViewModel) {
 
   function ContextVm(createDefault) {
     const self = this;
@@ -48,11 +49,11 @@ requirejs(['jquery','app/storage','knockout','knockout-secure-binding','hjls','a
     };
   }
   // FIXME: duplication of this VM
-  function EntryItemViewModel(name, value, enabled) {
+ /* function EntryItemViewModel(name, value, enabled) {
     this.name = ko.observable(name);
     this.value = ko.observable(value);
     this.enabled = ko.observable(enabled);
-  }
+  }*/
 
   function AppViewModel() {
     const Resting = {

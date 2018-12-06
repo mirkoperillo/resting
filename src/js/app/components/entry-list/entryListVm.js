@@ -1,11 +1,11 @@
-define(['knockout'],function(ko) {
+define(['knockout', 'component/entry-list/entryItemVm'],function(ko, EntryItemViewModel) {
 
-  function EntryItemViewModel(name, value, enabled) {
+ /* function EntryItemViewModel(name, value, enabled) {
     this.name = ko.observable(name);
     this.value = ko.observable(value);
     this.enabled = ko.observable(enabled);
-  }
-  
+  }*/
+
   return function EntryListViewModel(params) {
 
     const EntryList = {
