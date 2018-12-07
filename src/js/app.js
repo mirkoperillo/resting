@@ -38,6 +38,10 @@ requirejs(['jquery','app/storage','knockout','knockout-secure-binding','hjls','a
       bookmarkSelected : new BookmarkSelectedVm(),
       requestSelected : new RequestVm(),
       bookmarkCopy: null,   // copy of bookmark object loaded
+                            // used to match with modified version in _saveBookmark
+      bookmarks: ko.observableArray(),
+      folders: ko.observableArray(),
+      folderSelected: ko.observable(),
 
       // response fields
       responseBody: ko.observable(),
@@ -69,10 +73,6 @@ requirejs(['jquery','app/storage','knockout','knockout-secure-binding','hjls','a
       showResponseBody: ko.observable(true),
       useFormattedResponseBody: ko.observable(true),
       useRawResponseBody: ko.observable(false),
-
-      bookmarks: ko.observableArray(),
-      folders: ko.observableArray(),
-      folderSelected: ko.observable(),
 
       // Flags to show/hide dialogs
       showBookmarkDialog: ko.observable(false),
