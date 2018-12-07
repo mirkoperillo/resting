@@ -79,8 +79,6 @@ requirejs(['jquery','app/storage','knockout','knockout-secure-binding','hjls','a
 
       // Flags to show/hide dialogs
       showBookmarkDialog: ko.observable(false),
-      showFolderDialog: ko.observable(false),  // unused ?
-      showBookmarkDeleteDialog: ko.observable(false),  // unused ?
       showAboutDialog: ko.observable(false),
       showCreditsDialog: ko.observable(false),
       showContextDialog: ko.observable(false),
@@ -323,7 +321,7 @@ requirejs(['jquery','app/storage','knockout','knockout-secure-binding','hjls','a
       clearResponse();
     };
 
-    // dead function ????
+    // used by _saveBookmark...why ?
     const deleteBookmark = (bookmark, deleteChildrenBookmarks) => {
       if(bookmark.folder) {
         const containerFolder = Resting.bookmarks().find( b => b.id === bookmark.folder);
