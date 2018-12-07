@@ -106,7 +106,6 @@
 
          appVm.bookmarkCopy = null;
          appVm.folderSelected('');
-         appVm.folderName('');
 
          appVm.bookmarkSelected.id('');
          appVm.bookmarkSelected.name('');

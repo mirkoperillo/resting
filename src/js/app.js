@@ -70,10 +70,8 @@ requirejs(['jquery','app/storage','knockout','knockout-secure-binding','hjls','a
       useFormattedResponseBody: ko.observable(true),
       useRawResponseBody: ko.observable(false),
 
-
       bookmarks: ko.observableArray(),
       folders: ko.observableArray(),
-      folderName: ko.observable(),
       folderSelected: ko.observable(),
 
       // Flags to show/hide dialogs
@@ -310,7 +308,6 @@ requirejs(['jquery','app/storage','knockout','knockout-secure-binding','hjls','a
     const reset = () => {
       Resting.bookmarkCopy = null;
       Resting.folderSelected('');
-      Resting.folderName('');
 
       Resting.bookmarkSelected.name('');
       Resting.bookmarkSelected.id('');
