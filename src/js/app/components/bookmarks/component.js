@@ -107,7 +107,6 @@
          appVm.bookmarkCopy = null;
          appVm.folderSelected('');
          appVm.folderName('');
-         appVm.bookmarkName('');
 
          appVm.bookmarkSelected.id('');
          appVm.bookmarkSelected.name('');
@@ -125,7 +124,6 @@
     // FIXME direct interaction with appVm fields
     const loadBookmarkData = (bookmark) => {
       appVm.parseRequest(bookmark.request);
-      appVm.bookmarkName(bookmark.name);
       appVm.loadBookmarkInView(bookmark);
     };
 

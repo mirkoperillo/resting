@@ -73,7 +73,6 @@ requirejs(['jquery','app/storage','knockout','knockout-secure-binding','hjls','a
 
       bookmarks: ko.observableArray(),
       folders: ko.observableArray(),
-      bookmarkName: ko.observable(), // try to replace
       folderName: ko.observable(),
       folderSelected: ko.observable(),
 
@@ -312,7 +311,6 @@ requirejs(['jquery','app/storage','knockout','knockout-secure-binding','hjls','a
       Resting.bookmarkCopy = null;
       Resting.folderSelected('');
       Resting.folderName('');
-      Resting.bookmarkName('');
 
       Resting.bookmarkSelected.name('');
       Resting.bookmarkSelected.id('');
@@ -471,7 +469,6 @@ requirejs(['jquery','app/storage','knockout','knockout-secure-binding','hjls','a
     const dismissSaveBookmarkDialog = () => {
       Resting.showBookmarkDialog(false);
       if(Resting.bookmarkCopy == null) {
-        Resting.bookmarkName('');
         Resting.bookmarkSelected.name('');
         Resting.folderSelected('');
       }
