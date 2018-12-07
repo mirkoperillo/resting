@@ -37,18 +37,14 @@ requirejs(['jquery','app/storage','knockout','knockout-secure-binding','hjls','a
       contexts : new ContextVm(true),
       bookmarkSelected : new BookmarkSelectedVm(),
       requestSelected : new RequestVm(),
-      responseContent : {},
       bookmarkCopy: null,   // copy of bookmark object loaded
-      bookmarkToDelete: null,
-      bookmarkToDeleteName : ko.observable(),
-      tryToDeleteFolder: ko.observable(false),
-      deleteChildrenBookmarks: ko.observable(false),
 
       // response fields
       responseBody: ko.observable(),
       callDuration: ko.observable('-'),
       callStatus: ko.observable('-'),
       responseHeaders: ko.observableArray(),
+      responseContent : {},
 
       // request fields
       requestHeaders: ko.observableArray(),
@@ -83,8 +79,8 @@ requirejs(['jquery','app/storage','knockout','knockout-secure-binding','hjls','a
 
       // Flags to show/hide dialogs
       showBookmarkDialog: ko.observable(false),
-      showFolderDialog: ko.observable(false),
-      showBookmarkDeleteDialog: ko.observable(false),
+      showFolderDialog: ko.observable(false),  // unused ?
+      showBookmarkDeleteDialog: ko.observable(false),  // unused ?
       showAboutDialog: ko.observable(false),
       showCreditsDialog: ko.observable(false),
       showContextDialog: ko.observable(false),
