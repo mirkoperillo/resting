@@ -37,6 +37,14 @@ requirejs(['jquery','app/storage','knockout','knockout-secure-binding','hjls','a
     this.rawBody = ko.observable();
   }
 
+  function ResponseVm(response = {}) {
+    this.body = ko.observable();
+    this.callDuration = ko.observable('-');
+    this.callStatus = ko.observable('-');
+    this.headers = ko.observableArray();
+    this.content = {};
+  }
+
   function BookmarkSelectedVm(bookmark = {}) {
     const self = this;
     this.id = ko.observable('');
@@ -48,19 +56,13 @@ requirejs(['jquery','app/storage','knockout','knockout-secure-binding','hjls','a
       contexts : new ContextVm(true),
       bookmarkSelected : new BookmarkSelectedVm(),
       requestSelected : new RequestVm(),
+      response : new ResponseVm(),
       bookmarkCopy: null,   // copy of bookmark object loaded
                             // used to match with modified version in _saveBookmark
       bookmarks: ko.observableArray(),
       folders: ko.observableArray(),
       folderSelected: ko.observable(),
       methods: ko.observableArray(['GET','POST','PUT','DELETE','HEAD','OPTIONS','CONNECT','TRACE','PATCH']),
-
-      // response fields
-      responseBody: ko.observable(),
-      callDuration: ko.observable('-'),
-      callStatus: ko.observable('-'),
-      responseHeaders: ko.observableArray(),
-      responseContent : {},
 
       // request panel flags
       showRequestHeaders: ko.observable(true),
@@ -153,10 +155,10 @@ requirejs(['jquery','app/storage','knockout','knockout-secure-binding','hjls','a
     };
 
     const clearResponse = () => {
-      Resting.responseHeaders.removeAll();
-      Resting.responseBody('');
-      Resting.callDuration('-');
-      Resting.callStatus('-');
+      Resting.response.headers.removeAll();
+      Resting.response.body('');
+      Resting.response.callDuration('-');
+      Resting.response.callStatus('-');
     };
 
     const _convertToEntryItemVM = (items = []) => items.map(item => {
@@ -344,16 +346,16 @@ requirejs(['jquery','app/storage','knockout','knockout-secure-binding','hjls','a
 
 
     const displayResponse = (response) => {
-      Resting.responseHeaders.removeAll();
-      Resting.callDuration(`${response.duration}ms`);
-      Resting.callStatus(response.status);
-      response.headers.forEach(header => Resting.responseHeaders.push(header));
-      Resting.responseContent = response.content;
+      Resting.response.headers.removeAll();
+      Resting.response.callDuration(`${response.duration}ms`);
+      Resting.response.callStatus(response.status);
+      response.headers.forEach(header => Resting.response.headers.push(header));
+      Resting.response.content = response.content;
       if(Resting.useFormattedResponseBody()) {
-        Resting.responseBody(JSON.stringify(response.content,null,2));
+        Resting.response.body(JSON.stringify(response.content,null,2));
         highlight();
       } else {
-        Resting.responseBody(JSON.stringify(response.content));
+        Resting.response.body(JSON.stringify(response.content));
       }
     };
 
@@ -448,14 +450,14 @@ requirejs(['jquery','app/storage','knockout','knockout-secure-binding','hjls','a
     const formattedResponseBody = () => {
       Resting.useFormattedResponseBody(true);
       Resting.useRawResponseBody(false);
-      Resting.responseBody(JSON.stringify(Resting.responseContent,null,2));
+      Resting.response.body(JSON.stringify(Resting.response.content,null,2));
       highlight();
     };
 
     const rawResponseBody = () => {
       Resting.useFormattedResponseBody(false);
       Resting.useRawResponseBody(true);
-      Resting.responseBody(JSON.stringify(Resting.responseContent));
+      Resting.response.body(JSON.stringify(Resting.response.content));
       unhighlight();
     };
 
