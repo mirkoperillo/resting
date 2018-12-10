@@ -25,6 +25,7 @@ requirejs(['jquery','app/storage','knockout','knockout-secure-binding','hjls','a
     this.method = ko.observable('');
     this.url = ko.observable('');
     this.headers = ko.observableArray();
+    this.querystring = ko.observableArray();
   }
 
   function BookmarkSelectedVm(bookmark = {}) {
@@ -52,7 +53,6 @@ requirejs(['jquery','app/storage','knockout','knockout-secure-binding','hjls','a
       responseContent : {},
 
       // request fields
-      querystring: ko.observableArray(),
       bodyType: ko.observable(),
       formDataParams: ko.observableArray(),
       formEncodedParams: ko.observableArray(),
@@ -146,7 +146,7 @@ requirejs(['jquery','app/storage','knockout','knockout-secure-binding','hjls','a
       Resting.requestSelected.url('');
       clearRequestBody();
       Resting.requestSelected.headers.removeAll();
-      Resting.querystring.removeAll();
+      Resting.requestSelected.querystring.removeAll();
       Resting.authenticationType('');
       Resting.username('');
       Resting.password('');
@@ -177,7 +177,7 @@ requirejs(['jquery','app/storage','knockout','knockout-secure-binding','hjls','a
       Resting.requestSelected.url(req.url);
       Resting.bodyType(req.bodyType);
       Resting.requestSelected.headers(_convertToEntryItemVM(req.headers));
-      Resting.querystring(req.querystring ?  _convertToEntryItemVM(req.querystring) : []);
+      Resting.requestSelected.querystring(req.querystring ?  _convertToEntryItemVM(req.querystring) : []);
       _updateAuthentication(req.authentication);
       updateBody(req.bodyType, req.body);
     };
@@ -294,7 +294,7 @@ requirejs(['jquery','app/storage','knockout','knockout-secure-binding','hjls','a
     const saveBookmark = () => {
       const req = request.makeRequest(
         Resting.requestSelected.method(), Resting.requestSelected.url(),
-        _extractModelFromVM(Resting.requestSelected.headers()), _extractModelFromVM(Resting.querystring()), Resting.bodyType(),
+        _extractModelFromVM(Resting.requestSelected.headers()), _extractModelFromVM(Resting.requestSelected.querystring()), Resting.bodyType(),
         body(Resting.bodyType()),_authentication());
 
       const bookmarkId = Resting.bookmarkCopy ? Resting.bookmarkCopy.id : new Date().toString();
@@ -366,7 +366,7 @@ requirejs(['jquery','app/storage','knockout','knockout-secure-binding','hjls','a
       if(Resting.requestSelected.url() && Resting.requestSelected.url().trim().length > 0) {
         clearResponse();
         const url = _applyContext(Resting.requestSelected.url(),mapping);
-        request.execute(Resting.requestSelected.method(),url,convertToHeaderObj(Resting.requestSelected.headers(), mapping), _convertToQueryString(Resting.querystring(), mapping), Resting.bodyType(),Resting.dataToSend(mapping),
+        request.execute(Resting.requestSelected.method(),url,convertToHeaderObj(Resting.requestSelected.headers(), mapping), _convertToQueryString(Resting.requestSelected.querystring(), mapping), Resting.bodyType(),Resting.dataToSend(mapping),
         _authentication(mapping),displayResponse);
       }
     };

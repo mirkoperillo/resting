@@ -113,7 +113,7 @@
           <div class="panel-body">
             <request-body params="bodyType: bodyType, formDataParams : formDataParams, formEncodedParams : formEncodedParams, rawBody : rawBody" data-bind="visible : showRequestBody"></request-body>
             <entry-list params="entryList : requestSelected.headers" data-bind="visible : showRequestHeaders"></entry-list>
-            <entry-list params="entryList : querystring" data-bind="visible : showQuerystring"></entry-list>
+            <entry-list params="entryList : requestSelected.querystring" data-bind="visible : showQuerystring"></entry-list>
             <authentication params="authenticationType: authenticationType, username: username, password: password" data-bind="visible : showAuthentication"></authentication>
           </div>
         </div>
