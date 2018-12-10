@@ -114,7 +114,7 @@
             <request-body params="bodyType: bodyType, formDataParams : formDataParams, formEncodedParams : formEncodedParams, rawBody : rawBody" data-bind="visible : showRequestBody"></request-body>
             <entry-list params="entryList : requestSelected.headers" data-bind="visible : showRequestHeaders"></entry-list>
             <entry-list params="entryList : requestSelected.querystring" data-bind="visible : showQuerystring"></entry-list>
-            <authentication params="authenticationType: authenticationType, username: username, password: password" data-bind="visible : showAuthentication"></authentication>
+            <authentication params="authenticationType: requestSelected.authenticationType, username: requestSelected.username, password: requestSelected.password" data-bind="visible : showAuthentication"></authentication>
           </div>
         </div>
         </div>

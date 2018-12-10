@@ -26,6 +26,9 @@ requirejs(['jquery','app/storage','knockout','knockout-secure-binding','hjls','a
     this.url = ko.observable('');
     this.headers = ko.observableArray();
     this.querystring = ko.observableArray();
+    this.authenticationType = ko.observable();
+    this.username = ko.observable();
+    this.password = ko.observable();
   }
 
   function BookmarkSelectedVm(bookmark = {}) {
@@ -57,9 +60,9 @@ requirejs(['jquery','app/storage','knockout','knockout-secure-binding','hjls','a
       formDataParams: ko.observableArray(),
       formEncodedParams: ko.observableArray(),
       rawBody: ko.observable(),
-      authenticationType: ko.observable(),
-      username: ko.observable(),
-      password: ko.observable(),
+      //authenticationType: ko.observable(),
+      //username: ko.observable(),
+      //password: ko.observable(),
       methods: ko.observableArray(['GET','POST','PUT','DELETE','HEAD','OPTIONS','CONNECT','TRACE','PATCH']),
 
       // request panel flags
@@ -147,9 +150,9 @@ requirejs(['jquery','app/storage','knockout','knockout-secure-binding','hjls','a
       clearRequestBody();
       Resting.requestSelected.headers.removeAll();
       Resting.requestSelected.querystring.removeAll();
-      Resting.authenticationType('');
-      Resting.username('');
-      Resting.password('');
+      Resting.requestSelected.authenticationType('');
+      Resting.requestSelected.username('');
+      Resting.requestSelected.password('');
     };
 
     const clearResponse = () => {
@@ -184,9 +187,9 @@ requirejs(['jquery','app/storage','knockout','knockout-secure-binding','hjls','a
 
     const _updateAuthentication = authentication => {
      if(authentication) {
-        Resting.authenticationType(authentication.type);
-        Resting.username(authentication.username);
-        Resting.password(authentication.password);
+        Resting.requestSelected.authenticationType(authentication.type);
+        Resting.requestSelected.username(authentication.username);
+        Resting.requestSelected.password(authentication.password);
       }
     };
 
@@ -203,7 +206,7 @@ requirejs(['jquery','app/storage','knockout','knockout-secure-binding','hjls','a
     const _applyContextToArray = (a = [], context = {}) => {
       return
     };
-    const _authentication = (context = {}) => ({type: Resting.authenticationType(), username: _applyContext(Resting.username(),context), password: _applyContext(Resting.password(),context)});
+    const _authentication = (context = {}) => ({type: Resting.requestSelected.authenticationType(), username: _applyContext(Resting.requestSelected.username(),context), password: _applyContext(Resting.requestSelected.password(),context)});
 
     const body = (bodyType) => {
       if (bodyType === 'form-data') {
