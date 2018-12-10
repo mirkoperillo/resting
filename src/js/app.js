@@ -26,9 +26,15 @@ requirejs(['jquery','app/storage','knockout','knockout-secure-binding','hjls','a
     this.url = ko.observable('');
     this.headers = ko.observableArray();
     this.querystring = ko.observableArray();
+
     this.authenticationType = ko.observable();
     this.username = ko.observable();
     this.password = ko.observable();
+
+    this.bodyType = ko.observable();
+    this.formDataParams = ko.observableArray();
+    this.formEncodedParams = ko.observableArray();
+    this.rawBody = ko.observable();
   }
 
   function BookmarkSelectedVm(bookmark = {}) {
@@ -47,6 +53,7 @@ requirejs(['jquery','app/storage','knockout','knockout-secure-binding','hjls','a
       bookmarks: ko.observableArray(),
       folders: ko.observableArray(),
       folderSelected: ko.observable(),
+      methods: ko.observableArray(['GET','POST','PUT','DELETE','HEAD','OPTIONS','CONNECT','TRACE','PATCH']),
 
       // response fields
       responseBody: ko.observable(),
@@ -54,16 +61,6 @@ requirejs(['jquery','app/storage','knockout','knockout-secure-binding','hjls','a
       callStatus: ko.observable('-'),
       responseHeaders: ko.observableArray(),
       responseContent : {},
-
-      // request fields
-      bodyType: ko.observable(),
-      formDataParams: ko.observableArray(),
-      formEncodedParams: ko.observableArray(),
-      rawBody: ko.observable(),
-      //authenticationType: ko.observable(),
-      //username: ko.observable(),
-      //password: ko.observable(),
-      methods: ko.observableArray(['GET','POST','PUT','DELETE','HEAD','OPTIONS','CONNECT','TRACE','PATCH']),
 
       // request panel flags
       showRequestHeaders: ko.observable(true),
@@ -125,23 +122,23 @@ requirejs(['jquery','app/storage','knockout','knockout-secure-binding','hjls','a
 
     const updateBody = (bodyType, body) => {
       clearRequestBody();
-      Resting.bodyType(bodyType);
+      Resting.requestSelected.bodyType(bodyType);
       if (bodyType === 'form-data') {
-        return Resting.formDataParams(_convertToEntryItemVM(body));
+        return Resting.requestSelected.formDataParams(_convertToEntryItemVM(body));
       }
 
       if (bodyType === 'x-www-form-urlencoded') {
-        return Resting.formEncodedParams(_convertToEntryItemVM(body));
+        return Resting.requestSelected.formEncodedParams(_convertToEntryItemVM(body));
       }
 
-      return Resting.rawBody(body);
+      return Resting.requestSelected.rawBody(body);
     };
 
     const clearRequestBody = () => {
-      Resting.formDataParams.removeAll();
-      Resting.formEncodedParams.removeAll();
-      Resting.rawBody('');
-      Resting.bodyType('');
+      Resting.requestSelected.formDataParams.removeAll();
+      Resting.requestSelected.formEncodedParams.removeAll();
+      Resting.requestSelected.rawBody('');
+      Resting.requestSelected.bodyType('');
     };
 
     const clearRequest = () => {
@@ -178,7 +175,7 @@ requirejs(['jquery','app/storage','knockout','knockout-secure-binding','hjls','a
     const parseRequest = (req) => {
       Resting.requestSelected.method(req.method);
       Resting.requestSelected.url(req.url);
-      Resting.bodyType(req.bodyType);
+      Resting.requestSelected.bodyType(req.bodyType);
       Resting.requestSelected.headers(_convertToEntryItemVM(req.headers));
       Resting.requestSelected.querystring(req.querystring ?  _convertToEntryItemVM(req.querystring) : []);
       _updateAuthentication(req.authentication);
@@ -194,12 +191,12 @@ requirejs(['jquery','app/storage','knockout','knockout-secure-binding','hjls','a
     };
 
     const dataToSend = (context) => {
-      if (Resting.bodyType() === 'form-data') {
-        return convertToFormData(Resting.formDataParams(),context);
-      } else if (Resting.bodyType() === 'x-www-form-urlencoded') {
-        return convertToUrlEncoded(Resting.formEncodedParams(), context);
-      } else if (Resting.bodyType() === 'raw') {
-        return _applyContext(Resting.rawBody().trim(),context);
+      if (Resting.requestSelected.bodyType() === 'form-data') {
+        return convertToFormData(Resting.requestSelected.formDataParams(),context);
+      } else if (Resting.requestSelected.bodyType() === 'x-www-form-urlencoded') {
+        return convertToUrlEncoded(Resting.requestSelected.formEncodedParams(), context);
+      } else if (Resting.requestSelected.bodyType() === 'raw') {
+        return _applyContext(Resting.requestSelected.rawBody().trim(),context);
       }
     };
 
@@ -210,15 +207,15 @@ requirejs(['jquery','app/storage','knockout','knockout-secure-binding','hjls','a
 
     const body = (bodyType) => {
       if (bodyType === 'form-data') {
-        return _extractModelFromVM(Resting.formDataParams());
+        return _extractModelFromVM(Resting.requestSelected.formDataParams());
       }
 
       if (bodyType === 'x-www-form-urlencoded') {
-        return _extractModelFromVM(Resting.formEncodedParams());
+        return _extractModelFromVM(Resting.requestSelected.formEncodedParams());
       }
 
       if (bodyType === 'raw') {
-        return Resting.rawBody();
+        return Resting.requestSelected.rawBody();
       }
 
       return undefined;
@@ -297,8 +294,8 @@ requirejs(['jquery','app/storage','knockout','knockout-secure-binding','hjls','a
     const saveBookmark = () => {
       const req = request.makeRequest(
         Resting.requestSelected.method(), Resting.requestSelected.url(),
-        _extractModelFromVM(Resting.requestSelected.headers()), _extractModelFromVM(Resting.requestSelected.querystring()), Resting.bodyType(),
-        body(Resting.bodyType()),_authentication());
+        _extractModelFromVM(Resting.requestSelected.headers()), _extractModelFromVM(Resting.requestSelected.querystring()), Resting.requestSelected.bodyType(),
+        body(Resting.requestSelected.bodyType()),_authentication());
 
       const bookmarkId = Resting.bookmarkCopy ? Resting.bookmarkCopy.id : new Date().toString();
       const bookmarkObj = bookmarkProvider.makeBookmark(bookmarkId, req, validateBookmarkName(Resting.bookmarkSelected.name()), Resting.folderSelected());
@@ -369,7 +366,7 @@ requirejs(['jquery','app/storage','knockout','knockout-secure-binding','hjls','a
       if(Resting.requestSelected.url() && Resting.requestSelected.url().trim().length > 0) {
         clearResponse();
         const url = _applyContext(Resting.requestSelected.url(),mapping);
-        request.execute(Resting.requestSelected.method(),url,convertToHeaderObj(Resting.requestSelected.headers(), mapping), _convertToQueryString(Resting.requestSelected.querystring(), mapping), Resting.bodyType(),Resting.dataToSend(mapping),
+        request.execute(Resting.requestSelected.method(),url,convertToHeaderObj(Resting.requestSelected.headers(), mapping), _convertToQueryString(Resting.requestSelected.querystring(), mapping), Resting.requestSelected.bodyType(),Resting.dataToSend(mapping),
         _authentication(mapping),displayResponse);
       }
     };
