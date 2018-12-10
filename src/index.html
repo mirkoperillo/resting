@@ -60,13 +60,13 @@
 
     <div class="row" style="margin-top: 20px;">
       <div class="col-md-2">
-        <select class="form-control" id="sel1" data-bind="options: methods, value: requestSelected.method">
+        <select class="form-control" id="sel1" data-bind="options: methods, value: request.method">
         </select>
       </div>
 
       <div class="col-md-8">
         <div class="form-group">
-          <input type="text" class="form-control" placeholder="http://" data-bind="value: requestSelected.url, event: { keyup: callSendOnEnter}">
+          <input type="text" class="form-control" placeholder="http://" data-bind="value: request.url, event: { keyup: callSendOnEnter}">
         </div>
       </div>
 
@@ -111,10 +111,10 @@
 
         <div class="panel panel-default" style="padding: 10px;">
           <div class="panel-body">
-            <request-body params="bodyType: requestSelected.bodyType, formDataParams : requestSelected.formDataParams, formEncodedParams : requestSelected.formEncodedParams, rawBody : requestSelected.rawBody" data-bind="visible : showRequestBody"></request-body>
-            <entry-list params="entryList : requestSelected.headers" data-bind="visible : showRequestHeaders"></entry-list>
-            <entry-list params="entryList : requestSelected.querystring" data-bind="visible : showQuerystring"></entry-list>
-            <authentication params="authenticationType: requestSelected.authenticationType, username: requestSelected.username, password: requestSelected.password" data-bind="visible : showAuthentication"></authentication>
+            <request-body params="bodyType: request.bodyType, formDataParams : request.formDataParams, formEncodedParams : request.formEncodedParams, rawBody : request.rawBody" data-bind="visible : showRequestBody"></request-body>
+            <entry-list params="entryList : request.headers" data-bind="visible : showRequestHeaders"></entry-list>
+            <entry-list params="entryList : request.querystring" data-bind="visible : showQuerystring"></entry-list>
+            <authentication params="authenticationType: request.authenticationType, username: request.username, password: request.password" data-bind="visible : showAuthentication"></authentication>
           </div>
         </div>
         </div>
