@@ -11,7 +11,7 @@ requirejs.config({
     }
 });
 
-requirejs(['jquery','app/storage','knockout','knockout-secure-binding','hjls','app/request','app/bookmark','app/clipboard','bootstrap','component/entry-list/entryItemVm', 'component/bookmarks/bookmarkVm'], function($,storage,ko,ksb,hjls,request,makeBookmarkProvider,clipboard,bootstrap, EntryItemVm, BookmarkViewModel) {
+requirejs(['jquery','app/storage','knockout','knockout-secure-binding','hjls','app/request','app/bookmark','app/clipboard','bootstrap','component/entry-list/entryItemVm', 'component/bookmarks/bookmarkVm'], function($,storage,ko,ksb,hjls,request,makeBookmarkProvider,clipboard,bootstrap, EntryItemVm, BookmarkVm) {
 
   function ContextVm(createDefault) {
     const self = this;
@@ -244,7 +244,7 @@ requirejs(['jquery','app/storage','knockout','knockout-secure-binding','hjls','a
             const oldFolder = Resting.bookmarkCopy.folder;
             if(oldFolder == bookmark.folder) { // folderA to folderA
               let folderObj = Resting.bookmarks().find(b => b.id === bookmark.folder);
-              const modifiedFolder = bookmarkProvider.replaceBookmark(folderObj, new BookmarkViewModel(bookmark));
+              const modifiedFolder = bookmarkProvider.replaceBookmark(folderObj, new BookmarkVm(bookmark));
               bookmarkProvider.save(serializeBookmark(modifiedFolder));
               Resting.bookmarks.replace(folderObj, modifiedFolder);
             } else if(!oldFolder) { //from no-folder to folderA
@@ -252,23 +252,23 @@ requirejs(['jquery','app/storage','knockout','knockout-secure-binding','hjls','a
                                                                                         //  either it is not removed from it
               deleteBookmark(oldBookmark);
               let folderObj = Resting.bookmarks().find(b => b.id === bookmark.folder);
-              const modifiedFolder = bookmarkProvider.replaceBookmark(folderObj, new BookmarkViewModel(bookmark));
+              const modifiedFolder = bookmarkProvider.replaceBookmark(folderObj, new BookmarkVm(bookmark));
               bookmarkProvider.save(serializeBookmark(modifiedFolder));
               Resting.bookmarks.replace(folderObj, modifiedFolder);
             } else if( oldFolder != bookmark.folder) { // from folderA to folderB
               deleteBookmark(Resting.bookmarkCopy);
               let folderObj = Resting.bookmarks().find(b => b.id === bookmark.folder);
-              const modifiedFolder = bookmarkProvider.replaceBookmark(folderObj, new BookmarkViewModel(bookmark));
+              const modifiedFolder = bookmarkProvider.replaceBookmark(folderObj, new BookmarkVm(bookmark));
               bookmarkProvider.save(serializeBookmark(modifiedFolder));
               Resting.bookmarks.replace(folderObj, modifiedFolder);
             }
           } else {
             if(Resting.bookmarkCopy.folder) { // from folderA to no-folder
               deleteBookmark(Resting.bookmarkCopy);
-              Resting.bookmarks.push(new BookmarkViewModel(bookmark));
+              Resting.bookmarks.push(new BookmarkVm(bookmark));
             } else { // from no-folder to no-folder
               const oldBookmark = Resting.bookmarks().find(b => b.id === bookmark.id);
-              Resting.bookmarks.replace(oldBookmark, new BookmarkViewModel(bookmark));
+              Resting.bookmarks.replace(oldBookmark, new BookmarkVm(bookmark));
             }
             bookmarkProvider.save(serializeBookmark(bookmark));
           }
@@ -276,12 +276,12 @@ requirejs(['jquery','app/storage','knockout','knockout-secure-binding','hjls','a
         } else { // if new bookmark
           if(bookmark.folder) {
             let folderObj = Resting.bookmarks().find(b => b.id === bookmark.folder);
-            const modifiedFolder = bookmarkProvider.addBookmarks(folderObj, new BookmarkViewModel(bookmark));
+            const modifiedFolder = bookmarkProvider.addBookmarks(folderObj, new BookmarkVm(bookmark));
             bookmarkProvider.save(serializeBookmark(modifiedFolder));
             Resting.bookmarks.replace(folderObj, modifiedFolder);
           } else {
              bookmarkProvider.save(serializeBookmark(bookmark));
-             Resting.bookmarks.push(new BookmarkViewModel(bookmark));
+             Resting.bookmarks.push(new BookmarkVm(bookmark));
           }
 
           Resting.bookmarkSelected.id(bookmark.id);

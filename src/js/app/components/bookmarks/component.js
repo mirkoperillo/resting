@@ -1,6 +1,6 @@
- define(['knockout', 'app/bookmark', 'app/storage', 'component/bookmarks/bookmarkVm'],function(ko, makeBookmarkProvider, storage, BookmarkViewModel) {
+ define(['knockout', 'app/bookmark', 'app/storage', 'component/bookmarks/bookmarkVm'],function(ko, makeBookmarkProvider, storage, BookmarkVm) {
 
-  return function BookmarksViewModel(params) {
+  return function BookmarksVm(params) {
 
     const appVm = params.appVm;
 
@@ -40,7 +40,7 @@
     const addFolder = () => {
       const folder = bookmarkProvider.makeFolder(new Date().toString(), folderName());
       storage.save(_serializeBookmark(folder));
-      bookmarks.push(new BookmarkViewModel(folder));
+      bookmarks.push(new BookmarkVm(folder));
       folders.push(folder);
       folderName('');
 
@@ -65,7 +65,7 @@
 
     const _loadBookmarksNewFormat = () =>
       storage.iterate( value => {
-        bookmarks.push(new BookmarkViewModel(value));
+        bookmarks.push(new BookmarkVm(value));
         if(value.isFolder) {
           folders.push(value);
         }
