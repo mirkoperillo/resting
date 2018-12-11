@@ -52,7 +52,7 @@ requirejs(['jquery','app/storage','knockout','knockout-secure-binding','hjls','a
     this.name = ko.observable('');
   }
 
-  function AppViewModel() {
+  function AppVm() {
     const Resting = {
       contexts : new ContextVm(true),
       bookmarkSelected : new BookmarkSelectedVm(),
@@ -580,7 +580,7 @@ requirejs(['jquery','app/storage','knockout','knockout-secure-binding','hjls','a
 
    ko.bindingProvider.instance = new ksb(options);
 
-   const appVM = new AppViewModel();
+   const appVM = new AppVm();
    ko.applyBindings(appVM);
 
   $('ul.dropdown-menu [data-toggle=dropdown]').on('click', function(event) {

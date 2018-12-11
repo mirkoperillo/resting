@@ -1,6 +1,6 @@
  define(['knockout'],function(ko) {
- 
- return function RequestBodyViewModel(params) {
+
+ return function RequestBodyVm(params) {
     const self = this;
 
     self.bodyType = params.bodyType;
@@ -8,6 +8,6 @@
     self.formEncodedParams = params.formEncodedParams;
     self.rawBody = params.rawBody;
     self.types = ko.observableArray(['form-data','x-www-form-urlencoded','raw'])
-    
+
   }
 });
