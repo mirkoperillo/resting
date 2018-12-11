@@ -1,12 +1,6 @@
-define(['knockout', 'component/entry-list/entryItemVm'],function(ko, EntryItemViewModel) {
+define(['knockout', 'component/entry-list/entryItemVm'],function(ko, EntryItemVm) {
 
- /* function EntryItemViewModel(name, value, enabled) {
-    this.name = ko.observable(name);
-    this.value = ko.observable(value);
-    this.enabled = ko.observable(enabled);
-  }*/
-
-  return function EntryListViewModel(params) {
+  return function EntryListVm(params) {
 
     const EntryList = {
       entryList: params.entryList,
@@ -29,7 +23,7 @@ define(['knockout', 'component/entry-list/entryItemVm'],function(ko, EntryItemVi
     const add = () => {
       if (!checkValidEntry(EntryList.entryName(), EntryList.entryValue())) return false;
 
-      EntryList.entryList.push(new EntryItemViewModel(EntryList.entryName(), EntryList.entryValue(), true ));
+      EntryList.entryList.push(new EntryItemVm(EntryList.entryName(), EntryList.entryValue(), true ));
       EntryList.entryName('');
       EntryList.entryValue('');
 

@@ -11,7 +11,7 @@ requirejs.config({
     }
 });
 
-requirejs(['jquery','app/storage','knockout','knockout-secure-binding','hjls','app/request','app/bookmark','app/clipboard','bootstrap','component/entry-list/entryItemVm', 'component/bookmarks/bookmarkVm'], function($,storage,ko,ksb,hjls,request,makeBookmarkProvider,clipboard,bootstrap, EntryItemViewModel, BookmarkViewModel) {
+requirejs(['jquery','app/storage','knockout','knockout-secure-binding','hjls','app/request','app/bookmark','app/clipboard','bootstrap','component/entry-list/entryItemVm', 'component/bookmarks/bookmarkVm'], function($,storage,ko,ksb,hjls,request,makeBookmarkProvider,clipboard,bootstrap, EntryItemVm, BookmarkViewModel) {
 
   function ContextVm(createDefault) {
     const self = this;
@@ -167,7 +167,7 @@ requirejs(['jquery','app/storage','knockout','knockout-secure-binding','hjls','a
       // The field has been introduced in v0.7.0
       // maintain it for compatibility purposes
       const enabled = item.enabled === undefined ? true : item.enabled;
-      return new EntryItemViewModel(item.name,item.value, enabled);
+      return new EntryItemVm(item.name,item.value, enabled);
     });
 
 
