@@ -554,18 +554,18 @@ requirejs(['jquery','app/storage','knockout','knockout-secure-binding','hjls','a
     });
 
     ko.components.register('request-body', {
-      viewModel: { require: 'app/components/request-body/component' },
-      template: { require: 'text!app/components/request-body/view.html' }
+      viewModel: { require: 'app/components/request-body/requestBodyVm' },
+      template: { require: 'text!app/components/request-body/requestBody_view.html' }
     });
 
      ko.components.register('bookmarks', {
-      viewModel: { require: 'app/components/bookmarks/component' },
-      template: { require: 'text!app/components/bookmarks/view.html' }
+      viewModel: { require: 'app/components/bookmarks/bookmarksVm' },
+      template: { require: 'text!app/components/bookmarks/bookmarks_view.html' }
     });
 
     ko.components.register('authentication', {
-      viewModel: { require: 'app/components/authentication/component' },
-      template: { require: 'text!app/components/authentication/view.html' }
+      viewModel: { require: 'app/components/authentication/authenticationVm' },
+      template: { require: 'text!app/components/authentication/authentication_view.html' }
     });
 
 
