@@ -38,11 +38,10 @@ requirejs(['jquery','app/storage','knockout','knockout-secure-binding','hjls','a
   }
 
   function ResponseVm(response = {}) {
-    this.body = ko.observable();
     this.callDuration = ko.observable('-');
     this.callStatus = ko.observable('-');
     this.headers = ko.observableArray();
-    this.content = {};
+    this.content = ko.observable();
   }
 
  // already exist a BookmarkVm, why this ??
@@ -70,12 +69,6 @@ requirejs(['jquery','app/storage','knockout','knockout-secure-binding','hjls','a
       showRequestBody: ko.observable(false),
       showQuerystring: ko.observable(false),
       showAuthentication: ko.observable(false),
-
-      // response panel flags
-      showResponseHeaders: ko.observable(false),
-      showResponseBody: ko.observable(true),
-      useFormattedResponseBody: ko.observable(true),
-      useRawResponseBody: ko.observable(false),
 
       // Flags to show/hide dialogs
       showBookmarkDialog: ko.observable(false),
@@ -157,7 +150,7 @@ requirejs(['jquery','app/storage','knockout','knockout-secure-binding','hjls','a
 
     const clearResponse = () => {
       Resting.response.headers.removeAll();
-      Resting.response.body('');
+      Resting.response.content('');
       Resting.response.callDuration('-');
       Resting.response.callStatus('-');
     };
@@ -346,18 +339,12 @@ requirejs(['jquery','app/storage','knockout','knockout-secure-binding','hjls','a
       }, {});
 
 
-    const displayResponse = (response) => {
+    const _displayResponse = (response) => {
       Resting.response.headers.removeAll();
       Resting.response.callDuration(`${response.duration}ms`);
       Resting.response.callStatus(response.status);
       response.headers.forEach(header => Resting.response.headers.push(header));
-      Resting.response.content = response.content;
-      if(Resting.useFormattedResponseBody()) {
-        Resting.response.body(JSON.stringify(response.content,null,2));
-        highlight();
-      } else {
-        Resting.response.body(JSON.stringify(response.content));
-      }
+      Resting.response.content(response.content);
     };
 
     const _convertToQueryString = (params = [], context = {}) => {
@@ -370,7 +357,7 @@ requirejs(['jquery','app/storage','knockout','knockout-secure-binding','hjls','a
         clearResponse();
         const url = _applyContext(Resting.request.url(),mapping);
         request.execute(Resting.request.method(),url,convertToHeaderObj(Resting.request.headers(), mapping), _convertToQueryString(Resting.request.querystring(), mapping), Resting.request.bodyType(),Resting.dataToSend(mapping),
-        _authentication(mapping),displayResponse);
+        _authentication(mapping),_displayResponse);
       }
     };
 
@@ -435,33 +422,6 @@ requirejs(['jquery','app/storage','knockout','knockout-secure-binding','hjls','a
       Resting.showAuthentication(true);
     };
 
-    const responseHeadersPanel = () => {
-      Resting.showResponseHeaders(true);
-      Resting.showResponseBody(false);
-
-      // close jquery accordion
-      $('#collapseOne').collapse('hide');
-    };
-
-    const responseBodyPanel = () => {
-      Resting.showResponseBody(true);
-      Resting.showResponseHeaders(false);
-    };
-
-    const formattedResponseBody = () => {
-      Resting.useFormattedResponseBody(true);
-      Resting.useRawResponseBody(false);
-      Resting.response.body(JSON.stringify(Resting.response.content,null,2));
-      highlight();
-    };
-
-    const rawResponseBody = () => {
-      Resting.useFormattedResponseBody(false);
-      Resting.useRawResponseBody(true);
-      Resting.response.body(JSON.stringify(Resting.response.content));
-      unhighlight();
-    };
-
     const saveBookmarkDialog = () => {
       Resting.showBookmarkDialog(true);
     };
@@ -472,16 +432,6 @@ requirejs(['jquery','app/storage','knockout','knockout-secure-binding','hjls','a
         Resting.bookmarkSelected.name('');
         Resting.folderSelected('');
       }
-    };
-
-    const unhighlight = () => {
-      $('#highlighted-response').removeClass('hljs');
-    };
-
-    const highlight = () => {
-      $('#highlighted-response').each(function(i, block) {
-      hljs.highlightBlock(block);
-      });
     };
 
     const callSendOnEnter = (data, event) => {
@@ -506,30 +456,30 @@ requirejs(['jquery','app/storage','knockout','knockout-secure-binding','hjls','a
 
     Resting.parseRequest = parseRequest;
     Resting.dataToSend = dataToSend;
-    Resting.send = send;
-    Resting.saveBookmark = saveBookmark;
     Resting.deleteBookmark = deleteBookmark;
-    Resting.requestBodyPanel = requestBodyPanel;
-    Resting.responseBodyPanel = responseBodyPanel;
-    Resting.formattedResponseBody = formattedResponseBody;
-    Resting.requestHeadersPanel = requestHeadersPanel;
-    Resting.responseHeadersPanel = responseHeadersPanel;
-    Resting.querystringPanel = querystringPanel;
-    Resting.authenticationPanel = authenticationPanel;
-    Resting.rawResponseBody = rawResponseBody;
-    Resting.saveBookmarkDialog = saveBookmarkDialog;
-    Resting.dismissSaveBookmarkDialog = dismissSaveBookmarkDialog;
     Resting.callSendOnEnter = callSendOnEnter;
     Resting.clearResponse = clearResponse;
+
+    Resting.send = send;
+    Resting.saveBookmark = saveBookmark;
     Resting.reset = reset;
+
+    Resting.requestBodyPanel = requestBodyPanel;
+    Resting.requestHeadersPanel = requestHeadersPanel;
+    Resting.querystringPanel = querystringPanel;
+    Resting.authenticationPanel = authenticationPanel;
+
     Resting.aboutDialog = aboutDialog;
     Resting.creditsDialog = creditsDialog;
     Resting.contextDialog = contextDialog;
+    Resting.saveBookmarkDialog = saveBookmarkDialog;
+
+    Resting.dismissSaveBookmarkDialog = dismissSaveBookmarkDialog;
     Resting.dismissCreditsDialog = dismissCreditsDialog;
     Resting.dismissAboutDialog = dismissAboutDialog;
     Resting.dismissContextDialog = dismissContextDialog;
-    Resting.saveContext = saveContext;
 
+    Resting.saveContext = saveContext;
     // FIXME: not good to expose this internal function
     Resting._saveBookmark = _saveBookmark;
 
@@ -568,6 +518,11 @@ requirejs(['jquery','app/storage','knockout','knockout-secure-binding','hjls','a
       template: { require: 'text!app/components/authentication/authentication_view.html' }
     });
 
+    ko.components.register('response-panel', {
+      viewModel: { require: 'app/components/response/responseVm' },
+      template: { require: 'text!app/components/response/response_view.html' }
+    });
+
 
 
    // Show all options, more restricted setup than the Knockout regular binding.
@@ -590,14 +545,6 @@ requirejs(['jquery','app/storage','knockout','knockout-secure-binding','hjls','a
     $(this).parent().toggleClass('open');
   });
 
-  clipboard.bindOn('div.copy-n-paste');
-  clipboard.copyFrom('#highlighted-response');
-  clipboard.onCopy(function() {
-    $('.alert').removeClass('hide');
-    setTimeout(function () { $('.alert').addClass('hide'); }, 2000);
-  });
-
   appVM.loadContexts();
-
   });
 });

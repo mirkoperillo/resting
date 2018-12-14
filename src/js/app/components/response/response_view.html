@@ -1,0 +1,62 @@
+<html>
+    <div class="row">
+        <div class="col-md-12">
+          <div class="panel panel-default">
+          <div class="panel-heading">
+            <p class="text-center"><span class="response-metric">Status:</span> <span class="response-metric-value" data-bind="text: callStatus"></span> <span class="response-metric">Time:</span> <span class="response-metric-value" data-bind="text: callDuration"></span></p>
+          </div>
+
+          <div class="panel-body row">
+            <div class="col-md-3">
+              <div class="panel-group" id="accordion">
+                <div class="panel panel-default">
+                  <div class="panel-heading" data-bind="css: {active: showBody()}">
+                    <h4 class="panel-title"><a data-bind="click: bodyPanel" data-toggle="collapse" data-parent="#accordion" href="#collapseOne">Response</a></h4>
+                  </div>
+
+                  <div id="collapseOne" class="panel-collapse collapse in">
+                    <div class="panel-body">
+                      <table class="table">
+                        <tr>
+                          <td><a href="#" data-bind="css: {'selected-option': useFormattedBody()}, click: formattedBody">Formatted</a><span class="glyphicon glyphicon-ok" style="margin-left: 0.5em;" data-bind="visible: useFormattedBody"></span></td>
+                        </tr>
+                        <tr>
+                          <td><a href="#" data-bind="css: {'selected-option': useRawBody()}, click: rawBody">Raw</a><span class="glyphicon glyphicon-ok" style="margin-left: 0.5em;" data-bind="visible: useRawResponseBody"></span></td>
+                        </tr>
+                      </table>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="panel panel-default">
+                  <div class="panel-heading" data-bind="css: {active: showHeaders()}">
+                    <h4 class="panel-title"><a href="#" data-bind="click: headersPanel">Headers</a></h4>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="col-md-9">
+              <pre>
+                <div class="copy-n-paste" title="Copy Response">📋</div>
+                <div class="alert alert-success hide" role="alert">
+                  <p>Response copied siccessfull!</p>
+                </div>
+                <code id="highlighted-response" data-bind="visible: showBody, text: body"></code>
+              </pre>
+              <div data-bind="visible: showHeaders">
+                <table class="table table-striped">
+                  <tbody data-bind="foreach: headers">
+                    <tr>
+                      <td><strong><span data-bind="text: name"></span></strong></td>
+                      <td data-bind="text: value"></td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+        </div>
+      </div>
+</html>
