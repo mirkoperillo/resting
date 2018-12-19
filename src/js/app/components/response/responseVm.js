@@ -3,11 +3,12 @@ define(['knockout','jquery','hjls','app/clipboard'],function(ko,$,hjls,clipboard
   return function ResponseVm(params) {
 
     const appVm = params.appVm;
+    const response = params.response;
 
-    const callDuration = appVm.response.callDuration;
-    const callStatus = appVm.response.callStatus;
-    const headers = appVm.response.headers;
-    const content = appVm.response.content;
+    const callDuration = response.callDuration;
+    const callStatus = response.callStatus;
+    const headers = response.headers;
+    const content = response.content;
 
     const showHeaders = ko.observable(false);
     const showBody = ko.observable(true);
