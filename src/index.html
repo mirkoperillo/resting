@@ -114,7 +114,7 @@
             <request-body params="request: request" data-bind="visible : showRequestBody"></request-body>
             <entry-list params="entryList : request.headers" data-bind="visible : showRequestHeaders"></entry-list>
             <entry-list params="entryList : request.querystring" data-bind="visible : showQuerystring"></entry-list>
-            <authentication params="request: request, authenticationType: request.authenticationType, username: request.username, password: request.password" data-bind="visible : showAuthentication"></authentication>
+            <authentication params="request: request" data-bind="visible : showAuthentication"></authentication>
           </div>
         </div>
         </div>
