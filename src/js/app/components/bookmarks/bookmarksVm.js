@@ -4,6 +4,7 @@
 
     const appVm = params.appVm;
 
+
     let bookmarkToDelete = null;
     const bookmarkToDeleteName = ko.observable();
     const tryToDeleteFolder = ko.observable(false);
@@ -12,7 +13,7 @@
     const folderName = ko.observable();
 
     // FIXME: direct ref to bookmarks in appVm
-    const bookmarks = params.appVm.bookmarks;
+    const bookmarks = params.bookmarks;
 
     const folders= ko.observableArray();
 
