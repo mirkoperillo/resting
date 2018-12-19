@@ -111,10 +111,10 @@
 
         <div class="panel panel-default" style="padding: 10px;">
           <div class="panel-body">
-            <request-body params="bodyType: request.bodyType, formDataParams : request.formDataParams, formEncodedParams : request.formEncodedParams, rawBody : request.rawBody" data-bind="visible : showRequestBody"></request-body>
+            <request-body params="request: request" data-bind="visible : showRequestBody"></request-body>
             <entry-list params="entryList : request.headers" data-bind="visible : showRequestHeaders"></entry-list>
             <entry-list params="entryList : request.querystring" data-bind="visible : showQuerystring"></entry-list>
-            <authentication params="authenticationType: request.authenticationType, username: request.username, password: request.password" data-bind="visible : showAuthentication"></authentication>
+            <authentication params="request: request, authenticationType: request.authenticationType, username: request.username, password: request.password" data-bind="visible : showAuthentication"></authentication>
           </div>
         </div>
         </div>

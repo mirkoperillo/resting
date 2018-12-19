@@ -3,10 +3,12 @@
  return function RequestBodyVm(params) {
     const self = this;
 
-    self.bodyType = params.bodyType;
-    self.formDataParams = params.formDataParams;
-    self.formEncodedParams = params.formEncodedParams;
-    self.rawBody = params.rawBody;
+    const request = params.request;
+    self.bodyType = request.bodyType;
+    self.formDataParams = request.formDataParams;
+    self.formEncodedParams = request.formEncodedParams;
+    self.rawBody = request.rawBody;
+
     self.types = ko.observableArray(['form-data','x-www-form-urlencoded','raw'])
 
   }
