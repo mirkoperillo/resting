@@ -1,9 +1,8 @@
- define(['knockout', 'app/bookmark', 'app/storage', 'component/bookmarks/bookmarkVm'],function(ko, makeBookmarkProvider, storage, BookmarkVm) {
+ define(['knockout', 'app/bookmark', 'app/storage', 'app/bacheca', 'component/bookmarks/bookmarkVm'],function(ko, makeBookmarkProvider, storage, bacheca, BookmarkVm) {
 
   return function BookmarksVm(params) {
 
     const appVm = params.appVm;
-
 
     let bookmarkToDelete = null;
     const bookmarkToDeleteName = ko.observable();
@@ -14,13 +13,6 @@
 
     // FIXME: direct ref to bookmarks in appVm
     const bookmarks = params.bookmarks;
-
-    const folders= ko.observableArray();
-
-    folders.subscribe( newValue => {
-      appVm.folders.removeAll();
-      newValue.forEach(folder => appVm.folders.push(folder));
-    });
 
     const deleteChildrenBookmarks = ko.observable();
 
@@ -42,11 +34,11 @@
       const folder = bookmarkProvider.makeFolder(new Date().toString(), folderName());
       storage.save(_serializeBookmark(folder));
       bookmarks.push(new BookmarkVm(folder));
-      folders.push(folder);
       folderName('');
-
       // close the dialog
       dismissFolderDialog();
+
+      bacheca.publish('addFolder', folder);
     };
 
     const folderDialog = () => {
@@ -68,13 +60,16 @@
       storage.iterate( value => {
         bookmarks.push(new BookmarkVm(value));
         if(value.isFolder) {
-          folders.push(value);
+          bacheca.publish('addFolder', value);
         }
     });
 
     const deleteBookmarkFromView = () => {
       deleteBookmark(bookmarkToDelete, deleteChildrenBookmarks());
-      folders.remove(folder => folder.id === bookmarkToDelete.id);
+      if(bookmarkToDelete.isFolder) {
+        bacheca.publish('deleteFolder', bookmarkToDelete);
+      }
+
       bookmarkToDelete = null;
       dismissDeleteBookmarkDialog();
     }
@@ -113,18 +108,8 @@
       }
     };
 
-    // FIXME direct interaction with appVm fields
-     const loadBookmarkObj = (bookmarkObj) => {
-      appVm.bookmarkCopy = bookmarkProvider.copyBookmark(bookmarkObj);
-      appVm.folderSelected(bookmarkObj.folder);
-      appVm.clearResponse();
-      return loadBookmarkData(bookmarkObj);
-    };
-
-    // FIXME direct interaction with appVm fields
-    const loadBookmarkData = (bookmark) => {
-      appVm.parseRequest(bookmark.request);
-      appVm.loadBookmarkInView(bookmark);
+    const loadBookmarkObj = (bookmarkObj) => {
+       bacheca.publish('loadBookmark', bookmarkObj);
     };
 
     $(() => {
@@ -159,7 +144,6 @@
       dismissFolderDialog,
       addFolderOnEnter,
       addFolder,
-      folders,
       bookmarks,
       showBookmarkDeleteDialog,
       bookmarkToDeleteName,
@@ -170,7 +154,6 @@
       dismissDeleteBookmarkDialog,
       deleteBookmarkFromView,
       loadBookmarkObj,
-      loadBookmarkData,
     };
   }
 

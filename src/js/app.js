@@ -11,7 +11,7 @@ requirejs.config({
     }
 });
 
-requirejs(['jquery','app/storage','knockout','knockout-secure-binding','hjls','app/request','app/bookmark','app/clipboard','bootstrap','component/entry-list/entryItemVm', 'component/bookmarks/bookmarkVm'], function($,storage,ko,ksb,hjls,request,makeBookmarkProvider,clipboard,bootstrap, EntryItemVm, BookmarkVm) {
+requirejs(['jquery','app/storage','knockout','knockout-secure-binding','hjls','app/request','app/bookmark','app/clipboard', 'app/bacheca', 'bootstrap','component/entry-list/entryItemVm', 'component/bookmarks/bookmarkVm'], function($,storage,ko,ksb,hjls,request,makeBookmarkProvider,clipboard,bacheca,bootstrap, EntryItemVm, BookmarkVm) {
 
   function ContextVm(createDefault) {
     const self = this;
@@ -453,6 +453,26 @@ requirejs(['jquery','app/storage','knockout','knockout-secure-binding','hjls','a
       });
     };
 
+     const loadBookmarkObj = (bookmarkObj) => {
+      Resting.bookmarkCopy = bookmarkProvider.copyBookmark(bookmarkObj);
+      Resting.folderSelected(bookmarkObj.folder);
+      Resting.clearResponse();
+      return loadBookmarkData(bookmarkObj);
+    };
+
+    const loadBookmarkData = (bookmark) => {
+      Resting.parseRequest(bookmark.request);
+      loadBookmarkInView(bookmark);
+    };
+
+    const addFolder = (folder) => {
+      Resting.folders.push(folder);
+    };
+
+    const removeFolder = (folder) => {
+      Resting.folders.remove(f => f.id === folder.id);
+    };
+
 
     Resting.parseRequest = parseRequest;
     Resting.dataToSend = dataToSend;
@@ -488,6 +508,9 @@ requirejs(['jquery','app/storage','knockout','knockout-secure-binding','hjls','a
     Resting.bookmarkScreenName = bookmarkScreenName;
     Resting.loadContexts = loadContexts;
 
+    Resting.loadBookmarkObj = loadBookmarkObj;
+    Resting.addFolder = addFolder;
+    Resting.removeFolder = removeFolder;
     return Resting;
   }
 
@@ -536,7 +559,12 @@ requirejs(['jquery','app/storage','knockout','knockout-secure-binding','hjls','a
    ko.bindingProvider.instance = new ksb(options);
 
    const appVM = new AppVm();
+   bacheca.subscribe('loadBookmark', appVM.loadBookmarkObj);
+   bacheca.subscribe('addFolder', appVM.addFolder);
+   bacheca.subscribe('deleteFolder', appVM.removeFolder);
    ko.applyBindings(appVM);
+
+
 
   $('ul.dropdown-menu [data-toggle=dropdown]').on('click', function(event) {
     event.preventDefault();
