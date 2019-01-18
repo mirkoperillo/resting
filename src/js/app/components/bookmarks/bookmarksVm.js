@@ -106,6 +106,7 @@
 
          appVm.bookmarkSelected.id('');
          appVm.bookmarkSelected.name('');
+         appVm.clearRequest();
       }
     };
 

@@ -457,6 +457,7 @@ requirejs(['jquery','app/storage','knockout','knockout-secure-binding','hjls','a
    bacheca.subscribe('addFolder', addFolder);
    bacheca.subscribe('deleteFolder', removeFolder);
 
+    Resting.clearRequest = clearRequest;
     Resting.parseRequest = parseRequest;
     Resting.dataToSend = dataToSend;
     Resting.deleteBookmark = deleteBookmark;
