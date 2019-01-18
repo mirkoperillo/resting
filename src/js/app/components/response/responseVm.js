@@ -89,6 +89,7 @@ define(['knockout','jquery','hjls','app/clipboard', 'app/bacheca'],function(ko,$
     bacheca.subscribe('responseReady', display);
     bacheca.subscribe('reset', clear);
     bacheca.subscribe('loadBookmark', clear);
+    bacheca.subscribe('deleteBookmark', clear);
 
   $(() => {
 

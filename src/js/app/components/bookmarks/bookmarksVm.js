@@ -98,6 +98,7 @@
         storage.deleteById(bookmark.id, () => bookmarks.remove(bookmark));
       }
 
+      bacheca.publish('deleteBookmark');
        if( bookmark.id == appVm.bookmarkSelected.id()) {
 
          appVm.bookmarkCopy = null;
