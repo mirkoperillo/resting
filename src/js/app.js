@@ -453,6 +453,9 @@ requirejs(['jquery','app/storage','knockout','knockout-secure-binding','hjls','a
       Resting.folders.remove(f => f.id === folder.id);
     };
 
+   bacheca.subscribe('loadBookmark', loadBookmarkObj);
+   bacheca.subscribe('addFolder', addFolder);
+   bacheca.subscribe('deleteFolder', removeFolder);
 
     Resting.parseRequest = parseRequest;
     Resting.dataToSend = dataToSend;
@@ -487,9 +490,9 @@ requirejs(['jquery','app/storage','knockout','knockout-secure-binding','hjls','a
     Resting.bookmarkScreenName = bookmarkScreenName;
     Resting.loadContexts = loadContexts;
 
-    Resting.loadBookmarkObj = loadBookmarkObj;
-    Resting.addFolder = addFolder;
-    Resting.removeFolder = removeFolder;
+   // Resting.loadBookmarkObj = loadBookmarkObj;
+   // Resting.addFolder = addFolder;
+   // Resting.removeFolder = removeFolder;
     return Resting;
   }
 
@@ -538,9 +541,6 @@ requirejs(['jquery','app/storage','knockout','knockout-secure-binding','hjls','a
    ko.bindingProvider.instance = new ksb(options);
 
    const appVM = new AppVm();
-   bacheca.subscribe('loadBookmark', appVM.loadBookmarkObj);
-   bacheca.subscribe('addFolder', appVM.addFolder);
-   bacheca.subscribe('deleteFolder', appVM.removeFolder);
    ko.applyBindings(appVM);
 
 
