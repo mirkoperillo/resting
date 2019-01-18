@@ -1,14 +1,11 @@
-define(['knockout','jquery','hjls','app/clipboard'],function(ko,$,hjls,clipboard) {
+define(['knockout','jquery','hjls','app/clipboard', 'app/bacheca'],function(ko,$,hjls,clipboard,bacheca) {
 
   return function ResponseVm(params) {
 
-    const appVm = params.appVm;
-    const response = params.response;
-
-    const callDuration = response.callDuration;
-    const callStatus = response.callStatus;
-    const headers = response.headers;
-    const content = response.content;
+    const callDuration = ko.observable('-');
+    const callStatus = ko.observable('-');
+    const headers = ko.observableArray();;
+    const content = ko.observable();
 
     const showHeaders = ko.observable(false);
     const showBody = ko.observable(true);
@@ -71,6 +68,27 @@ define(['knockout','jquery','hjls','app/clipboard'],function(ko,$,hjls,clipboard
       hljs.highlightBlock(block);
       });
     };
+
+    const display = (response) => {
+      clear();
+       setTimeout(function () {
+        callDuration(`${response.duration}ms`);
+        callStatus(response.status);
+        response.headers.forEach(header => headers.push(header));
+        content(response.content);
+    }, 500);
+    };
+
+    const clear = () => {
+      headers.removeAll();
+      content('');
+      callDuration('-');
+      callStatus('-');
+    };
+
+    bacheca.subscribe('responseReady', display);
+    bacheca.subscribe('reset', clear);
+    bacheca.subscribe('loadBookmark', clear);
 
   $(() => {
 

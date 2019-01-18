@@ -37,13 +37,6 @@ requirejs(['jquery','app/storage','knockout','knockout-secure-binding','hjls','a
     this.rawBody = ko.observable();
   }
 
-  function ResponseVm(response = {}) {
-    this.callDuration = ko.observable('-');
-    this.callStatus = ko.observable('-');
-    this.headers = ko.observableArray();
-    this.content = ko.observable();
-  }
-
  // already exist a BookmarkVm, why this ??
   function BookmarkSelectedVm(bookmark = {}) {
     const self = this;
@@ -56,7 +49,7 @@ requirejs(['jquery','app/storage','knockout','knockout-secure-binding','hjls','a
       contexts : new ContextVm(true),
       bookmarkSelected : new BookmarkSelectedVm(),
       request : new RequestVm(),
-      response : new ResponseVm(),
+      //response : new ResponseVm(),
       bookmarkCopy: null,   // copy of bookmark object loaded
                             // used to match with modified version in _saveBookmark
       bookmarks: ko.observableArray(),
@@ -146,13 +139,6 @@ requirejs(['jquery','app/storage','knockout','knockout-secure-binding','hjls','a
       Resting.request.authenticationType('');
       Resting.request.username('');
       Resting.request.password('');
-    };
-
-    const clearResponse = () => {
-      Resting.response.headers.removeAll();
-      Resting.response.content('');
-      Resting.response.callDuration('-');
-      Resting.response.callStatus('-');
     };
 
     const _convertToEntryItemVM = (items = []) => items.map(item => {
@@ -309,7 +295,7 @@ requirejs(['jquery','app/storage','knockout','knockout-secure-binding','hjls','a
       Resting.bookmarkSelected.id('');
 
       clearRequest();
-      clearResponse();
+      bacheca.publish('reset');
     };
 
     // used by _saveBookmark...why ?
@@ -340,11 +326,7 @@ requirejs(['jquery','app/storage','knockout','knockout-secure-binding','hjls','a
 
 
     const _displayResponse = (response) => {
-      Resting.response.headers.removeAll();
-      Resting.response.callDuration(`${response.duration}ms`);
-      Resting.response.callStatus(response.status);
-      response.headers.forEach(header => Resting.response.headers.push(header));
-      Resting.response.content(response.content);
+      bacheca.publish('responseReady', response);
     };
 
     const _convertToQueryString = (params = [], context = {}) => {
@@ -354,7 +336,6 @@ requirejs(['jquery','app/storage','knockout','knockout-secure-binding','hjls','a
     const send = () => {
       const mapping = _mapContext();
       if(Resting.request.url() && Resting.request.url().trim().length > 0) {
-        clearResponse();
         const url = _applyContext(Resting.request.url(),mapping);
         request.execute(Resting.request.method(),url,convertToHeaderObj(Resting.request.headers(), mapping), _convertToQueryString(Resting.request.querystring(), mapping), Resting.request.bodyType(),Resting.dataToSend(mapping),
         _authentication(mapping),_displayResponse);
@@ -456,7 +437,6 @@ requirejs(['jquery','app/storage','knockout','knockout-secure-binding','hjls','a
      const loadBookmarkObj = (bookmarkObj) => {
       Resting.bookmarkCopy = bookmarkProvider.copyBookmark(bookmarkObj);
       Resting.folderSelected(bookmarkObj.folder);
-      Resting.clearResponse();
       return loadBookmarkData(bookmarkObj);
     };
 
@@ -478,7 +458,6 @@ requirejs(['jquery','app/storage','knockout','knockout-secure-binding','hjls','a
     Resting.dataToSend = dataToSend;
     Resting.deleteBookmark = deleteBookmark;
     Resting.callSendOnEnter = callSendOnEnter;
-    Resting.clearResponse = clearResponse;
 
     Resting.send = send;
     Resting.saveBookmark = saveBookmark;
