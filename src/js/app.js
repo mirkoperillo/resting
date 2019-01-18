@@ -490,9 +490,6 @@ requirejs(['jquery','app/storage','knockout','knockout-secure-binding','hjls','a
     Resting.bookmarkScreenName = bookmarkScreenName;
     Resting.loadContexts = loadContexts;
 
-   // Resting.loadBookmarkObj = loadBookmarkObj;
-   // Resting.addFolder = addFolder;
-   // Resting.removeFolder = removeFolder;
     return Resting;
   }
 
