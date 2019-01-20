@@ -16,6 +16,7 @@
     "default_icon": "icons/letter-r_32.png"
   },
   "permissions": [
-    "<all_urls>"
+    "<all_urls>",
+    "webRequest"
   ]
 }

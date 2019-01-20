@@ -1,5 +1,6 @@
 define(['jquery','app/response'],function($,response){
-
+  const processedRequest = new Map();
+  const requestQueue = [];
   const makeRequest = (method, url, headers, querystring, bodyType, body, authentication) =>
     ({ method, url, headers, querystring, bodyType, body, authentication });
 
@@ -29,7 +30,8 @@ define(['jquery','app/response'],function($,response){
   const execute = (method, url, headers, querystring, bodyType, body, authentication, onResponse) => {
     const startCall = new Date().getTime();
     const requestUrl = _appendQuerystring(prefixProtocol(url),querystring);
-     $.ajax({
+    requestQueue.push(requestUrl);
+    $.ajax({
       method: method,
       url: requestUrl,
       headers: headers,
@@ -46,7 +48,7 @@ define(['jquery','app/response'],function($,response){
       success: (data, status, jqXHR) => {
         const endCall = new Date().getTime();
         const callDuration = endCall - startCall;
-        onResponse(response.makeResponse({content: data, headers: response.parseHeaders(jqXHR.getAllResponseHeaders()), status: jqXHR.status,duration: callDuration}));
+        onResponse(response.makeResponse({content: data, headers: response.parseHeaders(processedRequest.get(requestUrl)), status: jqXHR.status,duration: callDuration}));
       },
       error: (jqXHR) => {
         const endCall = new Date().getTime();
@@ -55,7 +57,23 @@ define(['jquery','app/response'],function($,response){
       },
     });
   };
-  
+
+chrome.tabs.getCurrent(currentTab =>
+  browser.webRequest.onHeadersReceived.addListener(
+    request => {
+      const headers = [];
+      for (let {name, value} of request.responseHeaders) {
+        headers.push(name + ': ' + value);
+      }
+      
+      const requestId = requestQueue.pop();
+      if (!processedRequest.has(requestId)) {
+        processedRequest.set(requestId, headers.join('\n'));
+      }
+    },
+    { urls: ['<all_urls>'], tabId: currentTab.id },
+    ['responseHeaders'],
+  ));
 
   return {
     makeRequest: makeRequest,
