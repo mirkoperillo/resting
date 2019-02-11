@@ -129,3 +129,18 @@ label.disabled {
   cursor: pointer;
   float: left;
 }
+
+.ctx-menu {
+  width: 200px;
+  height: 100px;
+  z-index: 100;
+}
+
+.ctx-menu-item {
+ background-color: #f5f5f5;
+}
+
+.ctx-menu-item:hover {
+  background-color: #337ab7;
+  color: white;
+}

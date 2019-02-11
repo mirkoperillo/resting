@@ -5,11 +5,18 @@
     const appVm = params.appVm;
 
     let bookmarkToDelete = null;
+    let bookmarkOfContextMenu;
     const bookmarkToDeleteName = ko.observable();
     const tryToDeleteFolder = ko.observable(false);
     const showBookmarkDeleteDialog = ko.observable(false);
     const showFolderDialog = ko.observable(false);
     const folderName = ko.observable();
+
+
+    // contextual menu
+    const showContextMenu = ko.observable(false);
+    const contextMenuPosX = ko.observable('0px');
+    const contextMenuPosY = ko.observable('0px');
 
     // FIXME: direct ref to bookmarks in appVm
     const bookmarks = params.bookmarks;
@@ -114,10 +121,41 @@
        bacheca.publish('loadBookmark', bookmarkObj);
     };
 
+    const contextMenu = (bookmark, event) => {
+        console.log(`CLICK DX ${event.pageY} - ${event.pageX}`);
+        bookmarkOfContextMenu = bookmark;
+        showContextMenu(true);
+        contextMenuPosX(`${event.pageY}px`);
+        contextMenuPosY(`${event.pageX}px`);
+    };
+
+    const duplicate = () => {
+      const duplicate = bookmarkProvider.copyBookmark(bookmarkOfContextMenu);
+      if(duplicate.name) {
+        duplicate.name = 'Copy_' + duplicate.name;
+      }
+      duplicate.id = new Date().toString();
+      if(duplicate.folder) {
+        let folderObj = bookmarks().find(b => b.id === duplicate.folder);
+        const modifiedFolder = bookmarkProvider.addBookmarks(folderObj, new BookmarkVm(duplicate));
+        bookmarkProvider.save(_serializeBookmark(modifiedFolder));
+        bookmarks.replace(folderObj, modifiedFolder);
+      } else {
+        bookmarkProvider.save(_serializeBookmark(duplicate));
+        bookmarks.push(new BookmarkVm(duplicate));
+      }
+    };
+
     $(() => {
       const screenWidth = screen.width;
       const dialogLeftPosition = screenWidth / 2  - 200;
       $('div.dialog').css('left', dialogLeftPosition+'px');
+
+       // hide context menu on every click on page
+       $(".row").on("click", function() {
+        showContextMenu(false);
+       });
+
     });
 
     // define the storage format conversion
@@ -156,6 +194,13 @@
       dismissDeleteBookmarkDialog,
       deleteBookmarkFromView,
       loadBookmarkObj,
+      // context menu
+      contextMenu,
+      showContextMenu,
+      contextMenuPosX,
+      contextMenuPosY,
+      // context menu actions
+      duplicate,
     };
   }
 
