@@ -100,7 +100,7 @@
             return child;
           });
           //FIXME: bad use _saveBookmark from appVm
-          childrenBookmarks.forEach(child => appVm._saveBookmark(child));
+          childrenBookmarks.forEach(child => appVm._saveBookmark(child, true));
         }
         storage.deleteById(bookmark.id, () => bookmarks.remove(bookmark));
       }

@@ -216,8 +216,8 @@ requirejs(['jquery','app/storage','knockout','knockout-secure-binding','hjls','a
       return Resting.bookmarkSelected.id().length > 0;
     }
 
-    const _saveBookmark = bookmark => {
-       if(Resting.bookmarkCopy) {
+    const _saveBookmark = (bookmark, internal=false) => {
+       if(Resting.bookmarkCopy && !internal) {
           // if edit a bookmark
           if(bookmark.folder) {
             const oldFolder = Resting.bookmarkCopy.folder;
@@ -263,8 +263,10 @@ requirejs(['jquery','app/storage','knockout','knockout-secure-binding','hjls','a
              Resting.bookmarks.push(new BookmarkVm(bookmark));
           }
 
-          Resting.bookmarkSelected.id(bookmark.id);
-          Resting.bookmarkCopy = bookmarkProvider.copyBookmark(bookmark);
+          if(!internal) {
+            Resting.bookmarkSelected.id(bookmark.id);
+            Resting.bookmarkCopy = bookmarkProvider.copyBookmark(bookmark);
+          }
         }
     };
 
