@@ -14,6 +14,10 @@ define(['localforage'],function(localforage){
       localforage.removeItem(id, callback);
     };
 
+    const deleteContextById = (id, callback) => {
+      _contextsStore.removeItem(id, callback);
+    };
+
     const save = (bookmark) => {
       if(!bookmark.id) {
         return { result: 'KO', message: 'id must be set'};
@@ -39,10 +43,10 @@ define(['localforage'],function(localforage){
       return { result: 'OK', message: ''};
     };
 
-    const loadContexts = (callback) => {
+    const loadContexts = (callback, callbackResult) => {
       _contextsStore.iterate(function(value,key,iterationNumber) {
         callback(value);
-       });
+       }, callbackResult);
     };
 
     return {
@@ -51,5 +55,6 @@ define(['localforage'],function(localforage){
       iterate : iterate,
       saveContext,
       loadContexts,
+      deleteContextById,
     };
 });

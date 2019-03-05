@@ -13,11 +13,13 @@ requirejs.config({
 
 requirejs(['jquery','app/storage','knockout','knockout-secure-binding','hjls','app/request','app/bookmark','app/clipboard', 'app/bacheca', 'bootstrap','component/entry-list/entryItemVm', 'component/bookmarks/bookmarkVm'], function($,storage,ko,ksb,hjls,request,makeBookmarkProvider,clipboard,bacheca,bootstrap, EntryItemVm, BookmarkVm) {
 
-  function ContextVm(createDefault) {
+  function ContextVm(name = 'default',variables = []) {
     const self = this;
-    this.name = ko.observable(createDefault ? 'default' : '');
-    this.variables = ko.observableArray();
-    this.isDefault = createDefault;
+    this.name = ko.observable(name);
+    this.variables = ko.observableArray(variables.map(v => new EntryItemVm(v.name, v.value, v.enabled)));
+    this.isDefault = ko.computed(function() {
+        return this.name() === 'default';
+    }, this);
   };
 
   function RequestVm(request = {}) {
@@ -46,7 +48,8 @@ requirejs(['jquery','app/storage','knockout','knockout-secure-binding','hjls','a
 
   function AppVm() {
     const Resting = {
-      contexts : new ContextVm(true),
+      contexts : ko.observableArray(),
+      selectedContext: new ContextVm(),
       bookmarkSelected : new BookmarkSelectedVm(),
       request : new RequestVm(),
       //response : new ResponseVm(),
@@ -68,6 +71,12 @@ requirejs(['jquery','app/storage','knockout','knockout-secure-binding','hjls','a
       showAboutDialog: ko.observable(false),
       showCreditsDialog: ko.observable(false),
       showContextDialog: ko.observable(false),
+      showCreateContextDialog: ko.observable(false),
+      showConfirmDialog: ko.observable(false),
+
+      dialogConfirmMessage: ko.observable(),
+      contextName: ko.observable(),
+
     };
 
     const bookmarkProvider = makeBookmarkProvider(storage);
@@ -90,7 +99,9 @@ requirejs(['jquery','app/storage','knockout','knockout-secure-binding','hjls','a
       Resting.showCreditsDialog(true);
     };
 
-     const contextDialog = () => {
+     const contextDialog = (context) => {
+      Resting.selectedContext.name(context.name());
+      Resting.selectedContext.variables(context.variables());
       Resting.showContextDialog(true);
     };
 
@@ -425,17 +436,62 @@ requirejs(['jquery','app/storage','knockout','knockout-secure-binding','hjls','a
     };
 
     const saveContext = () => {
-      storage.saveContext({name : Resting.contexts.name(), variables : _extractModelFromVM(Resting.contexts.variables()) });
+      storage.saveContext({name : Resting.selectedContext.name(), variables : _extractModelFromVM(Resting.selectedContext.variables()) });
+      const contextToEditIdx = Resting.contexts().find(ctx => ctx.name === Resting.selectedContext.name());
+      if(contextToEditIdx > -1) {
+        Resting.contexts.replace(Resting.contexts[contextToEditIdx],Resting.selectedContext);
+      }
+
       dismissContextDialog();
+    };
+
+    const confirmDeleteContext = () => {
+       Resting.showConfirmDialog(true);
+       Resting.dialogConfirmMessage("Confirm context delete ?");
+    };
+
+    const deleteContext = () => {
+       const ctxToRemove = Resting.contexts().find(ctx => ctx.name() === Resting.selectedContext.name());
+       storage.deleteContextById(Resting.selectedContext.name());
+       Resting.contexts.remove(ctxToRemove);
+       dismissConfirmDialog();
+       dismissContextDialog();
     };
 
     const loadContexts = () => {
       // load contexts
       storage.loadContexts( ctx => {
-        Resting.contexts.variables(_convertToEntryItemVM(ctx.variables));
-      });
+        Resting.contexts.push(new ContextVm(ctx.name,ctx.variables));
+      },
+      () => {
+        const isDefaultMissing = Resting.contexts().findIndex(ctx => ctx.name() === 'default') < 0;
+        if(isDefaultMissing) {
+          // default context
+          Resting.contexts.push(new ContextVm());
+        }
+      }
+      );
+
     };
 
+    const dismissConfirmDialog = () => {
+      Resting.showConfirmDialog(false);
+    };
+
+    const createContextDialog = () => {
+      Resting.showCreateContextDialog(true);
+    };
+
+    const dismissCreateContextDialog = () => {
+      Resting.showCreateContextDialog(false);
+    };
+
+    const createContext = () => {
+      Resting.contexts.push(new ContextVm(Resting.contextName()));
+      storage.saveContext({name : Resting.contextName(), variables : [] });
+      dismissCreateContextDialog();
+
+    };
      const loadBookmarkObj = (bookmarkObj) => {
       Resting.bookmarkCopy = bookmarkProvider.copyBookmark(bookmarkObj);
       Resting.folderSelected(bookmarkObj.folder);
@@ -492,6 +548,12 @@ requirejs(['jquery','app/storage','knockout','knockout-secure-binding','hjls','a
     Resting.isBookmarkLoaded = isBookmarkLoaded;
     Resting.bookmarkScreenName = bookmarkScreenName;
     Resting.loadContexts = loadContexts;
+    Resting.createContextDialog = createContextDialog;
+    Resting.dismissCreateContextDialog = dismissCreateContextDialog;
+    Resting.createContext = createContext;
+    Resting.deleteContext = deleteContext;
+    Resting.confirmDeleteContext = confirmDeleteContext;
+    Resting.dismissConfirmDialog = dismissConfirmDialog;
 
     return Resting;
   }

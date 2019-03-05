@@ -43,7 +43,15 @@
                   <ul class="dropdown-menu">
                       <li class="dropdown dropdown-submenu"><a href="#" class="dropdown-toggle" data-toggle="dropdown">Contexts</a>
                         <ul class="dropdown-menu">
-                          <li><a href="#" data-bind="click: contextDialog">default</a></li>
+                          <li data-bind="foreach: contexts"><a href="#" data-bind="click: $parent.contextDialog"><span data-bind="text: name"></span></a></li>
+                          <li role="separator" class="divider"></li>
+                          <li>
+                            <a href="#" data-bind="click: createContextDialog">Create
+                              <span class="pull-right">
+                                <button class="btn btn-xs btn-primary"><span class="glyphicon glyphicon-plus" aria-hidden="true"></span></button>
+                              </span>
+                            </a>
+                          </li>
                         </ul>
                       </li>
                   </ul>
@@ -169,7 +177,7 @@
 
    <div id="context-dialog" class="panel panel-primary context-dialog" data-bind="visible: showContextDialog">
     <div class="panel-heading">
-      Context <span data-bind="text: contexts.name"></span><span style="cursor: pointer;" class="glyphicon glyphicon-remove pull-right" data-bind="click: dismissContextDialog"></span>
+      Context <span data-bind="text: selectedContext.name"></span><span style="cursor: pointer;" class="glyphicon glyphicon-remove pull-right" data-bind="click: dismissContextDialog"></span>
     </div>
     <div class="panel-body">
       <p>
@@ -182,10 +190,36 @@
           <li>as username and password in BASIC authentication</li>
         </ul>
       </p>
-      <entry-list params="entryList : contexts.variables"></entry-list>
+      <entry-list params="entryList : selectedContext.variables"></entry-list>
     </div>
      <div class="panel-footer">
       <button class="btn btn-default" data-bind="click: saveContext">Save</button><button class="btn btn-default" data-bind="click: dismissContextDialog">Cancel</button>
+      <button class="btn btn-danger pull-right" data-bind="click: confirmDeleteContext, visible: !selectedContext.isDefault">Delete</button>
+    </div>
+  </div>
+
+  <div id="create-context-dialog" class="panel panel-primary dialog" data-bind="visible: showCreateContextDialog">
+    <div class="panel-heading">
+      Create context
+    </div>
+    <div class="panel-body">
+      <div class="form-group">
+        Name <input type="text" class="form-control" data-bind="value: contextName"></input>
+      </div>
+    </div>
+    <div class="panel-footer">
+      <button class="btn btn-default" data-bind="click: createContext">Save</button><button class="btn btn-default" data-bind="click: dismissCreateContextDialog">Cancel</button>
+    </div>
+  </div>
+
+   <div id="dialog-confirm" class="panel panel-danger dialog" data-bind="visible: showConfirmDialog">
+    <div class="panel-heading">
+      Confirm operation
+    </div>
+    <div class="panel-body">
+      <p><span data-bind="text: dialogConfirmMessage"></span></p>
+    <div class="panel-footer">
+      <button class="btn btn-danger" data-bind="click: deleteContext">Confirm</button><button class="btn btn-default" data-bind="click: dismissConfirmDialog">Cancel</button>
     </div>
   </div>
 
