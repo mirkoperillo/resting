@@ -115,6 +115,7 @@
           <li role="presentation" data-bind="css: {active : showRequestBody()}"><a href="#" data-bind="click: requestBodyPanel">Body</a></li>
           <li role="presentation" data-bind="css: {active : showQuerystring()}"><a href="#" data-bind="click: querystringPanel">Querystring</a></li>
           <li role="presentation" data-bind="css: {active : showAuthentication()}"><a href="#" data-bind="click: authenticationPanel">Authentication</a></li>
+          <li role="presentation" data-bind="css: {active : showActiveContext()}"><a href="#" data-bind="click: contextPanel">Context</a></li>
         </ul>
 
         <div class="panel panel-default" style="padding: 10px;">
@@ -123,6 +124,15 @@
             <entry-list params="entryList : request.headers" data-bind="visible : showRequestHeaders"></entry-list>
             <entry-list params="entryList : request.querystring" data-bind="visible : showQuerystring"></entry-list>
             <authentication params="request: request" data-bind="visible : showAuthentication"></authentication>
+            <!-- ACTIVE CONTEXT PANEL -->
+            <div class="row" data-bind="visible: showActiveContext">
+              <div class="form-inline">
+                <div class="form-group">
+                  <label for="active-context">Active Context</label>
+                    <select class="form-control" style="margin-left: 10px;" id="active-context" data-bind="options: contexts, optionsText: 'name', optionsValue: 'name', value: request.context"></select>
+                </div>
+            </div>
+            </div>
           </div>
         </div>
         </div>

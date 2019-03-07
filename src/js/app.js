@@ -37,6 +37,8 @@ requirejs(['jquery','app/storage','knockout','knockout-secure-binding','hjls','a
     this.formDataParams = ko.observableArray();
     this.formEncodedParams = ko.observableArray();
     this.rawBody = ko.observable();
+
+    this.context = ko.observable('default');
   }
 
  // already exist a BookmarkVm, why this ??
@@ -65,6 +67,7 @@ requirejs(['jquery','app/storage','knockout','knockout-secure-binding','hjls','a
       showRequestBody: ko.observable(false),
       showQuerystring: ko.observable(false),
       showAuthentication: ko.observable(false),
+      showActiveContext: ko.observable(false),
 
       // Flags to show/hide dialogs
       showBookmarkDialog: ko.observable(false),
@@ -150,6 +153,7 @@ requirejs(['jquery','app/storage','knockout','knockout-secure-binding','hjls','a
       Resting.request.authenticationType('');
       Resting.request.username('');
       Resting.request.password('');
+      Resting.request.context('default');
     };
 
     const _convertToEntryItemVM = (items = []) => items.map(item => {
@@ -173,6 +177,7 @@ requirejs(['jquery','app/storage','knockout','knockout-secure-binding','hjls','a
       Resting.request.querystring(req.querystring ?  _convertToEntryItemVM(req.querystring) : []);
       _updateAuthentication(req.authentication);
       updateBody(req.bodyType, req.body);
+      Resting.request.context(req.context);
     };
 
     const _updateAuthentication = authentication => {
@@ -290,7 +295,7 @@ requirejs(['jquery','app/storage','knockout','knockout-secure-binding','hjls','a
       const req = request.makeRequest(
         Resting.request.method(), Resting.request.url(),
         _extractModelFromVM(Resting.request.headers()), _extractModelFromVM(Resting.request.querystring()), Resting.request.bodyType(),
-        body(Resting.request.bodyType()),_authentication());
+        body(Resting.request.bodyType()),_authentication(), Resting.request.context());
 
       const bookmarkId = Resting.bookmarkCopy ? Resting.bookmarkCopy.id : new Date().toString();
       const bookmarkObj = bookmarkProvider.makeBookmark(bookmarkId, req, validateBookmarkName(Resting.bookmarkSelected.name()), Resting.folderSelected());
@@ -393,6 +398,7 @@ requirejs(['jquery','app/storage','knockout','knockout-secure-binding','hjls','a
       Resting.showRequestBody(false);
       Resting.showQuerystring(false);
       Resting.showAuthentication(false);
+      Resting.showActiveContext(false);
     };
 
     const requestBodyPanel = () => {
@@ -400,6 +406,7 @@ requirejs(['jquery','app/storage','knockout','knockout-secure-binding','hjls','a
       Resting.showRequestBody(true);
       Resting.showQuerystring(false);
       Resting.showAuthentication(false);
+      Resting.showActiveContext(false);
     };
 
     const querystringPanel = () => {
@@ -407,6 +414,7 @@ requirejs(['jquery','app/storage','knockout','knockout-secure-binding','hjls','a
       Resting.showRequestBody(false);
       Resting.showQuerystring(true);
       Resting.showAuthentication(false);
+      Resting.showActiveContext(false);
     };
 
     const authenticationPanel = () => {
@@ -414,6 +422,15 @@ requirejs(['jquery','app/storage','knockout','knockout-secure-binding','hjls','a
       Resting.showRequestBody(false);
       Resting.showQuerystring(false);
       Resting.showAuthentication(true);
+      Resting.showActiveContext(false);
+    };
+
+    const contextPanel = () => {
+      Resting.showRequestHeaders(false);
+      Resting.showRequestBody(false);
+      Resting.showQuerystring(false);
+      Resting.showAuthentication(false);
+      Resting.showActiveContext(true);
     };
 
     const saveBookmarkDialog = () => {
@@ -529,6 +546,7 @@ requirejs(['jquery','app/storage','knockout','knockout-secure-binding','hjls','a
     Resting.requestHeadersPanel = requestHeadersPanel;
     Resting.querystringPanel = querystringPanel;
     Resting.authenticationPanel = authenticationPanel;
+    Resting.contextPanel = contextPanel;
 
     Resting.aboutDialog = aboutDialog;
     Resting.creditsDialog = creditsDialog;

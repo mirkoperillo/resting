@@ -1,8 +1,8 @@
 define(['jquery','app/response'],function($,response){
   const processedRequest = new Map();
   const requestQueue = [];
-  const makeRequest = (method, url, headers, querystring, bodyType, body, authentication) =>
-    ({ method, url, headers, querystring, bodyType, body, authentication });
+  const makeRequest = (method, url, headers, querystring, bodyType, body, authentication, context='default') =>
+    ({ method, url, headers, querystring, bodyType, body, authentication, context });
 
 
   const contentTypesFromBodyTypes = {
@@ -18,7 +18,7 @@ define(['jquery','app/response'],function($,response){
     } else {
       return url;
     }
-  }; 
+  };
 
   const _appendQuerystring = (url,querystring = []) => {
     const containsParams = url.indexOf("?") !== -1;
@@ -26,7 +26,7 @@ define(['jquery','app/response'],function($,response){
     const params = convertParams.join('&');
     return params.length > 0 ? (url + (containsParams ? "&" : "?") + params) : url;
   };
-  
+
   const execute = (method, url, headers, querystring, bodyType, body, authentication, onResponse) => {
     const startCall = new Date().getTime();
     const requestUrl = _appendQuerystring(prefixProtocol(url),querystring);
@@ -65,7 +65,7 @@ chrome.tabs.getCurrent(currentTab =>
       for (let {name, value} of request.responseHeaders) {
         headers.push(name + ': ' + value);
       }
-      
+
       const requestId = requestQueue.pop();
       if (!processedRequest.has(requestId)) {
         processedRequest.set(requestId, headers.join('\n'));
