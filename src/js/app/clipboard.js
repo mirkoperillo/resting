@@ -9,16 +9,16 @@ define(['jquery'], function($) {
         });        
     }
 
-    function copyClipboardHandler(selector) {
+    function copyClipboardHandler(contentSelector, copyButtonClass) {
         return function(event) {
-            if ($(selector).length === 0) {
+            if (!$(event.target).hasClass(copyButtonClass)) {
                 return;
             }
 
             event.preventDefault();
             event.stopPropagation();
 
-            var response = $(selector).text();
+            var response = $(contentSelector).text();
             if (!response) {
                 return;
             }
@@ -28,8 +28,8 @@ define(['jquery'], function($) {
         };
     }
 
-    function copyFrom(selector) {
-        document.addEventListener('copy', copyClipboardHandler(selector));
+    function copyFrom(contentSelector, copyButtonClass) {
+        document.addEventListener('copy', copyClipboardHandler(contentSelector, copyButtonClass));
     }
 
     function onCopy(handler) {
