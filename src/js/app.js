@@ -361,19 +361,36 @@ requirejs(['jquery','app/storage','knockout','knockout-secure-binding','hjls','a
     };
 
     const _mapContext = () => {
-      const mapping = {};
-      Resting.contexts.variables().filter(v => v.enabled()).forEach( v => mapping[v.name()] = v.value());
+      const mapping = [];
+      const defaultCtx = Resting.contexts().find(ctx => ctx.name() === 'default');
+      mapping.push(_extractCtxVars(defaultCtx.variables()));
+      if(Resting.request.context().length > 0) {
+        const activeCtx = Resting.contexts().find(ctx => ctx.name() === Resting.request.context());
+        mapping.push(_extractCtxVars(activeCtx.variables()));
+        
+      }
+      //Resting.contexts.variables().filter(v => v.enabled()).forEach( v => mapping[v.name()] = v.value());
       return mapping;
     };
+    
+    const _extractCtxVars = (vars = []) => {
+      const extracted = {};
+      vars.filter(v => v.enabled()).forEach( v => extracted[v.name()] = v.value());
+      return extracted;
+    };
 
-    const _applyContext = (value = '',context = {}) => {
+    const _applyContext = (value = '',context = []) => {
       const tokens = _tokenize(value);
       let computed = value.slice(0);
+      const contextDefaultVars = context[0];
+      const contextActiveVars = context.length > 1 ? context[1] : {};
       if(tokens) {
         tokens.forEach(t => {
           const contextVar = t.substring(1,t.length-1);
-          if(context[contextVar]) {
-            computed = computed.replace(t, context[contextVar]);
+          if(contextActiveVars[contextVar]) {
+            computed = computed.replace(t, contextActiveVars[contextVar]);
+          } else if(contextDefaultVars[contextVar]) {
+            computed = computed.replace(t, contextDefaultVars[contextVar]);
           }
         });
       }
@@ -500,6 +517,7 @@ requirejs(['jquery','app/storage','knockout','knockout-secure-binding','hjls','a
     };
 
     const dismissCreateContextDialog = () => {
+      Resting.contextName('');
       Resting.showCreateContextDialog(false);
     };
 
