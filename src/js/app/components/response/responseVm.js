@@ -94,7 +94,7 @@ define(['knockout','jquery','hjls','app/clipboard', 'app/bacheca'],function(ko,$
   $(() => {
 
     clipboard.bindOn('div.copy-n-paste');
-    clipboard.copyFrom('#highlighted-response');
+    clipboard.copyFrom('#highlighted-response', 'copy-n-paste');
     clipboard.onCopy(function() {
       $('.alert').removeClass('hide');
       setTimeout(function () { $('.alert').addClass('hide'); }, 2000);
