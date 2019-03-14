@@ -79,6 +79,8 @@ requirejs(['jquery','app/storage','knockout','knockout-secure-binding','hjls','a
 
       dialogConfirmMessage: ko.observable(),
       contextName: ko.observable(),
+      
+      showFeedbackDialog: ko.observable(false),
 
     };
 
@@ -546,6 +548,20 @@ requirejs(['jquery','app/storage','knockout','knockout-secure-binding','hjls','a
       Resting.folders.remove(f => f.id === folder.id);
     };
 
+
+    const feedbackDialog = () => {
+      storage.readSettings('showFeedbackDialog', (err,value) => {
+        if(!value) {
+          Resting.showFeedbackDialog(true);  
+        }
+      });
+    };
+
+    const dismissFeedbackDialog = () => {
+      Resting.showFeedbackDialog(false);
+      storage.saveSettings({showFeedbackDialog : true});
+    };
+
    bacheca.subscribe('loadBookmark', loadBookmarkObj);
    bacheca.subscribe('addFolder', addFolder);
    bacheca.subscribe('deleteFolder', removeFolder);
@@ -590,6 +606,9 @@ requirejs(['jquery','app/storage','knockout','knockout-secure-binding','hjls','a
     Resting.deleteContext = deleteContext;
     Resting.confirmDeleteContext = confirmDeleteContext;
     Resting.dismissConfirmDialog = dismissConfirmDialog;
+    
+    Resting.feedbackDialog = feedbackDialog;
+    Resting.dismissFeedbackDialog = dismissFeedbackDialog;
 
     return Resting;
   }
@@ -650,6 +669,7 @@ requirejs(['jquery','app/storage','knockout','knockout-secure-binding','hjls','a
     $(this).parent().toggleClass('open');
   });
 
+  appVM.feedbackDialog();
   appVM.loadContexts();
   });
 });

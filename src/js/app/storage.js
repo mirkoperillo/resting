@@ -10,6 +10,11 @@ define(['localforage'],function(localforage){
       storeName: 'contexts',
     });
 
+    const _settingsStore = localforage.createInstance({
+      name: 'resting',
+      storeName: 'configurations',
+    });
+
     const deleteById = (id, callback) => {
       localforage.removeItem(id, callback);
     };
@@ -48,6 +53,20 @@ define(['localforage'],function(localforage){
         callback(value);
        }, callbackResult);
     };
+    
+    const saveSettings = (conf) => {
+      if(conf) {
+        const keys = Object.keys(conf);
+        keys.forEach(k => _settingsStore.setItem(k, conf[k]));
+      }
+      return { result: 'OK', message: ''};
+    };
+    
+    const readSettings = (conf, callback) => {
+       _settingsStore.getItem(conf, callback);
+    }
+
+
 
     return {
       save : save,
@@ -56,5 +75,7 @@ define(['localforage'],function(localforage){
       saveContext,
       loadContexts,
       deleteContextById,
+      saveSettings,
+      readSettings,
     };
 });

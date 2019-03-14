@@ -147,6 +147,23 @@
 
   *************************************************************************** -->
 
+ <div id="feedback-dialog" class="panel panel-primary dialog" data-bind="visible: showFeedbackDialog">
+    <div class="panel-heading">
+      Help Resting<span style="cursor: pointer;" class="glyphicon glyphicon-remove pull-right" data-bind="click: dismissFeedbackDialog"></span>
+    </div>
+    <div class="panel-body">
+      <p>
+      Hi, <br />
+      if you read this message you are a Resting user. <br />
+      First of all thank you for use it. <br />
+      As you know Resting is a community friendly project so I need your help: <br />
+      please provide me a feedback through a review about Resting using <a href="https://addons.mozilla.org/en- US/firefox/addon/resting" target="_blank">the addon page</a>. <br />
+      I need to know if the work on Resting goes in the right direction. <br />
+      Thank you <br />
+      Mirko <br />
+      </p>     
+    </div>
+  </div>
 
   <div id="save-bookmark-dialog" class="panel panel-primary dialog" data-bind="visible: showBookmarkDialog">
     <div class="panel-heading">
@@ -164,6 +181,7 @@
       <button class="btn btn-default" data-bind="click: saveBookmark">Save</button><button class="btn btn-default" data-bind="click: dismissSaveBookmarkDialog">Cancel</button>
     </div>
   </div>
+  
 
   <div id="about-dialog" class="panel panel-primary dialog" data-bind="visible: showAboutDialog">
     <div class="panel-heading">
@@ -232,7 +250,7 @@
       <button class="btn btn-danger" data-bind="click: deleteContext">Confirm</button><button class="btn btn-default" data-bind="click: dismissConfirmDialog">Cancel</button>
     </div>
   </div>
-
+  
     <script data-main="js/app" src="js/require.js"></script>
 
   </div>
