@@ -1,4 +1,4 @@
-Resting is a rest client WebExtension actually tested in Firefox.
+Resting is a rest client WebExtension actually available for Firefox.
 
 It is a very young project under an heavy developement.
 
@@ -10,6 +10,13 @@ Give it a chance
 The mission of Resting is to simplify daily work of developer in testing and analyzing HTTP/Rest requests.
 
 Resting takes inspiration from Postman with the goal to be light and focused on the management of saved requests.
+
+## Tech Stack
+* Knockout.js 3.x: MVVM framework
+* Bootstrap 3.x: UI framework
+* highlight.js: response highlighter
+* localforage: storage manager
+* JQuery 3.x:  essentially used to perform http requests
 
 ## Principles
 Project tries to follow these principles:
