@@ -2,14 +2,37 @@ Resting is a rest client WebExtension actually available for Firefox.
 
 It is a very young project under an heavy developement.
 
-Extension is officially released [here](https://addons.mozilla.org/en-US/firefox/addon/resting?src=external-github)
-
-Give it a chance
-
 ## Mission
 The mission of Resting is to simplify daily work of developer in testing and analyzing HTTP/Rest requests.
 
 Resting takes inspiration from Postman with the goal to be light and focused on the management of saved requests.
+
+## Quickstart
+
+### Official release
+
+Actually Resting is released only for Mozilla Firefox.
+You can install it here [here](https://addons.mozilla.org/en-US/firefox/addon/resting?src=external-github)
+
+### Test development version 
+
+You can install Resting from the source code following these instructions:
+
+1. `git clone https://github.com/mirkoperillo/resting.git`
+2. `cd resting/scripts && ./build-unsigned.sh`
+3. Go to the addons page in Firefox and click `Install Add-on From File`
+
+### Setup a development environment
+
+**Requirement**: You need Firefox Dev Edition.
+
+1. `git clone https://github.com/mirkoperillo/resting.git`
+2. Open Firefox Dev Edition
+3. Visit url `about:debugging`
+4. Load temporary Addon
+5. Navigate your filesystem and select the manifest file in the addon
+6. The addon is loaded in the toolbar
+
 
 ## Tech Stack
 * Knockout.js 3.x: MVVM framework
