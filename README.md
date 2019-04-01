@@ -7,6 +7,18 @@ The mission of Resting is to simplify daily work of developer in testing and ana
 
 Resting takes inspiration from Postman with the goal to be light and focused on the management of saved requests.
 
+## Roadmap
+
+The road to v1.0.0
+
+- [ ] Load multiple bookmarks in tabs [#42](https://github.com/mirkoperillo/resting/issues/42) 
+- [ ] Import/export saved bookmarks [#87](https://github.com/mirkoperillo/resting/issues/87)
+- [ ] Import from HAR format [#51](https://github.com/mirkoperillo/resting/issues/51)
+- [ ] Add Oauth 2.0 authentication [#81](https://github.com/mirkoperillo/resting/issues/81)
+- [ ] Add JWT authentication [#83](https://github.com/mirkoperillo/resting/issues/83)
+
+Actually working on [v0.11.0](https://github.com/mirkoperillo/resting/projects/1)
+
 ## Quickstart
 
 ### Official release
