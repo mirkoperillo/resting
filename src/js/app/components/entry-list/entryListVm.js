@@ -1,4 +1,4 @@
-define(['knockout', 'component/entry-list/entryItemVm'],function(ko, EntryItemVm) {
+define(['knockout', 'component/entry-list/entryItemVm','app/bacheca'],function(ko, EntryItemVm, bacheca) {
 
   return function EntryListVm(params) {
 
@@ -33,6 +33,13 @@ define(['knockout', 'component/entry-list/entryItemVm'],function(ko, EntryItemVm
     const remove = entry =>
       EntryList.entryList.remove(entry);
 
+    const _cleanFields = () => {
+      EntryList.entryName('');
+      EntryList.entryValue('');
+    };
+    
+    bacheca.subscribe('reset', _cleanFields);
+    
     EntryList.add = add;
     EntryList.remove = remove;
     EntryList.addOnEnter = addOnEnter;
@@ -40,3 +47,4 @@ define(['knockout', 'component/entry-list/entryItemVm'],function(ko, EntryItemVm
     return EntryList;
   }
 });
+
