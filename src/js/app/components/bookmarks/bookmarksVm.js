@@ -122,11 +122,12 @@
     };
 
     const contextMenu = (bookmark, event) => {
-        console.log(`CLICK DX ${event.pageY} - ${event.pageX}`);
+        const posX = event.clientY;
+        const posY = event.clientX;
         bookmarkOfContextMenu = bookmark;
         showContextMenu(true);
-        contextMenuPosX(`${event.pageY}px`);
-        contextMenuPosY(`${event.pageX}px`);
+        contextMenuPosX(`${posX}px`);
+        contextMenuPosY(`${posY}px`);
     };
 
     const duplicate = () => {
