@@ -60,6 +60,7 @@ requirejs(['jquery','app/storage','knockout','knockout-secure-binding','hjls','a
       bookmarks: ko.observableArray(),
       folders: ko.observableArray(),
       folderSelected: ko.observable(),
+      bookmarkName: ko.observable(),
       methods: ko.observableArray(['GET','POST','PUT','DELETE','HEAD','OPTIONS','CONNECT','TRACE','PATCH']),
 
       // request panel flags
@@ -76,6 +77,8 @@ requirejs(['jquery','app/storage','knockout','knockout-secure-binding','hjls','a
       showContextDialog: ko.observable(false),
       showCreateContextDialog: ko.observable(false),
       showConfirmDialog: ko.observable(false),
+      
+      saveAsNewBookmark: ko.observable(false),
 
       dialogConfirmMessage: ko.observable(),
       contextName: ko.observable(),
@@ -235,7 +238,7 @@ requirejs(['jquery','app/storage','knockout','knockout-secure-binding','hjls','a
     }
 
     const _saveBookmark = (bookmark, internal=false) => {
-       if(Resting.bookmarkCopy && !internal) {
+       if(Resting.bookmarkCopy && !Resting.saveAsNewBookmark() && !internal) {
           // if edit a bookmark
           if(bookmark.folder) {
             const oldFolder = Resting.bookmarkCopy.folder;
@@ -299,8 +302,9 @@ requirejs(['jquery','app/storage','knockout','knockout-secure-binding','hjls','a
         _extractModelFromVM(Resting.request.headers()), _extractModelFromVM(Resting.request.querystring()), Resting.request.bodyType(),
         body(Resting.request.bodyType()),_authentication(), Resting.request.context());
 
-      const bookmarkId = Resting.bookmarkCopy ? Resting.bookmarkCopy.id : new Date().toString();
-      const bookmarkObj = bookmarkProvider.makeBookmark(bookmarkId, req, validateBookmarkName(Resting.bookmarkSelected.name()), Resting.folderSelected());
+      const bookmarkId = Resting.bookmarkCopy && !Resting.saveAsNewBookmark() ? Resting.bookmarkCopy.id : new Date().toString();
+      const bookmarkObj = bookmarkProvider.makeBookmark(bookmarkId, req, validateBookmarkName(Resting.bookmarkName()), Resting.folderSelected());
+      Resting.bookmarkSelected.name(Resting.bookmarkName());
       _saveBookmark(bookmarkObj);
 
       // close the dialog
@@ -310,7 +314,7 @@ requirejs(['jquery','app/storage','knockout','knockout-secure-binding','hjls','a
     const reset = () => {
       Resting.bookmarkCopy = null;
       Resting.folderSelected('');
-
+      Resting.bookmarkName('');
       Resting.bookmarkSelected.name('');
       Resting.bookmarkSelected.id('');
 
@@ -454,6 +458,14 @@ requirejs(['jquery','app/storage','knockout','knockout-secure-binding','hjls','a
 
     const saveBookmarkDialog = () => {
       Resting.showBookmarkDialog(true);
+      Resting.saveAsNewBookmark(false);
+      Resting.bookmarkName(Resting.bookmarkSelected.name());
+    };
+    
+    const saveAsBookmarkDialog = () => {
+      Resting.showBookmarkDialog(true);
+      Resting.saveAsNewBookmark(true);
+      Resting.bookmarkName('');
     };
 
     const dismissSaveBookmarkDialog = () => {
@@ -586,6 +598,7 @@ requirejs(['jquery','app/storage','knockout','knockout-secure-binding','hjls','a
     Resting.creditsDialog = creditsDialog;
     Resting.contextDialog = contextDialog;
     Resting.saveBookmarkDialog = saveBookmarkDialog;
+    Resting.saveAsBookmarkDialog = saveAsBookmarkDialog;
 
     Resting.dismissSaveBookmarkDialog = dismissSaveBookmarkDialog;
     Resting.dismissCreditsDialog = dismissCreditsDialog;
