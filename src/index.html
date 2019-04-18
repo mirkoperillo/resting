@@ -117,7 +117,9 @@
         <div class="col-md-12">
          <div class="panel panel-default">
           <div class="panel-body">
-            <strong>Loaded</strong> <span data-bind="text: bookmarkScreenName()"></span>
+            <div>Loaded <strong><span data-bind="text: bookmarkScreenName()"></span></strong></div>
+            <span style="margin-right: 15px;"><span class="glyphicon glyphicon-folder-close" aria-hidden="true"></span> <strong><span data-bind="text: folderName"></span></strong></span>
+            <span>Context: <strong><span data-bind="text: request.context"></span></strong></span>
           </div>
          </div>
         </div>
