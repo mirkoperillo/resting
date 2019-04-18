@@ -381,7 +381,6 @@ requirejs(['jquery','app/storage','knockout','knockout-secure-binding','hjls','a
         mapping.push(_extractCtxVars(activeCtx.variables()));
         
       }
-      //Resting.contexts.variables().filter(v => v.enabled()).forEach( v => mapping[v.name()] = v.value());
       return mapping;
     };
     
