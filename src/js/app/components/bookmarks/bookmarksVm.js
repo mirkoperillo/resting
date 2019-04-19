@@ -36,6 +36,10 @@
     const _serializeBookmark = (bookmarkObj) => {
       return bookmarkProvider.fromJson(JSON.stringify(bookmarkObj));
     }
+    
+    const expandFolder = (folder) => {
+      folder.folderCollapsed(!folder.folderCollapsed());
+    };
 
     const addFolder = () => {
       const folder = bookmarkProvider.makeFolder(new Date().toString(), folderName());
@@ -195,6 +199,7 @@
       dismissDeleteBookmarkDialog,
       deleteBookmarkFromView,
       loadBookmarkObj,
+      expandFolder,
       // context menu
       contextMenu,
       showContextMenu,

@@ -1,4 +1,4 @@
-define([],function() {
+define(['knockout'],function(ko) {
 
    return function BookmarkViewModel(bookmark) {
     const self = this;
@@ -9,7 +9,7 @@ define([],function() {
     this.requestMethod = bookmark.request ? bookmark.request.method : null;
     this.requestUrl = bookmark.request ? bookmark.request.url : null;
     this.bookmarks = bookmark.bookmarks ? bookmark.bookmarks.map( b => new BookmarkViewModel(b)) : undefined;
-
+    this.folderCollapsed = ko.observable(true);
     this.request = bookmark.request;
     this.viewName = function() {
         return self.name && self.name.length > 0 ? self.name :  self.requestMethod +' ' + self.requestUrl;
