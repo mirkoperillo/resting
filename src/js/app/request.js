@@ -48,12 +48,12 @@ define(['jquery','app/response'],function($,response){
       success: (data, status, jqXHR) => {
         const endCall = new Date().getTime();
         const callDuration = endCall - startCall;
-        onResponse(response.makeResponse({content: data, headers: response.parseHeaders(processedRequest.get(requestUrl)), status: jqXHR.status,duration: callDuration}));
+        onResponse(response.makeResponse({content: data, headers: response.parseHeaders(processedRequest.get(requestUrl)), status: jqXHR.status,duration: callDuration, size: jqXHR.responseText.length / 1024}));
       },
       error: (jqXHR) => {
         const endCall = new Date().getTime();
         const callDuration = endCall - startCall;
-        onResponse(response.makeResponse({content: jqXHR.responseJSON, headers: response.parseHeaders(jqXHR.getAllResponseHeaders()), status: jqXHR.status,duration: callDuration }));
+        onResponse(response.makeResponse({content: jqXHR.responseJSON, headers: response.parseHeaders(jqXHR.getAllResponseHeaders()), status: jqXHR.status,duration: callDuration, size: jqXHR.responseText.length / 1024 }));
       },
     });
   };

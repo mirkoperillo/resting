@@ -1,6 +1,6 @@
 define(function(){
   
-  const makeResponse = ({content = {}, headers = [],status,duration = 0}) => ({content,headers,status,duration});
+  const makeResponse = ({content = {}, headers = [],status,duration = 0, size = 0}) => ({content,headers,status,duration, size});
   
   const parseHeaders = (headers = '') =>
       headers.trim().split('\n')
@@ -11,7 +11,7 @@ define(function(){
   
   
   return {
-    makeResponse: makeResponse,
-    parseHeaders: parseHeaders,
+    makeResponse,
+    parseHeaders,
   }
 })

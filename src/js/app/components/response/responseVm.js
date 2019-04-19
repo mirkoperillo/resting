@@ -4,6 +4,7 @@ define(['knockout','jquery','hjls','app/clipboard', 'app/bacheca'],function(ko,$
 
     const callDuration = ko.observable('-');
     const callStatus = ko.observable('-');
+    const callSize = ko.observable('-');
     const headers = ko.observableArray();;
     const content = ko.observable();
 
@@ -74,6 +75,7 @@ define(['knockout','jquery','hjls','app/clipboard', 'app/bacheca'],function(ko,$
        setTimeout(function () {
         callDuration(`${response.duration}ms`);
         callStatus(response.status);
+        callSize(`${response.size.toFixed(2)}KB`)
         response.headers.forEach(header => headers.push(header));
         content(response.content);
     }, 500);
@@ -84,6 +86,7 @@ define(['knockout','jquery','hjls','app/clipboard', 'app/bacheca'],function(ko,$
       content('');
       callDuration('-');
       callStatus('-');
+      callSize('-');
     };
 
     bacheca.subscribe('responseReady', display);
@@ -115,6 +118,7 @@ define(['knockout','jquery','hjls','app/clipboard', 'app/bacheca'],function(ko,$
       body,
       callDuration,
       callStatus,
+      callSize,
       headers,
     };
 
