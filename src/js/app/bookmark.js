@@ -64,10 +64,10 @@ define(function() {
 
   const _escapeJsonContent = (content) => {
     if(content) {
-      //content = content.replace(/\\n/g,'\\n');
-      //content = content.replace(/\\t/g,'\\t');
-      //content = content.replace(/\\r/g,'\\r');
-      //console.log(content);
+      content = content.replace(/\n/g,'');
+      content = content.replace(/\t/g,'');
+      content = content.replace(/\r/g,'');
+      content = content.replace(/"response":\s?{.*},"/,'"response": {},"');
     }
 
     return content;

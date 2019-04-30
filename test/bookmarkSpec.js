@@ -765,7 +765,7 @@ describe("Import HAR", function() {
     expect(9).toBe(bookmark.request.headers.length);
   });
 
-    it("with one POST form-encoded call", function() {
+  it("with one POST form-encoded call", function() {
     const harContent = `{
   "log": {
     "version": "1.1",
@@ -876,7 +876,251 @@ describe("Import HAR", function() {
     expect("varA=a&varB=B").toBe(bookmark.request.body);
     expect(9).toBe(bookmark.request.headers.length);
   });
+
+  it("strange values in response field", function() {
+    const harContent = `{
+  "log": {
+    "version": "1.1",
+    "creator": {
+      "name": "Firefox",
+      "version": "66.0.3"
+    },
+    "browser": {
+      "name": "Firefox",
+      "version": "66.0.3"
+    },
+    "pages": [
+      {
+        "startedDateTime": "2019-04-25T06:53:13.527+02:00",
+        "id": "page_2",
+        "title": "Resting - the REST client",
+        "pageTimings": {
+          "onContentLoad": -53763,
+          "onLoad": -53717
+        }
+      }
+    ],
+    "entries": [
+      {
+        "pageref": "page_2",
+        "startedDateTime": "2019-04-25T06:53:13.527+02:00",
+        "request": {
+          "bodySize": 13,
+          "method": "POST",
+          "url": "http://localhost:3000/",
+          "httpVersion": "HTTP/1.1",
+          "headers": [
+            {
+              "name": "Host",
+              "value": "localhost:3000"
+            },
+            {
+              "name": "User-Agent",
+              "value": "Mozilla/5.0 (X11; Ubuntu; Linux i686; rv:66.0) Gecko/20100101 Firefox/66.0"
+            },
+            {
+              "name": "Accept",
+              "value": "*/*"
+            },
+            {
+              "name": "Accept-Language",
+              "value": "en-US,en;q=0.5"
+            },
+            {
+              "name": "Accept-Encoding",
+              "value": "gzip, deflate"
+            },
+            {
+              "name": "Content-Type",
+              "value": "multipart/form-data"
+            },
+            {
+              "name": "Content-Length",
+              "value": "13"
+            },
+            {
+              "name": "Connection",
+              "value": "keep-alive"
+            }
+          ],
+          "cookies": [],
+          "queryString": [],
+          "headersSize": 286,
+          "postData": {
+            "mimeType": "multipart/form-data",
+            "params": [],
+            "text": "varA=a&varB=b"
+          }
+        },
+        "response": {
+          "status": 200,
+          "statusText": "OK",
+          "httpVersion": "HTTP/1.1",
+          "headers": [
+            {
+              "name": "Date",
+              "value": "Thu Apr 25 2019 06:53:13 GMT+0200 (CEST)"
+            },
+            {
+              "name": "Connection",
+              "value": "close"
+            },
+            {
+              "name": "Content-Type",
+              "value": "text/plain"
+            },
+            {
+              "name": "Access-Control-Allow-Origin",
+              "value": "*"
+            }
+          ],
+          "cookies": [],
+          "content": {
+            "mimeType": "text/plain",
+            "size": 299,
+            "text": "POST / HTTP/1.1\r\nHost: localhost:3000\r\nUser-Agent: Mozilla/5.0 (X11; Ubuntu; Linux i686; rv:66.0) Gecko/20100101 Firefox/66.0\r\nAccept: */*\r\nAccept-Language: en-US,en;q=0.5\r\nAccept-Encoding: gzip, deflate\r\nContent-Type: multipart/form-data\r\nContent-Length: 13\r\nConnection: keep-alive\r\n\r\nvarA=a&varB=b"
+          },
+          "redirectURL": "",
+          "headersSize": 144,
+          "bodySize": 443
+        },
+        "cache": {},
+        "timings": {
+          "blocked": 0,
+          "dns": 0,
+          "connect": 0,
+          "ssl": 0,
+          "send": 0,
+          "wait": 2,
+          "receive": 2002
+        },
+        "time": 2004,
+        "_securityState": "insecure",
+        "serverIPAddress": "127.0.0.1",
+        "connection": "3000"
+      },
+      {
+        "pageref": "page_2",
+        "startedDateTime": "2019-04-25T07:21:47.459+02:00",
+        "request": {
+          "bodySize": 12,
+          "method": "POST",
+          "url": "http://localhost:3000/",
+          "httpVersion": "HTTP/1.1",
+          "headers": [
+            {
+              "name": "Host",
+              "value": "localhost:3000"
+            },
+            {
+              "name": "User-Agent",
+              "value": "Mozilla/5.0 (X11; Ubuntu; Linux i686; rv:66.0) Gecko/20100101 Firefox/66.0"
+            },
+            {
+              "name": "Accept",
+              "value": "*/*"
+            },
+            {
+              "name": "Accept-Language",
+              "value": "en-US,en;q=0.5"
+            },
+            {
+              "name": "Accept-Encoding",
+              "value": "gzip, deflate"
+            },
+            {
+              "name": "Content-Type",
+              "value": "application/x-www-form-urlencoded"
+            },
+            {
+              "name": "Content-Length",
+              "value": "12"
+            },
+            {
+              "name": "Connection",
+              "value": "keep-alive"
+            }
+          ],
+          "cookies": [],
+          "queryString": [],
+          "headersSize": 300,
+          "postData": {
+            "mimeType": "application/x-www-form-urlencoded",
+            "params": [
+              {
+                "name": "varA",
+                "value": "a"
+              },
+              {
+                "name": "vaB",
+                "value": "B"
+              }
+            ],
+            "text": "varA=a&vaB=B"
+          }
+        },
+        "response": {
+          "status": 200,
+          "statusText": "OK",
+          "httpVersion": "HTTP/1.1",
+          "headers": [
+            {
+              "name": "Date",
+              "value": "Thu Apr 25 2019 07:21:47 GMT+0200 (CEST)"
+            },
+            {
+              "name": "Connection",
+              "value": "close"
+            },
+            {
+              "name": "Content-Type",
+              "value": "text/plain"
+            },
+            {
+              "name": "Access-Control-Allow-Origin",
+              "value": "*"
+            }
+          ],
+          "cookies": [],
+          "content": {
+            "mimeType": "text/plain",
+            "size": 312,
+            "text": "POST / HTTP/1.1\r\nHost: localhost:3000\r\nUser-Agent: Mozilla/5.0 (X11; Ubuntu; Linux i686; rv:66.0) Gecko/20100101 Firefox/66.0\r\nAccept: */*\r\nAccept-Language: en-US,en;q=0.5\r\nAccept-Encoding: gzip, deflate\r\nContent-Type: application/x-www-form-urlencoded\r\nContent-Length: 12\r\nConnection: keep-alive\r\n\r\nvarA=a&vaB=B"
+          },
+          "redirectURL": "",
+          "headersSize": 144,
+          "bodySize": 456
+        },
+        "cache": {},
+        "timings": {
+          "blocked": 0,
+          "dns": 0,
+          "connect": 1,
+          "ssl": 0,
+          "send": 0,
+          "wait": 0,
+          "receive": 2002
+        },
+        "time": 2003,
+        "_securityState": "insecure",
+        "serverIPAddress": "127.0.0.1",
+        "connection": "3000"
+      }
+    ]
+  }
+}`;
+
+    const bookmarkProvider = makeBookmarkProvider(mockStorageProvider);
+    const bookmarks = bookmarkProvider.importHAR(harContent);
+    expect(2).toBe(bookmarks.length);
+    const bookmark = bookmarks[0];
+
+    expect("varA=a&varB=b").toBe(bookmark.request.body);
+    expect(9).toBe(bookmark.request.headers.length);
+  });
 });
+
+
 
 
 
