@@ -7,6 +7,11 @@
               </button>
           </div>
           <div class="panel-body">
+            <div style="margin-bottom: 2px;">
+              <button type="button" class="btn btn-default btn-sm" data-bind="click: importDialog" title="Import">
+                <span class="glyphicon glyphicon-import" aria-hidden="true"></span>
+              </button>
+            </div>
             <div data-bind="foreach: bookmarks">
                 <div class="folder panel panel-default" data-bind="visible: isFolder">
                   <div class="panel-heading">
@@ -42,7 +47,7 @@
           </div>
 
 
-    <div id="folder-dialog" class="panel panel-primary dialog" data-bind="visible: showFolderDialog">
+  <div id="folder-dialog" class="panel panel-primary dialog" data-bind="visible: showFolderDialog">
     <div class="panel-heading">
       Add Folder
     </div>
@@ -79,5 +84,23 @@
       <li class="list-group-item ctx-menu-item"></li>
     </ul>
   </div>
+
+   <div id="import-dialog" class="panel panel-primary dialog" data-bind="visible: showImportDialog">
+    <div class="panel-heading">
+      Import bookmarks
+    </div>
+    <div class="panel-body">
+      <div class="form-group">
+        From: <input type="radio" value="har" data-bind="checked: importSrc"></input><label style="margin-left: 2px;">har</label>
+      </div>
+      <div class="form-group">
+        <input type="file" id="import-file"/>
+      </div>
+    </div>
+    <div class="panel-footer">
+      <button class="btn btn-default" data-bind="click: importBookmarks">Import</button><button class="btn btn-default" data-bind="click: dismissImportDialog">Cancel</button>
+    </div>
+  </div>
+
 
 </html>

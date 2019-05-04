@@ -74,6 +74,7 @@ define(function() {
   };
   const _convertHarEntry = (entry) => {
     const bookmark = {};
+    bookmark.id = new Date().toString();
     bookmark.name = entry.pageref;
     bookmark.request = _convertHarRequest(entry.request);
     return bookmark;

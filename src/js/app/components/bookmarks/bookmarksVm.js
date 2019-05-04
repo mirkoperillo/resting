@@ -10,7 +10,10 @@
     const tryToDeleteFolder = ko.observable(false);
     const showBookmarkDeleteDialog = ko.observable(false);
     const showFolderDialog = ko.observable(false);
+    const showImportDialog = ko.observable(false);
     const folderName = ko.observable();
+    const importSrc = ko.observable('har');
+
 
 
     // contextual menu
@@ -36,7 +39,7 @@
     const _serializeBookmark = (bookmarkObj) => {
       return bookmarkProvider.fromJson(JSON.stringify(bookmarkObj));
     }
-    
+
     const expandFolder = (folder) => {
       folder.folderCollapsed(!folder.folderCollapsed());
     };
@@ -90,6 +93,10 @@
       deleteChildrenBookmarks(false);
     }
 
+    const dismissImportDialog = () => {
+      showImportDialog(false);
+    }
+
     const deleteBookmark = (bookmark, deleteChildrenBookmarks) => {
       if(bookmark.folder) {
         const containerFolder = bookmarks().find( b => b.id === bookmark.folder);
@@ -119,6 +126,15 @@
          appVm.bookmarkSelected.name('');
          appVm.clearRequest();
       }
+    };
+
+    const importBookmarks = () => {
+      _handleImport();
+      dismissImportDialog();
+    };
+
+    const importDialog = () => {
+      showImportDialog(true);
     };
 
     const loadBookmarkObj = (bookmarkObj) => {
@@ -151,6 +167,21 @@
       }
     };
 
+    const _handleImport = () => {
+        const f = document.getElementById("import-file").files;
+        const fr = new FileReader();
+        fr.onload = (e) => {
+          const content = e.target.result;
+          const importedBookmarks = bookmarkProvider.importHAR(content);
+          importedBookmarks.forEach(
+            b => {
+              bookmarkProvider.save(b);
+              bookmarks.push(new BookmarkVm(b));
+            });
+        };
+        fr.readAsText(f[0]);
+      };
+
     $(() => {
       const screenWidth = screen.width;
       const dialogLeftPosition = screenWidth / 2  - 200;
@@ -179,14 +210,20 @@
           _loadBookmarksNewFormat();
         }
       });
+
+     // $("#import-file").change((event) => handleInput());
     })();
 
 
     return {
       showFolderDialog,
+      showImportDialog,
       folderName,
       folderDialog,
+      importDialog,
       dismissFolderDialog,
+      dismissImportDialog,
+      importSrc,
       addFolderOnEnter,
       addFolder,
       bookmarks,
@@ -200,6 +237,7 @@
       deleteBookmarkFromView,
       loadBookmarkObj,
       expandFolder,
+      importBookmarks,
       // context menu
       contextMenu,
       showContextMenu,
