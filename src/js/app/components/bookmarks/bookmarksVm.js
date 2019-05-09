@@ -45,7 +45,7 @@
     };
 
     const addFolder = () => {
-      const folder = bookmarkProvider.makeFolder(new Date().toString(), folderName());
+      const folder = bookmarkProvider.makeFolder(storage.generateId(), folderName());
       storage.save(_serializeBookmark(folder));
       bookmarks.push(new BookmarkVm(folder));
       folderName('');
@@ -155,7 +155,7 @@
       if(duplicate.name) {
         duplicate.name = 'Copy_' + duplicate.name;
       }
-      duplicate.id = new Date().toString();
+      duplicate.id = storage.generateId();
       if(duplicate.folder) {
         let folderObj = bookmarks().find(b => b.id === duplicate.folder);
         const modifiedFolder = bookmarkProvider.addBookmarks(folderObj, new BookmarkVm(duplicate));

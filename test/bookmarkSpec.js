@@ -3,7 +3,8 @@ const requirejs = require('requirejs');
 const makeBookmarkProvider = requirejs("src/js/app/bookmark.js");
 
 const mockStorageProvider = {
-  save : (bookmark) => ({result: 'OK', message : ''})
+  save : (bookmark) => ({result: 'OK', message : ''}),
+  generateId: () => new Date().getTime()
 };
 
 describe("Save bookmarks", function() {

@@ -55,10 +55,10 @@ define(function() {
     return Object.assign({},bookmark);
   };
 
-  const importHAR = (harContent) => {
+  const importHAR = (storageProvider, harContent) => (harContent) => {
     const har = JSON.parse(_escapeJsonContent(harContent));
     const harEntries = har.log.entries;
-    const bookmarks = harEntries.map(entry => _convertHarEntry(entry));
+    const bookmarks = harEntries.map(entry => _convertHarEntry(storageProvider, entry));
     return bookmarks;
   };
 
@@ -72,9 +72,9 @@ define(function() {
 
     return content;
   };
-  const _convertHarEntry = (entry) => {
+  const _convertHarEntry = (storage, entry) => {
     const bookmark = {};
-    bookmark.id = new Date().toString();
+    bookmark.id = storage.generateId();
     bookmark.name = entry.pageref;
     bookmark.request = _convertHarRequest(entry.request);
     return bookmark;
@@ -105,7 +105,7 @@ define(function() {
         copyBookmark : copyBookmark,
         replaceBookmark : replaceBookmark,
         save : bookmark => storageProvider.save(bookmark),
-        importHAR,
+        importHAR : importHAR(storageProvider),
       };
   };
 });

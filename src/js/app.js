@@ -79,12 +79,12 @@ requirejs(['jquery','app/storage','knockout','knockout-secure-binding','hjls','a
       showContextDialog: ko.observable(false),
       showCreateContextDialog: ko.observable(false),
       showConfirmDialog: ko.observable(false),
-      
+
       saveAsNewBookmark: ko.observable(false),
 
       dialogConfirmMessage: ko.observable(),
       contextName: ko.observable(),
-      
+
       showFeedbackDialog: ko.observable(false),
 
     };
@@ -304,7 +304,7 @@ requirejs(['jquery','app/storage','knockout','knockout-secure-binding','hjls','a
         _extractModelFromVM(Resting.request.headers()), _extractModelFromVM(Resting.request.querystring()), Resting.request.bodyType(),
         body(Resting.request.bodyType()),_authentication(), Resting.request.context());
 
-      const bookmarkId = Resting.bookmarkCopy && !Resting.saveAsNewBookmark() ? Resting.bookmarkCopy.id : new Date().toString();
+      const bookmarkId = Resting.bookmarkCopy && !Resting.saveAsNewBookmark() ? Resting.bookmarkCopy.id : storage.generateId();
       const bookmarkObj = bookmarkProvider.makeBookmark(bookmarkId, req, validateBookmarkName(Resting.bookmarkName()), Resting.folderSelected());
       Resting.bookmarkSelected.name(Resting.bookmarkName());
       Resting.bookmarkSelected.folder(Resting.folderSelected());
@@ -379,11 +379,11 @@ requirejs(['jquery','app/storage','knockout','knockout-secure-binding','hjls','a
       if(Resting.request.context().length > 0) {
         const activeCtx = Resting.contexts().find(ctx => ctx.name() === Resting.request.context());
         mapping.push(_extractCtxVars(activeCtx.variables()));
-        
+
       }
       return mapping;
     };
-    
+
     const _extractCtxVars = (vars = []) => {
       const extracted = {};
       vars.filter(v => v.enabled()).forEach( v => extracted[v.name()] = v.value());
@@ -467,7 +467,7 @@ requirejs(['jquery','app/storage','knockout','knockout-secure-binding','hjls','a
       Resting.saveAsNewBookmark(false);
       Resting.bookmarkName(Resting.bookmarkSelected.name());
     };
-    
+
     const saveAsBookmarkDialog = () => {
       Resting.showBookmarkDialog(true);
       Resting.saveAsNewBookmark(true);
@@ -578,7 +578,7 @@ requirejs(['jquery','app/storage','knockout','knockout-secure-binding','hjls','a
     const feedbackDialog = () => {
       storage.readSettings('showFeedbackDialog', (err,value) => {
         if(!value) {
-          Resting.showFeedbackDialog(true);  
+          Resting.showFeedbackDialog(true);
         }
       });
     };
@@ -633,7 +633,7 @@ requirejs(['jquery','app/storage','knockout','knockout-secure-binding','hjls','a
     Resting.deleteContext = deleteContext;
     Resting.confirmDeleteContext = confirmDeleteContext;
     Resting.dismissConfirmDialog = dismissConfirmDialog;
-    
+
     Resting.feedbackDialog = feedbackDialog;
     Resting.dismissFeedbackDialog = dismissFeedbackDialog;
 
