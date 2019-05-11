@@ -95,6 +95,7 @@
 
     const dismissImportDialog = () => {
       showImportDialog(false);
+      document.getElementById("import-file").value = '';
     }
 
     const deleteBookmark = (bookmark, deleteChildrenBookmarks) => {
@@ -181,6 +182,7 @@
             });
         };
         fr.readAsText(f[0]);
+        document.getElementById("import-file").value = '';
       };
 
     $(() => {
