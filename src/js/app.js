@@ -305,7 +305,8 @@ requirejs(['jquery','app/storage','knockout','knockout-secure-binding','hjls','a
         body(Resting.request.bodyType()),_authentication(), Resting.request.context());
 
       const bookmarkId = Resting.bookmarkCopy && !Resting.saveAsNewBookmark() ? Resting.bookmarkCopy.id : storage.generateId();
-      const bookmarkObj = bookmarkProvider.makeBookmark(bookmarkId, req, validateBookmarkName(Resting.bookmarkName()), Resting.folderSelected());
+      const creationDate = Resting.bookmarkCopy && !Resting.saveAsNewBookmark() ? Resting.bookmarkCopy.created : new Date();
+      const bookmarkObj = bookmarkProvider.makeBookmark(bookmarkId, req, validateBookmarkName(Resting.bookmarkName()), Resting.folderSelected(), creationDate);
       Resting.bookmarkSelected.name(Resting.bookmarkName());
       Resting.bookmarkSelected.folder(Resting.folderSelected());
       const name = _folderName(Resting.folderSelected());

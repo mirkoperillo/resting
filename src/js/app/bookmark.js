@@ -1,12 +1,12 @@
 define(function() {
 
-  const makeBookmarkFromJson = ({id, request, name, folder}) => ({ id, request, name, folder, isFolder: false});
+  const makeBookmarkFromJson = ({id, request, name, folder, created}) => ({ id, request, name, folder, isFolder: false, created});
 
-  const makeFolderFromJson= ({id,name,bookmarks = []}) => ({id,name, bookmarks, isFolder : true});
+  const makeFolderFromJson= ({id,name,bookmarks = [], created}) => ({id,name, bookmarks, isFolder : true, created});
 
-  const makeBookmark = (id, request, name, folder) => ({ id, request, name, folder, isFolder: false});
+  const makeBookmark = (id, request, name, folder, created = new Date()) => ({ id, request, name, folder, isFolder: false, created});
 
-  const makeFolder= (id,name,bookmarks = []) => ({id,name, bookmarks, isFolder : true});
+  const makeFolder= (id,name,bookmarks = [], created = new Date()) => ({id,name, bookmarks, isFolder : true, created});
 
 
   const fromJson = (json = {}) => {

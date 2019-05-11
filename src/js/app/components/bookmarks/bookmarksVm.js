@@ -152,6 +152,7 @@
 
     const duplicate = () => {
       const duplicate = bookmarkProvider.copyBookmark(bookmarkOfContextMenu);
+      duplicate.created = new Date();
       if(duplicate.name) {
         duplicate.name = 'Copy_' + duplicate.name;
       }
