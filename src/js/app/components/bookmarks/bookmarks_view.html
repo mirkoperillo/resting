@@ -7,9 +7,12 @@
               </button>
           </div>
           <div class="panel-body">
-            <div style="margin-bottom: 2px;">
+            <div class="btn-group" role="group" style="margin-bottom: 2px;">
               <button type="button" class="btn btn-default btn-sm" data-bind="click: importDialog" title="Import">
-                <span class="glyphicon glyphicon-import" aria-hidden="true"></span>
+                <span class="glyphicon glyphicon-import" aria-hidden="true"></span
+              </button>
+              <button type="button" class="btn btn-default btn-sm" data-bind="click: exportDialog" title="Export">
+                  <span class="glyphicon glyphicon-export" aria-hidden="true"></span>
               </button>
             </div>
             <div data-bind="foreach: bookmarks">
@@ -102,5 +105,18 @@
     </div>
   </div>
 
+  <div id="export-dialog" class="panel panel-primary dialog" data-bind="visible: showExportDialog">
+    <div class="panel-heading">
+      Export bookmarks
+    </div>
+    <div class="panel-body">
+      <div class="form-group">
+        To: <input type="radio" value="har" data-bind="checked: exportSrc"></input><label style="margin-left: 2px;">har</label>
+      </div>
+    </div>
+    <div class="panel-footer">
+      <button class="btn btn-default" data-bind="click: exportBookmarks">Export</button><button class="btn btn-default" data-bind="click: dismissExportDialog">Cancel</button>
+    </div>
+  </div>
 
 </html>

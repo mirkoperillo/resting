@@ -1,4 +1,14 @@
- define(['knockout', 'app/bookmark', 'app/storage', 'app/bacheca', 'component/bookmarks/bookmarkVm'],function(ko, makeBookmarkProvider, storage, bacheca, BookmarkVm) {
+ define(['knockout', 'app/bookmark', 'app/storage', 'app/bacheca', 'component/bookmarks/bookmarkVm','component/entry-list/entryItemVm'],function(ko, makeBookmarkProvider, storage, bacheca, BookmarkVm, EntryItemVm) {
+
+  // FIXME app.js duplication
+  function ContextVm(name = 'default',variables = []) {
+    const self = this;
+    this.name = ko.observable(name);
+    this.variables = ko.observableArray(variables.map(v => new EntryItemVm(v.name, v.value, v.enabled)));
+    this.isDefault = ko.computed(function() {
+        return this.name() === 'default';
+    }, this);
+  };
 
   return function BookmarksVm(params) {
 
@@ -11,10 +21,10 @@
     const showBookmarkDeleteDialog = ko.observable(false);
     const showFolderDialog = ko.observable(false);
     const showImportDialog = ko.observable(false);
+    const showExportDialog = ko.observable(false);
     const folderName = ko.observable();
     const importSrc = ko.observable('har');
-
-
+    const exportSrc = ko.observable('har');
 
     // contextual menu
     const showContextMenu = ko.observable(false);
@@ -23,9 +33,9 @@
 
     // FIXME: direct ref to bookmarks in appVm
     const bookmarks = params.bookmarks;
+    const contexts = appVm.contexts;
 
     const deleteChildrenBookmarks = ko.observable();
-
 
     const bookmarkProvider = makeBookmarkProvider(storage);
 
@@ -98,6 +108,10 @@
       document.getElementById("import-file").value = '';
     }
 
+     const dismissExportDialog = () => {
+      showExportDialog(false);
+    }
+
     const deleteBookmark = (bookmark, deleteChildrenBookmarks) => {
       if(bookmark.folder) {
         const containerFolder = bookmarks().find( b => b.id === bookmark.folder);
@@ -134,8 +148,17 @@
       dismissImportDialog();
     };
 
+    const exportBookmarks = () => {
+      _handleExport();
+      dismissExportDialog();
+    };
+
     const importDialog = () => {
       showImportDialog(true);
+    };
+
+    const exportDialog = () => {
+      showExportDialog(true);
     };
 
     const loadBookmarkObj = (bookmarkObj) => {
@@ -175,15 +198,63 @@
         fr.onload = (e) => {
           const content = e.target.result;
           const importedBookmarks = bookmarkProvider.importHAR(content);
-          importedBookmarks.forEach(
+          importedBookmarks.bookmarks.forEach(
             b => {
               bookmarkProvider.save(b);
-              bookmarks.push(new BookmarkVm(b));
+              const bookmarkToEdit = bookmarks().find(bookmark => bookmark.id === b.id);
+              const bookmarkVm = new BookmarkVm(b);
+              if(bookmarkToEdit) {
+                bookmarks.replace(bookmarkToEdit, bookmarkVm);
+              } else {
+                bookmarks.push(bookmarkVm);
+              }
+              if(b.isFolder) {
+                bacheca.publish('addFolder', b);
+              }
             });
+
+            importedBookmarks.contexts.forEach(c => _saveContext(c));
         };
         fr.readAsText(f[0]);
         document.getElementById("import-file").value = '';
       };
+
+     // FIXME: duplication of appVm function
+    const _saveContext = (context = {}) => {
+      storage.saveContext({name : context.name, variables : context.variables});
+      const contextToEdit = contexts().find(ctx => ctx.name() === context.name);
+      const contextVm = new ContextVm(context.name, context.variables);
+      if(contextToEdit) {
+        contexts.replace(contextToEdit, contextVm);
+      } else {
+        contexts.push(contextVm);
+      }
+    };
+
+    const _handleExport = () => {
+        const contextsModels = _extractContextFromVM(contexts());
+        const exportContent = JSON.stringify(bookmarkProvider.exportObj(bookmarks(), contextsModels));
+        const exportFile = new File([exportContent], "export.resting.json", {
+          type: "application/json",
+        });
+
+        const url = URL.createObjectURL(exportFile);
+
+        chrome.downloads.download({
+            filename: exportFile.name,
+            url: url,
+            saveAs: true
+        });
+    };
+
+    const _extractContextFromVM = (contexts = []) => {
+      return contexts.map(c => ({name: c.name(), variables: _extractItemFromVM(c.variables())}));
+    };
+
+    const _extractItemFromVM = (items = []) => {
+      return items.map(item => ({name: item.name(),value: item.value(),enabled: item.enabled()}))
+    };
+
 
     $(() => {
       const screenWidth = screen.width;
@@ -221,12 +292,16 @@
     return {
       showFolderDialog,
       showImportDialog,
+      showExportDialog,
       folderName,
       folderDialog,
       importDialog,
+      exportDialog,
       dismissFolderDialog,
       dismissImportDialog,
+      dismissExportDialog,
       importSrc,
+      exportSrc,
       addFolderOnEnter,
       addFolder,
       bookmarks,
@@ -241,6 +316,7 @@
       loadBookmarkObj,
       expandFolder,
       importBookmarks,
+      exportBookmarks,
       // context menu
       contextMenu,
       showContextMenu,
