@@ -50,10 +50,18 @@ define(['jquery','app/response'],function($,response){
         const callDuration = endCall - startCall;
         onResponse(response.makeResponse({content: data, headers: response.parseHeaders(processedRequest.get(requestUrl)), status: jqXHR.status,duration: callDuration, size: jqXHR.responseText.length / 1024}));
       },
-      error: (jqXHR) => {
+      error: (jqXHR, status, errorMsg) => {
         const endCall = new Date().getTime();
         const callDuration = endCall - startCall;
-        onResponse(response.makeResponse({content: jqXHR.responseJSON, headers: response.parseHeaders(jqXHR.getAllResponseHeaders()), status: jqXHR.status,duration: callDuration, size: jqXHR.responseText.length / 1024 }));
+        let responseSize = 0;
+        if (!!jqXHR.responseText) {
+          responseSize = jqXHR.responseText.length / 1024;
+        }
+        let content = jqXHR.responseJSON;
+        if (!content) {
+          content = { status: status,  error: errorMsg };
+        }
+        onResponse(response.makeResponse({content: content, headers: response.parseHeaders(jqXHR.getAllResponseHeaders()), status: jqXHR.status,duration: callDuration, size: responseSize }));
       },
     });
   };
