@@ -32,6 +32,7 @@ requirejs(['jquery','app/storage','knockout','knockout-secure-binding','hjls','a
     this.authenticationType = ko.observable();
     this.username = ko.observable();
     this.password = ko.observable();
+    this.jwtToken = ko.observable();
 
     this.bodyType = ko.observable();
     this.formDataParams = ko.observableArray();
@@ -160,6 +161,7 @@ requirejs(['jquery','app/storage','knockout','knockout-secure-binding','hjls','a
       Resting.request.authenticationType('');
       Resting.request.username('');
       Resting.request.password('');
+      Resting.request.jwtToken('');
       Resting.request.context('default');
     };
 
@@ -190,8 +192,17 @@ requirejs(['jquery','app/storage','knockout','knockout-secure-binding','hjls','a
     const _updateAuthentication = authentication => {
      if(authentication) {
         Resting.request.authenticationType(authentication.type);
-        Resting.request.username(authentication.username);
-        Resting.request.password(authentication.password);
+        switch(authentication.type) {
+          case 'Basic':
+            Resting.request.username(authentication.username);
+            Resting.request.password(authentication.password);
+            break;
+          case 'JWT':
+            Resting.request.jwtToken(authentication.jwtToken);
+
+          default:
+            // No authentication
+        }
       }
     };
 
@@ -208,7 +219,12 @@ requirejs(['jquery','app/storage','knockout','knockout-secure-binding','hjls','a
     const _applyContextToArray = (a = [], context = {}) => {
       return
     };
-    const _authentication = (context = {}) => ({type: Resting.request.authenticationType(), username: _applyContext(Resting.request.username(),context), password: _applyContext(Resting.request.password(),context)});
+    const _authentication = (context = {}) => ({
+      type: Resting.request.authenticationType(),
+      username: _applyContext(Resting.request.username(), context),
+      password: _applyContext(Resting.request.password(), context),
+      jwtToken: _applyContext(Resting.request.jwtToken(), context),
+    });
 
     const body = (bodyType) => {
       if (bodyType === 'form-data') {
