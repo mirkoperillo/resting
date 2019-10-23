@@ -205,7 +205,7 @@ requirejs(['jquery','app/storage','knockout','knockout-secure-binding','hjls','a
       }
     };
 
-    const _authentication = (context = {}) => ({type: Resting.request.authenticationType(), username: _applyContext(Resting.request.username(),context), password: _applyContext(Resting.request.password(),context)});
+    const _authentication = (contexts = []) => ({type: Resting.request.authenticationType(), username: _applyContext(Resting.request.username(),contexts), password: _applyContext(Resting.request.password(),contexts)});
 
     const body = (bodyType) => {
       if (bodyType === 'form-data') {
@@ -383,13 +383,13 @@ requirejs(['jquery','app/storage','knockout','knockout-secure-binding','hjls','a
     };
 
     // Note that elements order is important
-    const _mapContext = () => 
+    const _mapContext = () =>
       [
         Resting.contexts()
           .find(ctx =>
             ctx.name() === 'default')
         ,
-        Resting.request.context() !== 'default' && 
+        Resting.request.context() !== 'default' &&
         Resting.contexts()
           .find(ctx =>
             ctx.name() === Resting.request.context())
@@ -398,7 +398,7 @@ requirejs(['jquery','app/storage','knockout','knockout-secure-binding','hjls','a
         .map(ctx =>
           _extractCtxVars(ctx.variables()));
 
-    const _extractCtxVars = (vars = []) => 
+    const _extractCtxVars = (vars = []) =>
       vars
         .filter(v => v.enabled())
         .reduce((acc, v) => {
@@ -407,8 +407,8 @@ requirejs(['jquery','app/storage','knockout','knockout-secure-binding','hjls','a
         }, {});
 
     // XXX: context is an object on some calls
-    const _applyContext = (value = '', context = []) => {
-      const contextVars = Object.assign(context[0], context[1] || {});
+    const _applyContext = (value = '', contexts = []) => {
+      const contextVars = contexts.length > 0  ? Object.assign(contexts[0], contexts[1] || {}) : [];
       return value.replace(
         /\{\w+\}/g,
         match =>
