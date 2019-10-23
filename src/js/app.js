@@ -205,10 +205,7 @@ requirejs(['jquery','app/storage','knockout','knockout-secure-binding','hjls','a
       }
     };
 
-    const _applyContextToArray = (a = [], context = {}) => {
-      return
-    };
-    const _authentication = (context = {}) => ({type: Resting.request.authenticationType(), username: _applyContext(Resting.request.username(),context), password: _applyContext(Resting.request.password(),context)});
+    const _authentication = (contexts = []) => ({type: Resting.request.authenticationType(), username: _applyContext(Resting.request.username(),contexts), password: _applyContext(Resting.request.password(),contexts)});
 
     const body = (bodyType) => {
       if (bodyType === 'form-data') {
@@ -365,54 +362,58 @@ requirejs(['jquery','app/storage','knockout','knockout-secure-binding','hjls','a
     };
 
     const send = () => {
+      if (!Resting.request.url() || Resting.request.url().trim().length === 0) {
+        return;
+      }
+
       const mapping = _mapContext();
-      if(Resting.request.url() && Resting.request.url().trim().length > 0) {
-        const url = _applyContext(Resting.request.url(),mapping);
-        request.execute(Resting.request.method(),url,convertToHeaderObj(Resting.request.headers(), mapping), _convertToQueryString(Resting.request.querystring(), mapping), Resting.request.bodyType(),Resting.dataToSend(mapping),
-        _authentication(mapping),_displayResponse);
-      }
+      request.execute(
+        Resting.request.method(),
+        _applyContext(Resting.request.url().trim(), mapping),
+        convertToHeaderObj(
+          Resting.request.headers(), mapping
+        ),
+        _convertToQueryString(
+          Resting.request.querystring(), mapping
+        ),
+        Resting.request.bodyType(),
+        Resting.dataToSend(mapping),
+        _authentication(mapping), _displayResponse
+      );
     };
 
-    const _mapContext = () => {
-      const mapping = [];
-      const defaultCtx = Resting.contexts().find(ctx => ctx.name() === 'default');
-      mapping.push(_extractCtxVars(defaultCtx.variables()));
-      if(Resting.request.context().length > 0) {
-        const activeCtx = Resting.contexts().find(ctx => ctx.name() === Resting.request.context());
-        mapping.push(_extractCtxVars(activeCtx.variables()));
+    // Note that elements order is important
+    const _mapContext = () =>
+      [
+        Resting.contexts()
+          .find(ctx =>
+            ctx.name() === 'default')
+        ,
+        Resting.request.context() !== 'default' &&
+        Resting.contexts()
+          .find(ctx =>
+            ctx.name() === Resting.request.context())
+      ]
+        .filter(ctx => !!ctx)
+        .map(ctx =>
+          _extractCtxVars(ctx.variables()));
 
-      }
-      return mapping;
-    };
+    const _extractCtxVars = (vars = []) =>
+      vars
+        .filter(v => v.enabled())
+        .reduce((acc, v) => {
+          acc[v.name()] = v.value();
+          return acc;
+        }, {});
 
-    const _extractCtxVars = (vars = []) => {
-      const extracted = {};
-      vars.filter(v => v.enabled()).forEach( v => extracted[v.name()] = v.value());
-      return extracted;
-    };
-
-    const _applyContext = (value = '',context = []) => {
-      const tokens = _tokenize(value);
-      let computed = value.slice(0);
-      const contextDefaultVars = context[0];
-      const contextActiveVars = context.length > 1 ? context[1] : {};
-      if(tokens) {
-        tokens.forEach(t => {
-          const contextVar = t.substring(1,t.length-1);
-          if(contextActiveVars[contextVar]) {
-            computed = computed.replace(t, contextActiveVars[contextVar]);
-          } else if(contextDefaultVars[contextVar]) {
-            computed = computed.replace(t, contextDefaultVars[contextVar]);
-          }
-        });
-      }
-      return computed;
-    };
-
-    const _tokenize = (v = '') => {
-      const varRegexp = /\{\w+\}/g;
-      const tokens = v.match(varRegexp);
-      return tokens;
+    // XXX: context is an object on some calls
+    const _applyContext = (value = '', contexts = []) => {
+      const contextVars = contexts.length > 0  ? Object.assign(contexts[0], contexts[1] || {}) : [];
+      return value.replace(
+        /\{\w+\}/g,
+        match =>
+          contextVars[match.substring(1,match.length-1)] || match
+      );
     };
 
     const loadBookmarkInView = (bookmark = {}) => {
