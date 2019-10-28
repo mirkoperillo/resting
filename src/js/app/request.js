@@ -1,7 +1,8 @@
 define(['jquery','app/response'],function($,response){
-
-  const makeRequest = (method, url, headers, querystring, bodyType, body, authentication) =>
-    ({ method, url, headers, querystring, bodyType, body, authentication });
+  const processedRequest = new Map();
+  const requestQueue = [];
+  const makeRequest = (method, url, headers, querystring, bodyType, body, authentication, context='default') =>
+    ({ method, url, headers, querystring, bodyType, body, authentication, context });
 
 
   const contentTypesFromBodyTypes = {
@@ -17,7 +18,7 @@ define(['jquery','app/response'],function($,response){
     } else {
       return url;
     }
-  }; 
+  };
 
   const _appendQuerystring = (url,querystring = []) => {
     const containsParams = url.indexOf("?") !== -1;
@@ -25,11 +26,12 @@ define(['jquery','app/response'],function($,response){
     const params = convertParams.join('&');
     return params.length > 0 ? (url + (containsParams ? "&" : "?") + params) : url;
   };
-  
+
   const execute = (method, url, headers, querystring, bodyType, body, authentication, onResponse) => {
     const startCall = new Date().getTime();
     const requestUrl = _appendQuerystring(prefixProtocol(url),querystring);
-     $.ajax({
+    requestQueue.push(requestUrl);
+    $.ajax({
       method: method,
       url: requestUrl,
       headers: headers,
@@ -46,16 +48,40 @@ define(['jquery','app/response'],function($,response){
       success: (data, status, jqXHR) => {
         const endCall = new Date().getTime();
         const callDuration = endCall - startCall;
-        onResponse(response.makeResponse({content: data, headers: response.parseHeaders(jqXHR.getAllResponseHeaders()), status: jqXHR.status,duration: callDuration}));
+        onResponse(response.makeResponse({content: data, headers: response.parseHeaders(processedRequest.get(requestUrl)), status: jqXHR.status,duration: callDuration, size: jqXHR.responseText.length / 1024}));
       },
-      error: (jqXHR) => {
+      error: (jqXHR, status, errorMsg) => {
         const endCall = new Date().getTime();
         const callDuration = endCall - startCall;
-        onResponse(response.makeResponse({content: jqXHR.responseJSON, headers: response.parseHeaders(jqXHR.getAllResponseHeaders()), status: jqXHR.status,duration: callDuration }));
+        let responseSize = 0;
+        if (!!jqXHR.responseText) {
+          responseSize = jqXHR.responseText.length / 1024;
+        }
+        let content = jqXHR.responseJSON;
+        if (!content) {
+          content = { status: status,  error: errorMsg };
+        }
+        onResponse(response.makeResponse({content: content, headers: response.parseHeaders(jqXHR.getAllResponseHeaders()), status: jqXHR.status,duration: callDuration, size: responseSize }));
       },
     });
   };
-  
+
+chrome.tabs.getCurrent(currentTab =>
+  browser.webRequest.onHeadersReceived.addListener(
+    request => {
+      const headers = [];
+      for (let {name, value} of request.responseHeaders) {
+        headers.push(name + ': ' + value);
+      }
+
+      const requestId = requestQueue.pop();
+      if (!processedRequest.has(requestId)) {
+        processedRequest.set(requestId, headers.join('\n'));
+      }
+    },
+    { urls: ['<all_urls>'], tabId: currentTab.id },
+    ['responseHeaders'],
+  ));
 
   return {
     makeRequest: makeRequest,

@@ -1,0 +1,122 @@
+<html>
+   <div class="panel panel-default">
+          <div class="panel-heading">
+              Bookmarks
+          </div>
+          <div class="panel-body">          
+            <div class="btn-group" role="group" style="margin-bottom: 2px;">
+                <button type="button" class="btn btn-default btn-sm" aria-label="Add folder" data-bind="click: folderDialog" title="Add folder">
+                    <span class="glyphicon glyphicon-plus" aria-hidden="true"></span>
+                  </button>
+              <button type="button" class="btn btn-default btn-sm" data-bind="click: importDialog" title="Import">
+                <span class="glyphicon glyphicon-import" aria-hidden="true"></span
+              </button>
+              <button type="button" class="btn btn-default btn-sm" data-bind="click: exportDialog" title="Export">
+                  <span class="glyphicon glyphicon-export" aria-hidden="true"></span>
+              </button>
+            </div>
+            <div data-bind="foreach: bookmarks">
+                <div class="folder panel panel-default" data-bind="visible: isFolder">
+                  <div class="panel-heading">
+                    <a class="folder clearfix"  href="#" data-bind="click: $parent.expandFolder">
+                      <span class="glyphicon glyphicon-folder-close" aria-hidden="true"></span>
+                      <span data-bind="text: name"></span>
+                      <span class="pull-right">
+                        <button class="btn btn-xs btn-danger" data-bind="click: $parent.confirmDelete, clickBubble: false"><span class="glyphicon glyphicon-trash" aria-hidden="true"></span></button>
+                      </span>
+                    </a>
+                  </div>
+                  <div class="collapse" data-bind="if: isFolder, attr: {'id' : 'folderContent' + $index() }, css: { in : !folderCollapsed()}">
+                    <div data-bind="foreach: bookmarks">
+                      <a class="bookmark clearfix" data-bind="visible: !isFolder,click: $parents[1].loadBookmarkObj, event: { contextmenu: $parents[1].contextMenu }">
+                        <span data-bind="text: viewName()"></span>
+                        <span class="pull-right">
+                          <button class="btn btn-xs btn-danger" data-bind="click: $parents[1].confirmDelete, clickBubble: false"><span class="glyphicon glyphicon-trash" aria-hidden="true"></span></button>
+                        </span>
+                      </a>
+                   </div>
+                  </div>
+                </div>
+                <div class="element" data-bind="visible: !isFolder">
+                  <a class="bookmark clearfix" data-bind="click: $parent.loadBookmarkObj, event: { contextmenu: $parent.contextMenu }">
+                    <span data-bind="text: viewName()"></span>
+                    <span class="pull-right">
+                      <button class="btn btn-xs btn-danger" data-bind="click: $parent.confirmDelete, clickBubble: false"><span class="glyphicon glyphicon-trash" aria-hidden="true"></span></button>
+                    </span>
+                  </a>
+                </div>
+            </div>
+            </div>
+          </div>
+
+
+  <div id="folder-dialog" class="panel panel-primary dialog" data-bind="visible: showFolderDialog">
+    <div class="panel-heading">
+      Add Folder
+    </div>
+    <div class="panel-body">
+      Name: <input type="text" class="form-control" data-bind="value: folderName, event: { keyup: addFolderOnEnter}"></input>
+    </div>
+    <div class="panel-footer">
+      <button class="btn btn-default" data-bind="click: addFolder">Save</button><button class="btn btn-default" data-bind="click: dismissFolderDialog">Cancel</button>
+    </div>
+  </div>
+
+   <div id="confirm-bookmark-delete-dialog" class="panel panel-primary dialog" data-bind="visible: showBookmarkDeleteDialog">
+    <div class="panel-heading">
+      Confirm
+    </div>
+    <div class="panel-body">
+      <p>
+        Confirm to delete <strong><span data-bind="text: bookmarkToDeleteName"></span></strong> ?
+      </p>
+      <div class="checkbox" data-bind="if: tryToDeleteFolder">
+        <label>
+          <input type="checkbox" data-bind="checked: deleteChildrenBookmarks"> Delete bookmarks in the folder</input>
+        </label>
+      </div>
+    </div>
+    <div class="panel-footer">
+      <button class="btn btn-default" data-bind="click: deleteBookmarkFromView">Yes</button><button class="btn btn-default" data-bind="click: dismissDeleteBookmarkDialog">No</button>
+    </div>
+  </div>
+
+  <div class="ctx-menu" data-bind="visible: showContextMenu, style: {'position':'fixed', 'top': contextMenuPosX, 'left': contextMenuPosY }, clickBubble: false">
+    <ul class="list-group">
+      <li class="list-group-item ctx-menu-item" data-bind="click: duplicate">Duplicate</li>
+      <li class="list-group-item ctx-menu-item"></li>
+    </ul>
+  </div>
+
+   <div id="import-dialog" class="panel panel-primary dialog" data-bind="visible: showImportDialog">
+    <div class="panel-heading">
+      Import bookmarks
+    </div>
+    <div class="panel-body">
+      <div class="form-group">
+        From: <input type="radio" value="har" data-bind="checked: importSrc"></input><label style="margin-left: 2px;">har</label>
+      </div>
+      <div class="form-group">
+        <input type="file" id="import-file"/>
+      </div>
+    </div>
+    <div class="panel-footer">
+      <button class="btn btn-default" data-bind="click: importBookmarks">Import</button><button class="btn btn-default" data-bind="click: dismissImportDialog">Cancel</button>
+    </div>
+  </div>
+
+  <div id="export-dialog" class="panel panel-primary dialog" data-bind="visible: showExportDialog">
+    <div class="panel-heading">
+      Export bookmarks
+    </div>
+    <div class="panel-body">
+      <div class="form-group">
+        To: <input type="radio" value="har" data-bind="checked: exportSrc"></input><label style="margin-left: 2px;">har</label>
+      </div>
+    </div>
+    <div class="panel-footer">
+      <button class="btn btn-default" data-bind="click: exportBookmarks">Export</button><button class="btn btn-default" data-bind="click: dismissExportDialog">Cancel</button>
+    </div>
+  </div>
+
+</html>

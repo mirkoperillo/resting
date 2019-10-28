@@ -1,12 +1,6 @@
-define(['knockout'],function(ko) {
+define(['knockout', 'component/entry-list/entryItemVm','app/bacheca'],function(ko, EntryItemVm, bacheca) {
 
-  function EntryItemViewModel(name, value, enabled) {
-    this.name = ko.observable(name);
-    this.value = ko.observable(value);
-    this.enabled = ko.observable(enabled);
-  }
-  
-  return function EntryListViewModel(params) {
+  return function EntryListVm(params) {
 
     const EntryList = {
       entryList: params.entryList,
@@ -29,7 +23,7 @@ define(['knockout'],function(ko) {
     const add = () => {
       if (!checkValidEntry(EntryList.entryName(), EntryList.entryValue())) return false;
 
-      EntryList.entryList.push(new EntryItemViewModel(EntryList.entryName(), EntryList.entryValue(), true ));
+      EntryList.entryList.push(new EntryItemVm(EntryList.entryName(), EntryList.entryValue(), true ));
       EntryList.entryName('');
       EntryList.entryValue('');
 
@@ -39,6 +33,13 @@ define(['knockout'],function(ko) {
     const remove = entry =>
       EntryList.entryList.remove(entry);
 
+    const _cleanFields = () => {
+      EntryList.entryName('');
+      EntryList.entryValue('');
+    };
+    
+    bacheca.subscribe('reset', _cleanFields);
+    
     EntryList.add = add;
     EntryList.remove = remove;
     EntryList.addOnEnter = addOnEnter;
@@ -46,3 +47,4 @@ define(['knockout'],function(ko) {
     return EntryList;
   }
 });
+

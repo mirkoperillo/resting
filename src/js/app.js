@@ -2,6 +2,7 @@ requirejs.config({
     baseUrl: 'js/vendor',
     paths: {
          app : '../app',
+         component : '../app/components',
         'jquery': 'jquery-3.3.1.min',
         'knockout': 'knockout-3.4.2',
         'knockout-secure-binding': 'knockout-secure-binding',
@@ -10,98 +11,82 @@ requirejs.config({
     }
 });
 
-requirejs(['jquery','app/storage','knockout','knockout-secure-binding','hjls','app/request','app/bookmark','bootstrap'], function($,storage,ko,ksb,hjls,request,makeBookmarkProvider, bootstrap) {
+requirejs(['jquery','app/storage','knockout','knockout-secure-binding','hjls','app/request','app/bookmark','app/clipboard', 'app/bacheca', 'bootstrap','component/entry-list/entryItemVm', 'component/bookmarks/bookmarkVm'], function($,storage,ko,ksb,hjls,request,makeBookmarkProvider,clipboard,bacheca,bootstrap, EntryItemVm, BookmarkVm) {
 
-  function ContextVm(createDefault) {
+  function ContextVm(name = 'default',variables = []) {
     const self = this;
-    this.name = ko.observable(createDefault ? 'default' : '');
-    this.variables = ko.observableArray();
-    this.isDefault = createDefault;
+    this.name = ko.observable(name);
+    this.variables = ko.observableArray(variables.map(v => new EntryItemVm(v.name, v.value, v.enabled)));
+    this.isDefault = ko.computed(function() {
+        return this.name() === 'default';
+    }, this);
   };
 
   function RequestVm(request = {}) {
     const self = this;
     this.method = ko.observable('');
     this.url = ko.observable('');
+    this.headers = ko.observableArray();
+    this.querystring = ko.observableArray();
+
+    this.authenticationType = ko.observable();
+    this.username = ko.observable();
+    this.password = ko.observable();
+
+    this.bodyType = ko.observable();
+    this.formDataParams = ko.observableArray();
+    this.formEncodedParams = ko.observableArray();
+    this.rawBody = ko.observable();
+
+    this.context = ko.observable('default');
   }
 
+ // already exist a BookmarkVm, why this ??
   function BookmarkSelectedVm(bookmark = {}) {
     const self = this;
     this.id = ko.observable('');
     this.name = ko.observable('');
+    this.folder = ko.observable('');
   }
 
-  // FIXME: duplication of this VM used by save functionality and bookmarks component
-  function BookmarkViewModel(bookmark) {
-    const self = this;
-    this.id = bookmark.id;
-    this.name = bookmark.name;
-    this.isFolder = bookmark.isFolder;
-    this.folder = bookmark.folder;
-    this.requestMethod = bookmark.request ? bookmark.request.method : null;
-    this.requestUrl = bookmark.request ? bookmark.request.url : null;
-    this.bookmarks = bookmark.bookmarks ? bookmark.bookmarks.map( b => new BookmarkViewModel(b)) : undefined;
-
-    this.request = bookmark.request;
-    this.viewName = function() {
-        return self.name && self.name.length > 0 ? self.name :  self.requestMethod +' ' + self.requestUrl;
-    };
-  }
-  // FIXME: duplication of this VM
-  function EntryItemViewModel(name, value, enabled) {
-    this.name = ko.observable(name);
-    this.value = ko.observable(value);
-    this.enabled = ko.observable(enabled);
-  }
-
-  function AppViewModel() {
+  function AppVm() {
     const Resting = {
-      contexts : new ContextVm(true),
-
+      contexts : ko.observableArray(),
+      selectedContext: new ContextVm(),
       bookmarkSelected : new BookmarkSelectedVm(),
-      requestSelected : new RequestVm(),
-      responseContent : {},
+      request : new RequestVm(),
+      //response : new ResponseVm(),
       bookmarkCopy: null,   // copy of bookmark object loaded
-      bookmarkLoadedName: ko.observable(),  // dead field ??
-      bookmarkToDelete: null,
-      bookmarkToDeleteName : ko.observable(),
-      tryToDeleteFolder: ko.observable(false),
-      deleteChildrenBookmarks: ko.observable(false),
-      requestMethod: ko.observable(), // try to replace
-      requestUrl: ko.observable(), // try to replace
-      responseBody: ko.observable(),
-      callDuration: ko.observable('-'),
-      callStatus: ko.observable('-'),
-      responseHeaders: ko.observableArray(),
-      requestHeaders: ko.observableArray(),
-      querystring: ko.observableArray(),
+                            // used to match with modified version in _saveBookmark
+      bookmarks: ko.observableArray(),
+      folders: ko.observableArray(),
+      folderSelected: ko.observable(),
+      folderName: ko.observable(),
+      bookmarkName: ko.observable(),
+      methods: ko.observableArray(['GET','POST','PUT','DELETE','HEAD','OPTIONS','CONNECT','TRACE','PATCH']),
+
+      // request panel flags
       showRequestHeaders: ko.observable(true),
       showRequestBody: ko.observable(false),
       showQuerystring: ko.observable(false),
       showAuthentication: ko.observable(false),
-      showResponseHeaders: ko.observable(false),
-      showResponseBody: ko.observable(true),
-      useFormattedResponseBody: ko.observable(true),
-      useRawResponseBody: ko.observable(false), // is it used ??
-      bodyType: ko.observable(),
-      formDataParams: ko.observableArray(),
-      formEncodedParams: ko.observableArray(),
-      rawBody: ko.observable(),
-      authenticationType: ko.observable(),
-      username: ko.observable(),
-      password: ko.observable(),
-      bookmarks: ko.observableArray(),
-      folders: ko.observableArray(),
-      bookmarkName: ko.observable(), // try to replace
+      showActiveContext: ko.observable(false),
+
+      // Flags to show/hide dialogs
       showBookmarkDialog: ko.observable(false),
-      showFolderDialog: ko.observable(false),
-      folderName: ko.observable(),
-      folderSelected: ko.observable(),
-      methods: ko.observableArray(['GET','POST','PUT','DELETE','HEAD','OPTIONS','CONNECT','TRACE','PATCH']),
-      showBookmarkDeleteDialog: ko.observable(false),
       showAboutDialog: ko.observable(false),
       showCreditsDialog: ko.observable(false),
       showContextDialog: ko.observable(false),
+      showCreateContextDialog: ko.observable(false),
+      showConfirmDialog: ko.observable(false),
+
+      saveAsNewBookmark: ko.observable(false),
+
+      dialogConfirmMessage: ko.observable(),
+      contextName: ko.observable(),
+
+      showFeedbackDialog: ko.observable(false),
+
     };
 
     const bookmarkProvider = makeBookmarkProvider(storage);
@@ -124,7 +109,9 @@ requirejs(['jquery','app/storage','knockout','knockout-secure-binding','hjls','a
       Resting.showCreditsDialog(true);
     };
 
-     const contextDialog = () => {
+     const contextDialog = (context) => {
+      Resting.selectedContext.name(context.name());
+      Resting.selectedContext.variables(context.variables());
       Resting.showContextDialog(true);
     };
 
@@ -145,41 +132,35 @@ requirejs(['jquery','app/storage','knockout','knockout-secure-binding','hjls','a
 
     const updateBody = (bodyType, body) => {
       clearRequestBody();
-      Resting.bodyType(bodyType);
+      Resting.request.bodyType(bodyType);
       if (bodyType === 'form-data') {
-        return Resting.formDataParams(_convertToEntryItemVM(body));
+        return Resting.request.formDataParams(_convertToEntryItemVM(body));
       }
 
       if (bodyType === 'x-www-form-urlencoded') {
-        return Resting.formEncodedParams(_convertToEntryItemVM(body));
+        return Resting.request.formEncodedParams(_convertToEntryItemVM(body));
       }
 
-      return Resting.rawBody(body);
+      return Resting.request.rawBody(body);
     };
 
     const clearRequestBody = () => {
-      Resting.formDataParams.removeAll();
-      Resting.formEncodedParams.removeAll();
-      Resting.rawBody('');
-      Resting.bodyType('');
+      Resting.request.formDataParams.removeAll();
+      Resting.request.formEncodedParams.removeAll();
+      Resting.request.rawBody('');
+      Resting.request.bodyType('');
     };
 
     const clearRequest = () => {
+      Resting.request.method('GET');
+      Resting.request.url('');
       clearRequestBody();
-      Resting.requestHeaders.removeAll();
-      Resting.querystring.removeAll();
-      Resting.authenticationType('');
-      Resting.username('');
-      Resting.password('');
-      Resting.requestMethod('GET');
-      Resting.requestUrl('');
-    };
-
-    const clearResponse = () => {
-      Resting.responseHeaders.removeAll();
-      Resting.responseBody('');
-      Resting.callDuration('-');
-      Resting.callStatus('-');
+      Resting.request.headers.removeAll();
+      Resting.request.querystring.removeAll();
+      Resting.request.authenticationType('');
+      Resting.request.username('');
+      Resting.request.password('');
+      Resting.request.context('default');
     };
 
     const _convertToEntryItemVM = (items = []) => items.map(item => {
@@ -187,60 +168,56 @@ requirejs(['jquery','app/storage','knockout','knockout-secure-binding','hjls','a
       // The field has been introduced in v0.7.0
       // maintain it for compatibility purposes
       const enabled = item.enabled === undefined ? true : item.enabled;
-      return new EntryItemViewModel(item.name,item.value, enabled);
+      return new EntryItemVm(item.name,item.value, enabled);
     });
 
 
     const bookmarkScreenName = () => {
-      return Resting.bookmarkSelected.name() && Resting.bookmarkSelected.name().length > 0 ? Resting.bookmarkSelected.name() : Resting.requestSelected.method() + ' ' + Resting.requestSelected.url();
+      return Resting.bookmarkSelected.name() && Resting.bookmarkSelected.name().length > 0 ? Resting.bookmarkSelected.name() : Resting.request.method() + ' ' + Resting.request.url();
     };
 
     const parseRequest = (req) => {
-      Resting.requestMethod(req.method);
-      Resting.requestSelected.method(req.method);
-      Resting.requestUrl(req.url);
-      Resting.requestSelected.url(req.url);
-      Resting.bodyType(req.bodyType);
-      Resting.requestHeaders(_convertToEntryItemVM(req.headers));
-      Resting.querystring(req.querystring ?  _convertToEntryItemVM(req.querystring) : []);
+      Resting.request.method(req.method);
+      Resting.request.url(req.url);
+      Resting.request.bodyType(req.bodyType);
+      Resting.request.headers(_convertToEntryItemVM(req.headers));
+      Resting.request.querystring(req.querystring ?  _convertToEntryItemVM(req.querystring) : []);
       _updateAuthentication(req.authentication);
       updateBody(req.bodyType, req.body);
+      Resting.request.context(req.context);
     };
 
     const _updateAuthentication = authentication => {
      if(authentication) {
-        Resting.authenticationType(authentication.type);
-        Resting.username(authentication.username);
-        Resting.password(authentication.password);
+        Resting.request.authenticationType(authentication.type);
+        Resting.request.username(authentication.username);
+        Resting.request.password(authentication.password);
       }
     };
 
     const dataToSend = (context) => {
-      if (Resting.bodyType() === 'form-data') {
-        return convertToFormData(Resting.formDataParams(),context);
-      } else if (Resting.bodyType() === 'x-www-form-urlencoded') {
-        return convertToUrlEncoded(Resting.formEncodedParams(), context);
-      } else if (Resting.bodyType() === 'raw') {
-        return _applyContext(Resting.rawBody().trim(),context);
+      if (Resting.request.bodyType() === 'form-data') {
+        return convertToFormData(Resting.request.formDataParams(),context);
+      } else if (Resting.request.bodyType() === 'x-www-form-urlencoded') {
+        return convertToUrlEncoded(Resting.request.formEncodedParams(), context);
+      } else if (Resting.request.bodyType() === 'raw') {
+        return _applyContext(Resting.request.rawBody().trim(),context);
       }
     };
 
-    const _applyContextToArray = (a = [], context = {}) => {
-      return
-    };
-    const _authentication = (context = {}) => ({type: Resting.authenticationType(), username: _applyContext(Resting.username(),context), password: _applyContext(Resting.password(),context)});
+    const _authentication = (contexts = []) => ({type: Resting.request.authenticationType(), username: _applyContext(Resting.request.username(),contexts), password: _applyContext(Resting.request.password(),contexts)});
 
     const body = (bodyType) => {
       if (bodyType === 'form-data') {
-        return _extractModelFromVM(Resting.formDataParams());
+        return _extractModelFromVM(Resting.request.formDataParams());
       }
 
       if (bodyType === 'x-www-form-urlencoded') {
-        return _extractModelFromVM(Resting.formEncodedParams());
+        return _extractModelFromVM(Resting.request.formEncodedParams());
       }
 
       if (bodyType === 'raw') {
-        return Resting.rawBody();
+        return Resting.request.rawBody();
       }
 
       return undefined;
@@ -259,14 +236,14 @@ requirejs(['jquery','app/storage','knockout','knockout-secure-binding','hjls','a
       return Resting.bookmarkSelected.id().length > 0;
     }
 
-    const _saveBookmark = bookmark => {
-       if(Resting.bookmarkCopy) {
+    const _saveBookmark = (bookmark, internal=false) => {
+       if(Resting.bookmarkCopy && !Resting.saveAsNewBookmark() && !internal) {
           // if edit a bookmark
           if(bookmark.folder) {
             const oldFolder = Resting.bookmarkCopy.folder;
             if(oldFolder == bookmark.folder) { // folderA to folderA
               let folderObj = Resting.bookmarks().find(b => b.id === bookmark.folder);
-              const modifiedFolder = bookmarkProvider.replaceBookmark(folderObj, new BookmarkViewModel(bookmark));
+              const modifiedFolder = bookmarkProvider.replaceBookmark(folderObj, new BookmarkVm(bookmark));
               bookmarkProvider.save(serializeBookmark(modifiedFolder));
               Resting.bookmarks.replace(folderObj, modifiedFolder);
             } else if(!oldFolder) { //from no-folder to folderA
@@ -274,41 +251,42 @@ requirejs(['jquery','app/storage','knockout','knockout-secure-binding','hjls','a
                                                                                         //  either it is not removed from it
               deleteBookmark(oldBookmark);
               let folderObj = Resting.bookmarks().find(b => b.id === bookmark.folder);
-              const modifiedFolder = bookmarkProvider.replaceBookmark(folderObj, new BookmarkViewModel(bookmark));
+              const modifiedFolder = bookmarkProvider.replaceBookmark(folderObj, new BookmarkVm(bookmark));
               bookmarkProvider.save(serializeBookmark(modifiedFolder));
               Resting.bookmarks.replace(folderObj, modifiedFolder);
             } else if( oldFolder != bookmark.folder) { // from folderA to folderB
               deleteBookmark(Resting.bookmarkCopy);
               let folderObj = Resting.bookmarks().find(b => b.id === bookmark.folder);
-              const modifiedFolder = bookmarkProvider.replaceBookmark(folderObj, new BookmarkViewModel(bookmark));
+              const modifiedFolder = bookmarkProvider.replaceBookmark(folderObj, new BookmarkVm(bookmark));
               bookmarkProvider.save(serializeBookmark(modifiedFolder));
               Resting.bookmarks.replace(folderObj, modifiedFolder);
             }
           } else {
             if(Resting.bookmarkCopy.folder) { // from folderA to no-folder
               deleteBookmark(Resting.bookmarkCopy);
-              Resting.bookmarks.push(new BookmarkViewModel(bookmark));
+              Resting.bookmarks.push(new BookmarkVm(bookmark));
             } else { // from no-folder to no-folder
               const oldBookmark = Resting.bookmarks().find(b => b.id === bookmark.id);
-              Resting.bookmarks.replace(oldBookmark, new BookmarkViewModel(bookmark));
+              Resting.bookmarks.replace(oldBookmark, new BookmarkVm(bookmark));
             }
             bookmarkProvider.save(serializeBookmark(bookmark));
           }
-          Resting.bookmarkLoadedName(new BookmarkViewModel(bookmark).viewName());
           Resting.bookmarkCopy = bookmarkProvider.copyBookmark(bookmark);
         } else { // if new bookmark
           if(bookmark.folder) {
             let folderObj = Resting.bookmarks().find(b => b.id === bookmark.folder);
-            const modifiedFolder = bookmarkProvider.addBookmarks(folderObj, new BookmarkViewModel(bookmark));
+            const modifiedFolder = bookmarkProvider.addBookmarks(folderObj, new BookmarkVm(bookmark));
             bookmarkProvider.save(serializeBookmark(modifiedFolder));
             Resting.bookmarks.replace(folderObj, modifiedFolder);
           } else {
              bookmarkProvider.save(serializeBookmark(bookmark));
-             Resting.bookmarks.push(new BookmarkViewModel(bookmark));
+             Resting.bookmarks.push(new BookmarkVm(bookmark));
           }
 
-          Resting.bookmarkSelected.id(bookmark.id);
-          Resting.bookmarkCopy = bookmarkProvider.copyBookmark(bookmark);
+          if(!internal) {
+            Resting.bookmarkSelected.id(bookmark.id);
+            Resting.bookmarkCopy = bookmarkProvider.copyBookmark(bookmark);
+          }
         }
     };
 
@@ -319,12 +297,17 @@ requirejs(['jquery','app/storage','knockout','knockout-secure-binding','hjls','a
 
     const saveBookmark = () => {
       const req = request.makeRequest(
-        Resting.requestSelected.method(), Resting.requestSelected.url(),
-        _extractModelFromVM(Resting.requestHeaders()), _extractModelFromVM(Resting.querystring()), Resting.bodyType(),
-        body(Resting.bodyType()),_authentication());
+        Resting.request.method(), Resting.request.url(),
+        _extractModelFromVM(Resting.request.headers()), _extractModelFromVM(Resting.request.querystring()), Resting.request.bodyType(),
+        body(Resting.request.bodyType()),_authentication(), Resting.request.context());
 
-      const bookmarkId = Resting.bookmarkCopy ? Resting.bookmarkCopy.id : new Date().toString();
-      const bookmarkObj = bookmarkProvider.makeBookmark(bookmarkId, req, validateBookmarkName(Resting.bookmarkSelected.name()), Resting.folderSelected());
+      const bookmarkId = Resting.bookmarkCopy && !Resting.saveAsNewBookmark() ? Resting.bookmarkCopy.id : storage.generateId();
+      const creationDate = Resting.bookmarkCopy && !Resting.saveAsNewBookmark() ? Resting.bookmarkCopy.created : new Date();
+      const bookmarkObj = bookmarkProvider.makeBookmark(bookmarkId, req, validateBookmarkName(Resting.bookmarkName()), Resting.folderSelected(), creationDate);
+      Resting.bookmarkSelected.name(Resting.bookmarkName());
+      Resting.bookmarkSelected.folder(Resting.folderSelected());
+      const name = _folderName(Resting.folderSelected());
+      Resting.folderName(name ? name : '--');
       _saveBookmark(bookmarkObj);
 
       // close the dialog
@@ -334,20 +317,16 @@ requirejs(['jquery','app/storage','knockout','knockout-secure-binding','hjls','a
     const reset = () => {
       Resting.bookmarkCopy = null;
       Resting.folderSelected('');
-      Resting.folderName('');
-      Resting.bookmarkLoadedName('');
+      Resting.folderName('--');
       Resting.bookmarkName('');
-
       Resting.bookmarkSelected.name('');
       Resting.bookmarkSelected.id('');
-      Resting.requestSelected.method('GET');
-      Resting.requestSelected.url('');
 
       clearRequest();
-      clearResponse();
+      bacheca.publish('reset');
     };
 
-    // dead function ????
+    // used by _saveBookmark...why ?
     const deleteBookmark = (bookmark, deleteChildrenBookmarks) => {
       if(bookmark.folder) {
         const containerFolder = Resting.bookmarks().find( b => b.id === bookmark.folder);
@@ -374,18 +353,8 @@ requirejs(['jquery','app/storage','knockout','knockout-secure-binding','hjls','a
       }, {});
 
 
-    const displayResponse = (response) => {
-      Resting.responseHeaders.removeAll();
-      Resting.callDuration(`${response.duration}ms`);
-      Resting.callStatus(response.status);
-      response.headers.forEach(header => Resting.responseHeaders.push(header));
-      Resting.responseContent = response.content;
-      if(Resting.useFormattedResponseBody()) {
-        Resting.responseBody(JSON.stringify(response.content,null,2));
-        highlight();
-      } else {
-        Resting.responseBody(JSON.stringify(response.content));
-      }
+    const _displayResponse = (response) => {
+      bacheca.publish('responseReady', response);
     };
 
     const _convertToQueryString = (params = [], context = {}) => {
@@ -393,46 +362,66 @@ requirejs(['jquery','app/storage','knockout','knockout-secure-binding','hjls','a
     };
 
     const send = () => {
+      if (!Resting.request.url() || Resting.request.url().trim().length === 0) {
+        return;
+      }
+
       const mapping = _mapContext();
-      if(Resting.requestSelected.url() && Resting.requestSelected.url().trim().length > 0) {
-        clearResponse();
-        const url = _applyContext(Resting.requestSelected.url(),mapping);
-        request.execute(Resting.requestSelected.method(),url,convertToHeaderObj(Resting.requestHeaders(), mapping), _convertToQueryString(Resting.querystring(), mapping), Resting.bodyType(),Resting.dataToSend(mapping),
-        _authentication(mapping),displayResponse);
-      }
+      request.execute(
+        Resting.request.method(),
+        _applyContext(Resting.request.url().trim(), mapping),
+        convertToHeaderObj(
+          Resting.request.headers(), mapping
+        ),
+        _convertToQueryString(
+          Resting.request.querystring(), mapping
+        ),
+        Resting.request.bodyType(),
+        Resting.dataToSend(mapping),
+        _authentication(mapping), _displayResponse
+      );
     };
 
-    const _mapContext = () => {
-      const mapping = {};
-      Resting.contexts.variables().filter(v => v.enabled()).forEach( v => mapping[v.name()] = v.value());
-      return mapping;
-    };
+    // Note that elements order is important
+    const _mapContext = () =>
+      [
+        Resting.contexts()
+          .find(ctx =>
+            ctx.name() === 'default')
+        ,
+        Resting.request.context() !== 'default' &&
+        Resting.contexts()
+          .find(ctx =>
+            ctx.name() === Resting.request.context())
+      ]
+        .filter(ctx => !!ctx)
+        .map(ctx =>
+          _extractCtxVars(ctx.variables()));
 
-    const _applyContext = (value = '',context = {}) => {
-      const tokens = _tokenize(value);
-      let computed = value.slice(0);
-      if(tokens) {
-        tokens.forEach(t => {
-          const contextVar = t.substring(1,t.length-1);
-          if(context[contextVar]) {
-            computed = computed.replace(t, context[contextVar]);
-          }
-        });
-      }
-      return computed;
-    };
+    const _extractCtxVars = (vars = []) =>
+      vars
+        .filter(v => v.enabled())
+        .reduce((acc, v) => {
+          acc[v.name()] = v.value();
+          return acc;
+        }, {});
 
-    const _tokenize = (v = '') => {
-      const varRegexp = /\{\w+\}/g;
-      const tokens = v.match(varRegexp);
-      return tokens;
+    // XXX: context is an object on some calls
+    const _applyContext = (value = '', contexts = []) => {
+      const contextVars = contexts.length > 0  ? Object.assign(contexts[0], contexts[1] || {}) : [];
+      return value.replace(
+        /\{\w+\}/g,
+        match =>
+          contextVars[match.substring(1,match.length-1)] || match
+      );
     };
 
     const loadBookmarkInView = (bookmark = {}) => {
       Resting.bookmarkSelected.id(bookmark.id);
       Resting.bookmarkSelected.name(bookmark.name);
-      Resting.requestSelected.method(bookmark.request.method);
-      Resting.requestSelected.url(bookmark.request.url);
+      Resting.bookmarkSelected.folder(bookmark.folder);
+      Resting.request.method(bookmark.request.method);
+      Resting.request.url(bookmark.request.url);
     };
 
     const requestHeadersPanel = () => {
@@ -440,6 +429,7 @@ requirejs(['jquery','app/storage','knockout','knockout-secure-binding','hjls','a
       Resting.showRequestBody(false);
       Resting.showQuerystring(false);
       Resting.showAuthentication(false);
+      Resting.showActiveContext(false);
     };
 
     const requestBodyPanel = () => {
@@ -447,6 +437,7 @@ requirejs(['jquery','app/storage','knockout','knockout-secure-binding','hjls','a
       Resting.showRequestBody(true);
       Resting.showQuerystring(false);
       Resting.showAuthentication(false);
+      Resting.showActiveContext(false);
     };
 
     const querystringPanel = () => {
@@ -454,6 +445,7 @@ requirejs(['jquery','app/storage','knockout','knockout-secure-binding','hjls','a
       Resting.showRequestBody(false);
       Resting.showQuerystring(true);
       Resting.showAuthentication(false);
+      Resting.showActiveContext(false);
     };
 
     const authenticationPanel = () => {
@@ -461,56 +453,36 @@ requirejs(['jquery','app/storage','knockout','knockout-secure-binding','hjls','a
       Resting.showRequestBody(false);
       Resting.showQuerystring(false);
       Resting.showAuthentication(true);
+      Resting.showActiveContext(false);
     };
 
-    const responseHeadersPanel = () => {
-      Resting.showResponseHeaders(true);
-      Resting.showResponseBody(false);
-
-      // close jquery accordion
-      $('#collapseOne').collapse('hide');
-    };
-
-    const responseBodyPanel = () => {
-      Resting.showResponseBody(true);
-      Resting.showResponseHeaders(false);
-    };
-
-    const formattedResponseBody = () => {
-      Resting.useFormattedResponseBody(true);
-      Resting.useRawResponseBody(false);
-      Resting.responseBody(JSON.stringify(Resting.responseContent,null,2));
-      highlight();
-    };
-
-    const rawResponseBody = () => {
-      Resting.useFormattedResponseBody(false);
-      Resting.useRawResponseBody(true);
-      Resting.responseBody(JSON.stringify(Resting.responseContent));
-      unhighlight();
+    const contextPanel = () => {
+      Resting.showRequestHeaders(false);
+      Resting.showRequestBody(false);
+      Resting.showQuerystring(false);
+      Resting.showAuthentication(false);
+      Resting.showActiveContext(true);
     };
 
     const saveBookmarkDialog = () => {
       Resting.showBookmarkDialog(true);
+      Resting.saveAsNewBookmark(false);
+      Resting.bookmarkName(Resting.bookmarkSelected.name());
+    };
+
+    const saveAsBookmarkDialog = () => {
+      Resting.showBookmarkDialog(true);
+      Resting.saveAsNewBookmark(true);
+      Resting.bookmarkName('');
     };
 
     const dismissSaveBookmarkDialog = () => {
       Resting.showBookmarkDialog(false);
       if(Resting.bookmarkCopy == null) {
-        Resting.bookmarkName('');
         Resting.bookmarkSelected.name('');
         Resting.folderSelected('');
+        Resting.folderName('--');
       }
-    };
-
-    const unhighlight = () => {
-      $('#highlighted-response').removeClass('hljs');
-    };
-
-    const highlight = () => {
-      $('#highlighted-response').each(function(i, block) {
-      hljs.highlightBlock(block);
-      });
     };
 
     const callSendOnEnter = (data, event) => {
@@ -521,44 +493,135 @@ requirejs(['jquery','app/storage','knockout','knockout-secure-binding','hjls','a
     };
 
     const saveContext = () => {
-      storage.saveContext({name : Resting.contexts.name(), variables : _extractModelFromVM(Resting.contexts.variables()) });
+      storage.saveContext({name : Resting.selectedContext.name(), variables : _extractModelFromVM(Resting.selectedContext.variables()) });
+      const contextToEditIdx = Resting.contexts().find(ctx => ctx.name === Resting.selectedContext.name());
+      if(contextToEditIdx > -1) {
+        Resting.contexts.replace(Resting.contexts[contextToEditIdx],Resting.selectedContext);
+      }
+
       dismissContextDialog();
+    };
+
+    const confirmDeleteContext = () => {
+       Resting.showConfirmDialog(true);
+       Resting.dialogConfirmMessage("Confirm context delete ?");
+    };
+
+    const deleteContext = () => {
+       const ctxToRemove = Resting.contexts().find(ctx => ctx.name() === Resting.selectedContext.name());
+       storage.deleteContextById(Resting.selectedContext.name());
+       Resting.contexts.remove(ctxToRemove);
+       dismissConfirmDialog();
+       dismissContextDialog();
     };
 
     const loadContexts = () => {
       // load contexts
       storage.loadContexts( ctx => {
-        Resting.contexts.variables(_convertToEntryItemVM(ctx.variables));
-      });
+        Resting.contexts.push(new ContextVm(ctx.name,ctx.variables));
+      },
+      () => {
+        const isDefaultMissing = Resting.contexts().findIndex(ctx => ctx.name() === 'default') < 0;
+        if(isDefaultMissing) {
+          // default context
+          Resting.contexts.push(new ContextVm());
+        }
+      }
+      );
+
+    };
+
+    const dismissConfirmDialog = () => {
+      Resting.showConfirmDialog(false);
+    };
+
+    const createContextDialog = () => {
+      Resting.showCreateContextDialog(true);
+    };
+
+    const dismissCreateContextDialog = () => {
+      Resting.contextName('');
+      Resting.showCreateContextDialog(false);
+    };
+
+    const createContext = () => {
+      Resting.contexts.push(new ContextVm(Resting.contextName()));
+      storage.saveContext({name : Resting.contextName(), variables : [] });
+      dismissCreateContextDialog();
+
+    };
+     const loadBookmarkObj = (bookmarkObj) => {
+      Resting.bookmarkCopy = bookmarkProvider.copyBookmark(bookmarkObj);
+      Resting.folderSelected(bookmarkObj.folder);
+      const name = _folderName(bookmarkObj.folder);
+      Resting.folderName(name ? name : '--');
+      return loadBookmarkData(bookmarkObj);
+    };
+
+    const _folderName = (id) => {
+      const folderObj =  Resting.folders().find((elem) => elem.id === id);
+      return folderObj ? folderObj.name : folderObj;
+    };
+
+    const loadBookmarkData = (bookmark) => {
+      Resting.parseRequest(bookmark.request);
+      loadBookmarkInView(bookmark);
+    };
+
+    const addFolder = (folder) => {
+      Resting.folders.push(folder);
+    };
+
+    const removeFolder = (folder) => {
+      Resting.folders.remove(f => f.id === folder.id);
     };
 
 
+    const feedbackDialog = () => {
+      storage.readSettings('showFeedbackDialog', (err,value) => {
+        if(!value) {
+          Resting.showFeedbackDialog(true);
+        }
+      });
+    };
+
+    const dismissFeedbackDialog = () => {
+      Resting.showFeedbackDialog(false);
+      storage.saveSettings({showFeedbackDialog : true});
+    };
+
+   bacheca.subscribe('loadBookmark', loadBookmarkObj);
+   bacheca.subscribe('addFolder', addFolder);
+   bacheca.subscribe('deleteFolder', removeFolder);
+
+    Resting.clearRequest = clearRequest;
     Resting.parseRequest = parseRequest;
     Resting.dataToSend = dataToSend;
+    Resting.deleteBookmark = deleteBookmark;
+    Resting.callSendOnEnter = callSendOnEnter;
+
     Resting.send = send;
     Resting.saveBookmark = saveBookmark;
-    Resting.deleteBookmark = deleteBookmark;
+    Resting.reset = reset;
+
     Resting.requestBodyPanel = requestBodyPanel;
-    Resting.responseBodyPanel = responseBodyPanel;
-    Resting.formattedResponseBody = formattedResponseBody;
     Resting.requestHeadersPanel = requestHeadersPanel;
-    Resting.responseHeadersPanel = responseHeadersPanel;
     Resting.querystringPanel = querystringPanel;
     Resting.authenticationPanel = authenticationPanel;
-    Resting.rawResponseBody = rawResponseBody;
-    Resting.saveBookmarkDialog = saveBookmarkDialog;
-    Resting.dismissSaveBookmarkDialog = dismissSaveBookmarkDialog;
-    Resting.callSendOnEnter = callSendOnEnter;
-    Resting.clearResponse = clearResponse;
-    Resting.reset = reset;
+    Resting.contextPanel = contextPanel;
+
     Resting.aboutDialog = aboutDialog;
     Resting.creditsDialog = creditsDialog;
     Resting.contextDialog = contextDialog;
+    Resting.saveBookmarkDialog = saveBookmarkDialog;
+    Resting.saveAsBookmarkDialog = saveAsBookmarkDialog;
+
+    Resting.dismissSaveBookmarkDialog = dismissSaveBookmarkDialog;
     Resting.dismissCreditsDialog = dismissCreditsDialog;
     Resting.dismissAboutDialog = dismissAboutDialog;
     Resting.dismissContextDialog = dismissContextDialog;
-    Resting.saveContext = saveContext;
 
+    Resting.saveContext = saveContext;
     // FIXME: not good to expose this internal function
     Resting._saveBookmark = _saveBookmark;
 
@@ -566,6 +629,15 @@ requirejs(['jquery','app/storage','knockout','knockout-secure-binding','hjls','a
     Resting.isBookmarkLoaded = isBookmarkLoaded;
     Resting.bookmarkScreenName = bookmarkScreenName;
     Resting.loadContexts = loadContexts;
+    Resting.createContextDialog = createContextDialog;
+    Resting.dismissCreateContextDialog = dismissCreateContextDialog;
+    Resting.createContext = createContext;
+    Resting.deleteContext = deleteContext;
+    Resting.confirmDeleteContext = confirmDeleteContext;
+    Resting.dismissConfirmDialog = dismissConfirmDialog;
+
+    Resting.feedbackDialog = feedbackDialog;
+    Resting.dismissFeedbackDialog = dismissFeedbackDialog;
 
     return Resting;
   }
@@ -583,18 +655,23 @@ requirejs(['jquery','app/storage','knockout','knockout-secure-binding','hjls','a
     });
 
     ko.components.register('request-body', {
-      viewModel: { require: 'app/components/request-body/component' },
-      template: { require: 'text!app/components/request-body/view.html' }
+      viewModel: { require: 'app/components/request-body/requestBodyVm' },
+      template: { require: 'text!app/components/request-body/requestBody_view.html' }
     });
 
      ko.components.register('bookmarks', {
-      viewModel: { require: 'app/components/bookmarks/component' },
-      template: { require: 'text!app/components/bookmarks/view.html' }
+      viewModel: { require: 'app/components/bookmarks/bookmarksVm' },
+      template: { require: 'text!app/components/bookmarks/bookmarks_view.html' }
     });
 
     ko.components.register('authentication', {
-      viewModel: { require: 'app/components/authentication/component' },
-      template: { require: 'text!app/components/authentication/view.html' }
+      viewModel: { require: 'app/components/authentication/authenticationVm' },
+      template: { require: 'text!app/components/authentication/authentication_view.html' }
+    });
+
+    ko.components.register('response-panel', {
+      viewModel: { require: 'app/components/response/responseVm' },
+      template: { require: 'text!app/components/response/response_view.html' }
     });
 
 
@@ -609,8 +686,10 @@ requirejs(['jquery','app/storage','knockout','knockout-secure-binding','hjls','a
 
    ko.bindingProvider.instance = new ksb(options);
 
-   const appVM = new AppViewModel();
+   const appVM = new AppVm();
    ko.applyBindings(appVM);
+
+
 
   $('ul.dropdown-menu [data-toggle=dropdown]').on('click', function(event) {
     event.preventDefault();
@@ -619,7 +698,7 @@ requirejs(['jquery','app/storage','knockout','knockout-secure-binding','hjls','a
     $(this).parent().toggleClass('open');
   });
 
+  appVM.feedbackDialog();
   appVM.loadContexts();
-
   });
 });

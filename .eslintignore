@@ -1,0 +1,6 @@
+dist/**
+node_modules/**
+scripts/**
+LICENSE
+README.md
+package.json
