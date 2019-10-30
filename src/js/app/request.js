@@ -41,8 +41,15 @@ define(['jquery','app/response'],function($,response){
       contentType: contentTypesFromBodyTypes[bodyType],
       data: body,
       beforeSend: function(xhr) {
-        if( authentication.type === 'Basic') {
-          xhr.setRequestHeader('Authorization', 'Basic ' + btoa(authentication.username+':'+authentication.password));
+        switch(authentication.type) {
+          case 'Basic':
+            xhr.setRequestHeader('Authorization', 'Basic ' + btoa(authentication.username+':'+authentication.password));
+            break;
+          case 'JWT':
+            xhr.setRequestHeader('Authorization', 'Bearer ' + authentication.jwtToken);
+            break;
+          default:
+            // None: no authentication required
         }
       },
       success: (data, status, jqXHR) => {

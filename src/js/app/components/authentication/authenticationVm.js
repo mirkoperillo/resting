@@ -4,10 +4,11 @@ define(['knockout'],function(ko) {
     const request = params.request;
 
     const Authentication = {
-      types: ko.observableArray(['Basic']),
+      types: ko.observableArray(['Basic', 'JWT']),
       authenticationType: request.authenticationType,
       username: request.username,
       password: request.password,
+      jwtToken: request.jwtToken,
     };
 
     return Authentication;

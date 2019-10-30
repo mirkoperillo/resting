@@ -2,8 +2,8 @@
   <div class="row">
     <div class="form-inline">
       <div class="form-group">
-         <label for="authentication-type">Type</label>
-           <select class="form-control" style="margin-left: 10px;" id="authentication-type" data-bind="options: types, optionsCaption: 'None', value: authenticationType"></select>
+        <label for="authentication-type">Type</label>
+        <select class="form-control" style="margin-left: 10px;" id="authentication-type" data-bind="options: types, optionsCaption: 'None', value: authenticationType"></select>
     </div>
     </div>
   </div>
@@ -16,6 +16,12 @@
       <div class="form-group">
         <label>Password</label>
         <input type="password" class="form-control" data-bind="value: password"></input>
+      </div>
+    </div>
+    <div class="col-md-12" data-bind="visible : authenticationType() == 'JWT'">
+      <div class="form-group">
+        <label>Token</label>
+        <textarea class="form-control" data-bind="value: jwtToken" placeholder="Header.Payload.Signature"></textarea>
       </div>
     </div>
   </div>
