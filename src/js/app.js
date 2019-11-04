@@ -491,6 +491,23 @@ requirejs(['jquery','app/storage','knockout','knockout-secure-binding','hjls','a
       }
     };
 
+    const closeDialogOnExcape = (data, event) => {
+      debugger;
+      const excape = 27;
+      if(event.keyCode === excape) {
+        Resting.showAuthentication(false),
+        Resting.showActiveContext(false),
+        Resting.showBookmarkDialog(false),
+        Resting.showAboutDialog(false),
+        Resting.showCreditsDialog(false),
+        Resting.showContextDialog(false),
+        Resting.showCreateContextDialog(false),
+        Resting.showConfirmDialog(false),
+        Resting.saveAsNewBookmark(false),
+        Resting.showFeedbackDialog(false)
+      }
+    };
+
     const saveContext = () => {
       storage.saveContext({name : Resting.selectedContext.name(), variables : _extractModelFromVM(Resting.selectedContext.variables()) });
       const contextToEditIdx = Resting.contexts().find(ctx => ctx.name === Resting.selectedContext.name());
@@ -619,7 +636,7 @@ requirejs(['jquery','app/storage','knockout','knockout-secure-binding','hjls','a
     Resting.dismissCreditsDialog = dismissCreditsDialog;
     Resting.dismissAboutDialog = dismissAboutDialog;
     Resting.dismissContextDialog = dismissContextDialog;
-
+    Resting.closeDialogOnExcape = closeDialogOnExcape;
     Resting.saveContext = saveContext;
     // FIXME: not good to expose this internal function
     Resting._saveBookmark = _saveBookmark;

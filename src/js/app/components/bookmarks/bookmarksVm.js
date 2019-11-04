@@ -160,7 +160,17 @@
     const exportDialog = () => {
       showExportDialog(true);
     };
-
+    const closeDialogOnExcape = (data, event) => {
+      debugger;
+      const excape = 27;
+      if(event.keyCode === excape) {
+        showBookmarkDeleteDialog(false);
+        showFolderDialog(false);
+        showImportDialog(false);
+        showExportDialog(false);
+        showContextMenu(false);
+      }
+    };
     const loadBookmarkObj = (bookmarkObj) => {
        bacheca.publish('loadBookmark', bookmarkObj);
     };
@@ -290,6 +300,7 @@
 
 
     return {
+      closeDialogOnExcape,
       showFolderDialog,
       showImportDialog,
       showExportDialog,
