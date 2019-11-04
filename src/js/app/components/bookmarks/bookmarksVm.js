@@ -161,7 +161,6 @@
       showExportDialog(true);
     };
     const closeDialogOnExcape = (data, event) => {
-      debugger;
       const excape = 27;
       if(event.keyCode === excape) {
         showBookmarkDeleteDialog(false);
