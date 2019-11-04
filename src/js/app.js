@@ -492,7 +492,6 @@ requirejs(['jquery','app/storage','knockout','knockout-secure-binding','hjls','a
     };
 
     const closeDialogOnExcape = (data, event) => {
-      debugger;
       const excape = 27;
       if(event.keyCode === excape) {
         Resting.showAuthentication(false),
