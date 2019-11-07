@@ -33,6 +33,8 @@ requirejs(['jquery','app/storage','knockout','knockout-secure-binding','hjls','a
     this.username = ko.observable();
     this.password = ko.observable();
     this.jwtToken = ko.observable();
+    this.oauthAuthPosition = ko.observable();
+    this.oauthAccessToken = ko.observable();
 
     this.bodyType = ko.observable();
     this.formDataParams = ko.observableArray();
@@ -162,6 +164,8 @@ requirejs(['jquery','app/storage','knockout','knockout-secure-binding','hjls','a
       Resting.request.username('');
       Resting.request.password('');
       Resting.request.jwtToken('');
+      Resting.request.oauthAuthPosition('');
+      Resting.request.oauthAccessToken('');
       Resting.request.context('default');
     };
 
@@ -199,6 +203,11 @@ requirejs(['jquery','app/storage','knockout','knockout-secure-binding','hjls','a
             break;
           case 'JWT':
             Resting.request.jwtToken(authentication.jwtToken);
+            break;
+          case 'Oauth 2.0':
+            Resting.request.oauthAuthPosition(authentication.oauthAuthPosition);
+            Resting.request.oauthAccessToken(authentication.oauthAccessToken);
+            break;
 
           default:
             // No authentication
@@ -221,6 +230,8 @@ requirejs(['jquery','app/storage','knockout','knockout-secure-binding','hjls','a
       username: _applyContext(Resting.request.username(), contexts),
       password: _applyContext(Resting.request.password(), contexts),
       jwtToken: _applyContext(Resting.request.jwtToken(), contexts),
+      oauthAuthPosition: _applyContext(Resting.request.oauthAuthPosition(), contexts),
+      oauthAccessToken: _applyContext(Resting.request.oauthAccessToken(), contexts),
     });
 
     const body = (bodyType) => {
