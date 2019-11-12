@@ -29,6 +29,9 @@ define(['jquery','app/response'],function($,response){
 
   const execute = (method, url, headers, querystring, bodyType, body, authentication, onResponse) => {
     const startCall = new Date().getTime();
+    if (authentication.type === 'Oauth 2.0' && authentication.oauthAuthPosition === 'Request URL') {
+      querystring = [{ name: "access_token", value: authentication.oauthAccessToken}].concat(querystring);
+    }
     const requestUrl = _appendQuerystring(prefixProtocol(url),querystring);
     requestQueue.push(requestUrl);
     $.ajax({
@@ -47,6 +50,11 @@ define(['jquery','app/response'],function($,response){
             break;
           case 'JWT':
             xhr.setRequestHeader('Authorization', 'Bearer ' + authentication.jwtToken);
+            break;
+          case 'Oauth 2.0':
+            if (authentication.oauthAuthPosition === 'Request Header') {
+              xhr.setRequestHeader('Authorization', 'Bearer ' + authentication.oauthAccessToken);
+            }
             break;
           default:
             // None: no authentication required

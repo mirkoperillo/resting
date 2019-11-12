@@ -24,5 +24,13 @@
         <textarea class="form-control" data-bind="value: jwtToken" placeholder="Header.Payload.Signature"></textarea>
       </div>
     </div>
+    <div class="col-md-12" data-bind="visible : authenticationType() == 'Oauth 2.0'">
+      <div class="form-group">
+        <label>Access Token</label>
+        <input type="text" class="form-control" data-bind="value: oauthAccessToken" />
+        <label>Add authorization data to</label>
+        <select class="form-control" data-bind="options: oauthAuthPositions, optionsCaption: 'Select one', value: oauthAuthPosition"></select>
+      </div>
+    </div>
   </div>
 </html>
