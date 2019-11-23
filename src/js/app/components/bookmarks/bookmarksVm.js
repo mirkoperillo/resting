@@ -19,10 +19,8 @@
     const bookmarkToDeleteName = ko.observable();
     const tryToDeleteFolder = ko.observable(false);
     const showBookmarkDeleteDialog = ko.observable(false);
-    const showFolderDialog = ko.observable(false);
     const showImportDialog = ko.observable(false);
     const showExportDialog = ko.observable(false);
-    const folderName = ko.observable();
     const importSrc = ko.observable('har');
     const exportSrc = ko.observable('har');
 
@@ -54,30 +52,8 @@
       folder.folderCollapsed(!folder.folderCollapsed());
     };
 
-    const addFolder = () => {
-      const folder = bookmarkProvider.makeFolder(storage.generateId(), folderName());
-      storage.save(_serializeBookmark(folder));
+    const _addFolder = (folder) => {
       bookmarks.push(new BookmarkVm(folder));
-      folderName('');
-      // close the dialog
-      dismissFolderDialog();
-
-      bacheca.publish('addFolder', folder);
-    };
-
-    const folderDialog = () => {
-      showFolderDialog(true);
-    };
-
-    const dismissFolderDialog = () => {
-      showFolderDialog(false);
-    };
-
-    const addFolderOnEnter = (data,event) => {
-      const enter = 13;
-      if(event.keyCode === enter) {
-        addFolder();
-      }
     };
 
     const _loadBookmarksNewFormat = () =>
@@ -160,6 +136,7 @@
     const exportDialog = () => {
       showExportDialog(true);
     };
+
     const closeDialogOnExcape = (data, event) => {
       const excape = 27;
       if(event.keyCode === excape) {
@@ -293,27 +270,26 @@
           _loadBookmarksNewFormat();
         }
       });
-
-     // $("#import-file").change((event) => handleInput());
     })();
 
+    /*
+     * FIXME: subscribe to newFolder is a workaround:
+     * bookmarksVm publishes and now consumes addFolder events.
+     * it publishes addFolder events  loading bookmarks from storage
+     * and this duplicates (only in view) all folder elements
+     */
+    bacheca.subscribe('newFolder', _addFolder);
 
     return {
       closeDialogOnExcape,
-      showFolderDialog,
       showImportDialog,
       showExportDialog,
-      folderName,
-      folderDialog,
       importDialog,
       exportDialog,
-      dismissFolderDialog,
       dismissImportDialog,
       dismissExportDialog,
       importSrc,
       exportSrc,
-      addFolderOnEnter,
-      addFolder,
       bookmarks,
       showBookmarkDeleteDialog,
       bookmarkToDeleteName,

@@ -717,6 +717,10 @@ requirejs(['jquery','app/storage','knockout','knockout-secure-binding','hjls','a
       template: { require: 'text!app/components/response/response_view.html' }
     });
 
+    ko.components.register('add-folder-button', {
+      viewModel: { require: 'app/components/add-folder/addFolderVm' },
+      template: { require: 'text!app/components/add-folder/addFolder_view.html' }
+    });
 
 
    // Show all options, more restricted setup than the Knockout regular binding.

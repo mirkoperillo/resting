@@ -30,7 +30,7 @@ body {
 
 
 .dialog {
- position: absolute;
+ position: fixed;
  top: 100px;
  width: 400px;
  z-index: 100;

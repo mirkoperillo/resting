@@ -5,9 +5,7 @@
           </div>
           <div class="panel-body">          
             <div class="btn-group" role="group" style="margin-bottom: 2px;">
-                <button type="button" class="btn btn-default btn-sm" aria-label="Add folder" data-bind="click: folderDialog" title="Add folder">
-                    <span class="glyphicon glyphicon-plus" aria-hidden="true"></span>
-                  </button>
+              <add-folder-button />
               <button type="button" class="btn btn-default btn-sm" data-bind="click: importDialog" title="Import">
                 <span class="glyphicon glyphicon-import" aria-hidden="true"></span
               </button>
@@ -50,7 +48,7 @@
           </div>
 
 
-  <div id="folder-dialog" class="panel panel-primary dialog" data-bind="visible: showFolderDialog">
+  <!-- div id="folder-dialog" class="panel panel-primary dialog" data-bind="visible: showFolderDialog">
     <div class="panel-heading">
       Add Folder
     </div>
@@ -60,7 +58,7 @@
     <div class="panel-footer">
       <button class="btn btn-default" data-bind="click: addFolder">Save</button><button class="btn btn-default" data-bind="click: dismissFolderDialog">Cancel</button>
     </div>
-  </div>
+  </div -->
 
    <div id="confirm-bookmark-delete-dialog" class="panel panel-primary dialog" data-bind="visible: showBookmarkDeleteDialog">
     <div class="panel-heading">
