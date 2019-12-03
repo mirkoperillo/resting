@@ -43,6 +43,9 @@ define(['jquery','app/response'],function($,response){
       crossDomain: true,
       contentType: contentTypesFromBodyTypes[bodyType],
       data: body,
+      converters: {
+        'text xml' : window.String,
+      },
       beforeSend: function(xhr) {
         switch(authentication.type) {
           case 'Basic':
