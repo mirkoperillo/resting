@@ -14,7 +14,7 @@ The road to v1.0.0
 - [ ] Load multiple bookmarks in tabs [#42](https://github.com/mirkoperillo/resting/issues/42) 
 - [x] Import/export saved bookmarks [#87](https://github.com/mirkoperillo/resting/issues/87)
 - [x] Import from HAR format [#51](https://github.com/mirkoperillo/resting/issues/51)
-- [ ] Add Oauth 2.0 authentication [#81](https://github.com/mirkoperillo/resting/issues/81)
+- [x] Add Oauth 2.0 authentication [#81](https://github.com/mirkoperillo/resting/issues/81)
 - [x] Add JWT authentication [#83](https://github.com/mirkoperillo/resting/issues/83)
 
 Actually working on [v0.15.0](https://github.com/mirkoperillo/resting/projects/6)
