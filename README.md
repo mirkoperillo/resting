@@ -17,7 +17,7 @@ The road to v1.0.0
 - [x] Add Oauth 2.0 authentication [#81](https://github.com/mirkoperillo/resting/issues/81)
 - [x] Add JWT authentication [#83](https://github.com/mirkoperillo/resting/issues/83)
 
-Actually working on [v0.15.0](https://github.com/mirkoperillo/resting/projects/6)
+Actually working on [v1.0.0](https://github.com/mirkoperillo/resting/projects/7)
 
 ## Quickstart
 
