@@ -687,10 +687,6 @@ requirejs(['jquery','app/storage','knockout','knockout-secure-binding','hjls','a
 
   // init application
   $(() => {
-    const screenWidth = screen.width;
-    const dialogLeftPosition = screenWidth / 2  - 200;
-    $('div.dialog').css('left', dialogLeftPosition+'px');
-
     // seems that this below must be the last instructions to permit component to be registered
     ko.components.register('entry-list', {
       viewModel: { require: 'app/components/entry-list/entryListVm' },
