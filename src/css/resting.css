@@ -28,12 +28,13 @@ body {
   color: white;
 }
 
-
 .dialog {
- position: fixed;
- top: 100px;
- width: 400px;
- z-index: 100;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  margin-top: -150px;
+  margin-left: -200px;
+  width: 400px;
 }
 
 .context-dialog {

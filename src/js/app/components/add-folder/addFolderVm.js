@@ -38,12 +38,6 @@ define(['knockout', 'app/bookmark', 'app/storage', 'app/bacheca'],function(ko, m
       return bookmarkProvider.fromJson(JSON.stringify(bookmarkObj));
     }
 
-    $(() => {
-      const screenWidth = screen.width;
-      const dialogLeftPosition = screenWidth / 2  - 200;
-      $('.dialog').css('left', dialogLeftPosition+'px');
-    });
-
     return {
       addFolder,
       addFolderOnEnter,
