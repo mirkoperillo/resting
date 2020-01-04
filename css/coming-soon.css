@@ -230,14 +230,12 @@ video {
 
 .snapshot {
   position: absolute;
-  left: 50%;
+  left: 35%;
   top: 20%;
+  right: 1%;
   z-index: 1;
 }
 
-.snapshot img {
-  width: 600px;
-}
 
 @media only screen and (max-width: 1024px) {
   .snapshot {
