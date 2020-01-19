@@ -17,7 +17,7 @@ The road to v1.0.0
 - [x] Add Oauth 2.0 authentication [#81](https://github.com/mirkoperillo/resting/issues/81)
 - [x] Add JWT authentication [#83](https://github.com/mirkoperillo/resting/issues/83)
 
-Actually working on [v0.15.0](https://github.com/mirkoperillo/resting/projects/6)
+Actually working on [v1.0.0](https://github.com/mirkoperillo/resting/projects/7)
 
 ## Quickstart
 
@@ -66,7 +66,7 @@ The project follows the semantic versioning
 * Signal a bug
 * Suggest a new feature or an improvement of an existing one
 * This project is community friendly: put a :+1: on a feature or an improvement. Issues with a lot of votes will be put on the top of the todo stack 
-* A cup of coffee: [paypal](https://www.paypal.me/mirkoperillo) | [liberapay](https://liberapay.com/mirkoperillo)
+* A cup of coffee: [paypal](https://www.paypal.me/owlcodesw) | [liberapay](https://liberapay.com/mirkoperillo)
 * Star the project :star2:
 
 ## License
