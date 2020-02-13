@@ -9,15 +9,15 @@ Resting takes inspiration from Postman with the goal to be light and focused on 
 
 ## Roadmap
 
-The road to v1.0.0
+Resting v1.0.0 is out, main features of major release: 
 
-- [ ] Load multiple bookmarks in tabs [#42](https://github.com/mirkoperillo/resting/issues/42) 
+- [x] Load multiple bookmarks in tabs [#42](https://github.com/mirkoperillo/resting/issues/42) 
 - [x] Import/export saved bookmarks [#87](https://github.com/mirkoperillo/resting/issues/87)
 - [x] Import from HAR format [#51](https://github.com/mirkoperillo/resting/issues/51)
 - [x] Add Oauth 2.0 authentication [#81](https://github.com/mirkoperillo/resting/issues/81)
 - [x] Add JWT authentication [#83](https://github.com/mirkoperillo/resting/issues/83)
 
-Actually working on [v1.0.0](https://github.com/mirkoperillo/resting/projects/7)
+Now it's time to celebrate 🎉🎉, then to pianificate the road to v2.0.0
 
 ## Quickstart
 
