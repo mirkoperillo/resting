@@ -50,22 +50,59 @@ requirejs(['jquery','app/storage','knockout','knockout-secure-binding','hjls','a
     this.id = ko.observable('');
     this.name = ko.observable('');
     this.folder = ko.observable('');
+
+    this.toModel = () => {
+      return { id: this.id(), name : this.name(), folder : this.folder() };
+    }
+
+    this.reset = () => {
+      this.id('');
+      this.name('');
+      this.folder('');
+    };
+  }
+
+/**
+ * PROBLEMI con remove and active
+ *
+ */
+  function TabContextVm(counter = 1) {
+    const self = this;
+    this.name = ko.observable('TAB ' + counter);
+    this.request = {};
+    this.response = {};
+
+    // bookmark stuff
+    this.folderName = ko.observable();
+    this.bookmarkSelected = new BookmarkSelectedVm();
+
+    this.isActive = ko.observable(true);
+
+    this.reset = () => {
+      this.request = {};
+      this.response = {};
+      this.folderName('');
+      this.bookmarkSelected.reset();
+    };
   }
 
   function AppVm() {
     const Resting = {
       contexts : ko.observableArray(),
       selectedContext: new ContextVm(),
-      bookmarkSelected : new BookmarkSelectedVm(),
+      bookmarkSelected : new BookmarkSelectedVm(),  // bookmark loaded
+      tabCounter: 1,
+      tabContexts : ko.observableArray([new TabContextVm()]),
+      activeTabIndex : 0,
       request : new RequestVm(),
       //response : new ResponseVm(),
       bookmarkCopy: null,   // copy of bookmark object loaded
                             // used to match with modified version in _saveBookmark
       bookmarks: ko.observableArray(),
       folders: ko.observableArray(),
-      folderSelected: ko.observable(),
-      folderName: ko.observable(),
-      bookmarkName: ko.observable(),
+      folderSelected: ko.observable(),  // used by save dialog
+      folderName: ko.observable(),  // used by loadedBookmark div
+      bookmarkName: ko.observable(),  // used by save dialog
       methods: ko.observableArray(['GET','POST','PUT','DELETE','HEAD','OPTIONS','CONNECT','TRACE','PATCH']),
 
       // request panel flags
@@ -183,14 +220,16 @@ requirejs(['jquery','app/storage','knockout','knockout-secure-binding','hjls','a
     };
 
     const parseRequest = (req) => {
-      Resting.request.method(req.method);
-      Resting.request.url(req.url);
-      Resting.request.bodyType(req.bodyType);
-      Resting.request.headers(_convertToEntryItemVM(req.headers));
-      Resting.request.querystring(req.querystring ?  _convertToEntryItemVM(req.querystring) : []);
-      _updateAuthentication(req.authentication);
-      updateBody(req.bodyType, req.body);
-      Resting.request.context(req.context);
+      if(req) {
+        Resting.request.method(req.method);
+        Resting.request.url(req.url);
+        Resting.request.bodyType(req.bodyType);
+        Resting.request.headers(_convertToEntryItemVM(req.headers));
+        Resting.request.querystring(req.querystring ?  _convertToEntryItemVM(req.querystring) : []);
+        _updateAuthentication(req.authentication);
+        updateBody(req.bodyType, req.body);
+        Resting.request.context(req.context);
+      }
     };
 
     const _updateAuthentication = authentication => {
@@ -341,16 +380,24 @@ requirejs(['jquery','app/storage','knockout','knockout-secure-binding','hjls','a
       Resting.showBookmarkDialog(false);
     };
 
-    const reset = () => {
+
+    const reset = (tabReset = true) => {
       Resting.bookmarkCopy = null;
       Resting.folderSelected('');
       Resting.folderName('--');
       Resting.bookmarkName('');
       Resting.bookmarkSelected.name('');
       Resting.bookmarkSelected.id('');
-
       clearRequest();
+      if(tabReset) {
+        _tabReset();
+      }
       bacheca.publish('reset');
+    };
+
+    const _tabReset = () => {
+      const tab = _activeTab();
+      tab.reset();
     };
 
     // used by _saveBookmark...why ?
@@ -405,8 +452,14 @@ requirejs(['jquery','app/storage','knockout','knockout-secure-binding','hjls','a
         ),
         Resting.request.bodyType(),
         Resting.dataToSend(mapping),
-        _authentication(mapping), _displayResponse
+        _authentication(mapping), _manageResponse
       );
+    };
+
+    const _manageResponse = (response) => {
+      const activeTab = _activeTab();
+      activeTab.response = response;
+      _displayResponse(response);
     };
 
     // Note that elements order is important
@@ -447,8 +500,10 @@ requirejs(['jquery','app/storage','knockout','knockout-secure-binding','hjls','a
       Resting.bookmarkSelected.id(bookmark.id);
       Resting.bookmarkSelected.name(bookmark.name);
       Resting.bookmarkSelected.folder(bookmark.folder);
-      Resting.request.method(bookmark.request.method);
-      Resting.request.url(bookmark.request.url);
+      if(bookmark.request) {
+        Resting.request.method(bookmark.request.method);
+        Resting.request.url(bookmark.request.url);
+      }
     };
 
     const requestHeadersPanel = () => {
@@ -633,6 +688,85 @@ requirejs(['jquery','app/storage','knockout','knockout-secure-binding','hjls','a
       storage.saveSettings({showFeedbackDialog : true});
     };
 
+    const activateTab = (tabActivated) => {
+      _activateTab(tabActivated, Resting.activeTabIndex);
+    };
+
+    const _activateTab = (tabActivated, oldActiveIndex = -1) => {
+       const newActiveIndex = Resting.tabContexts().indexOf(tabActivated);
+
+       Resting.tabContexts().forEach(function(tab, idx) {
+         tab.isActive(idx == newActiveIndex);
+       });
+       Resting.activeTabIndex = newActiveIndex;
+
+       if(oldActiveIndex == newActiveIndex) {
+         return;
+       }
+       // backup data old tab
+      const previousActiveTab = Resting.tabContexts()[oldActiveIndex];
+      // previousActiveTab is undefined when activateTab is used
+      // in removeTab and tab removed is the active one
+      if(previousActiveTab) {
+        previousActiveTab.request = request.makeRequest(
+          Resting.request.method(), Resting.request.url(),
+          _extractModelFromVM(Resting.request.headers()), _extractModelFromVM(Resting.request.querystring()), Resting.request.bodyType(),
+          body(Resting.request.bodyType()),_authentication(), Resting.request.context());
+
+        if(Resting.bookmarkCopy) {
+          previousActiveTab.bookmarkSelected.id(Resting.bookmarkCopy.id);
+        } else {
+          previousActiveTab.bookmarkSelected.id('');
+        }
+        previousActiveTab.bookmarkSelected.name(Resting.bookmarkSelected.name());
+        previousActiveTab.bookmarkSelected.folder(Resting.folderSelected());
+      }
+
+      // set new active tab data
+      let bookmark = tabActivated.bookmarkSelected.toModel();
+      bookmark.request = tabActivated.request;
+      reset(false);
+      if(bookmark.id.length > 0) {
+        loadBookmarkObj(bookmark);
+      } else {
+        parseRequest(tabActivated.request);
+      }
+
+      if(! _isEmptyObj(tabActivated.response)) {
+        _displayResponse(tabActivated.response);
+      }
+    };
+
+    const _isEmptyObj = (obj) => {
+      return Object.keys(obj).length == 0;
+    };
+    const newTab = () => {
+      const newTabContext = new TabContextVm(++Resting.tabCounter);
+      Resting.tabContexts.push(newTabContext);
+      _activateTab(newTabContext, Resting.activeTabIndex);
+    };
+
+    const removeTab = (tab) => {
+      const tabToRemoveIndex = Resting.tabContexts().indexOf(tab);
+      const [ removedTab ] = Resting.tabContexts.remove(tab);
+      const tabs = Resting.tabContexts().length;
+      const activeBiggerThanRemoved = Resting.activeTabIndex > tabToRemoveIndex;
+      let newActiveTabIndex;
+      if(removedTab.isActive()) {
+        newActiveTabIndex = tabToRemoveIndex > 0 ? tabToRemoveIndex - 1 : 0;
+      } else {
+        if(Resting.activeTabIndex > tabToRemoveIndex) {
+          newActiveTabIndex = Resting.activeTabIndex - 1;
+        } else {
+          newActiveTabIndex = Resting.activeTabIndex;
+        }
+      }
+      _activateTab(Resting.tabContexts()[newActiveTabIndex], removedTab.isActive() ? -1 : newActiveTabIndex);
+    };
+
+    const _activeTab =  () => Resting.tabContexts()[Resting.activeTabIndex];
+
+
    bacheca.subscribe('loadBookmark', loadBookmarkObj);
    bacheca.subscribe('addFolder', addFolder);
    bacheca.subscribe('deleteFolder', removeFolder);
@@ -667,6 +801,9 @@ requirejs(['jquery','app/storage','knockout','knockout-secure-binding','hjls','a
     Resting.saveContext = saveContext;
     // FIXME: not good to expose this internal function
     Resting._saveBookmark = _saveBookmark;
+    Resting.newTab = newTab;
+    Resting.removeTab = removeTab;
+    Resting.activateTab = activateTab;
 
     Resting.loadBookmarkInView = loadBookmarkInView;
     Resting.isBookmarkLoaded = isBookmarkLoaded;

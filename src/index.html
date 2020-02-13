@@ -66,6 +66,21 @@
 
     <!-- FIRST ROW -->
 
+    <ul class="nav nav-tabs" data-bind="foreach: tabContexts">
+      <li role="presentation" data-bind="css: {active : isActive}">
+          <a href="#" data-bind="click: $parent.activateTab"><span data-bind="text: name"></span>
+            <button type="button" class="btn btn-xs btn-danger" data-bind="click: $parent.removeTab, clickBubble: false">
+            <span class="glyphicon glyphicon-remove"></span>
+            </button>
+          </a>
+      </li>
+
+    </ul>
+    <button type="button" class="btn btn-xs btn-primary" data-bind="click: newTab" title="new tab">
+      <span class="glyphicon glyphicon-plus"></span>
+    </button>
+
+
     <div class="row" style="margin-top: 20px;">
       <div class="col-md-2">
         <select class="form-control" id="sel1" data-bind="options: methods, value: request.method">
@@ -203,7 +218,7 @@
       About Resting<span style="cursor: pointer;" class="glyphicon glyphicon-remove pull-right" data-bind="click: dismissAboutDialog"></span>
     </div>
     <div class="panel-body">
-      <h4>Resting v0.15.0</h4>
+      <h4>Resting v1.0.0</h4>
       <a target="_blank" href="https://github.com/mirkoperillo/resting">Project Website</a> --
       <a target="_blank" href="https://github.com/mirkoperillo/resting/issues">Issue tracker</a>
     </div>
