@@ -9,6 +9,11 @@ The mission of Resting is to simplify daily work of developer in testing and ana
 
 Resting takes inspiration from Postman with the goal to be light and focused on the management of saved requests.
 
+## Privacy
+Data is yours.
+Resting doesn't save in any servers data about the APIs you invoke or any other data about the usage of Resting.
+Everything is store offline on your device, all the data is saved locally in the Indexed DB of your browser
+
 ## Roadmap
 
 Resting v1.0.0 is out, main features of major release: 
