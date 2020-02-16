@@ -1,3 +1,5 @@
+![Icon](src/icons/letter-r_64.png)
+
 Resting is a rest client WebExtension actually available for Firefox.
 
 It is a very young project under an heavy developement.
