@@ -38,18 +38,6 @@ define(['knockout', 'app/bookmark', 'app/storage', 'app/bacheca'],function(ko, m
       return bookmarkProvider.fromJson(JSON.stringify(bookmarkObj));
     }
 
-    function center(d) {
-      const dialogLeftPosition = window.innerWidth / 2;
-      d.css('left', dialogLeftPosition+'px');
-    }
-
-    const dialogCenterer = () => center($('#folder-dialog'));
-
-    $(dialogCenterer);
-
-    // TODO: maybe a cleanup is needed.
-    window.addEventListener('resize', dialogCenterer);
-
     return {
       addFolder,
       addFolderOnEnter,
