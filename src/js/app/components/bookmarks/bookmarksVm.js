@@ -243,15 +243,10 @@
 
 
     $(() => {
-      const screenWidth = screen.width;
-      const dialogLeftPosition = screenWidth / 2  - 200;
-      $('div.dialog').css('left', dialogLeftPosition+'px');
-
        // hide context menu on every click on page
        $(".row").on("click", function() {
         showContextMenu(false);
        });
-
     });
 
     // define the storage format conversion
