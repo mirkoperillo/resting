@@ -16,15 +16,11 @@ Everything is store offline on your device, all the data is saved locally in the
 
 ## Roadmap
 
-Resting v1.0.0 is out, main features of major release: 
+It' time to plan the next major version of Resting.
 
-- [x] Load multiple bookmarks in tabs [#42](https://github.com/mirkoperillo/resting/issues/42) 
-- [x] Import/export saved bookmarks [#87](https://github.com/mirkoperillo/resting/issues/87)
-- [x] Import from HAR format [#51](https://github.com/mirkoperillo/resting/issues/51)
-- [x] Add Oauth 2.0 authentication [#81](https://github.com/mirkoperillo/resting/issues/81)
-- [x] Add JWT authentication [#83](https://github.com/mirkoperillo/resting/issues/83)
+Please help me filling the following quick [survey](https://forms.gle/TotSJZc6EUpiX9kQA) (only 5 questions)
 
-Now it's time to celebrate 🎉🎉, then to pianificate the road to v2.0.0
+Any help is appreciated
 
 ## Quickstart
 
