@@ -119,14 +119,13 @@ requirejs(['jquery','app/storage','knockout','knockout-secure-binding','hjls','a
       showContextDialog: ko.observable(false),
       showCreateContextDialog: ko.observable(false),
       showConfirmDialog: ko.observable(false),
+      showFeedbackDialog: ko.observable(false),
+      showCommunicationDialog: ko.observable(false),
 
       saveAsNewBookmark: ko.observable(false),
 
       dialogConfirmMessage: ko.observable(),
       contextName: ko.observable(),
-
-      showFeedbackDialog: ko.observable(false),
-
     };
 
     const bookmarkProvider = makeBookmarkProvider(storage);
@@ -674,18 +673,37 @@ requirejs(['jquery','app/storage','knockout','knockout-secure-binding','hjls','a
       Resting.folders.remove(f => f.id === folder.id);
     };
 
-
-    const feedbackDialog = () => {
-      storage.readSettings('showFeedbackDialog', (err,value) => {
-        if(!value) {
-          Resting.showFeedbackDialog(true);
+    const communicationDialog = () => {
+      storage.readSettings('communication', (err,value) => {
+        if(!value || !value.survey || !value.survey.read) {
+           Resting.showCommunicationDialog(true);
         }
-      });
+      })
     };
 
-    const dismissFeedbackDialog = () => {
-      Resting.showFeedbackDialog(false);
-      storage.saveSettings({showFeedbackDialog : true});
+    const surveyDialog = () => {
+           Resting.showCommunicationDialog(true);
+    };
+
+    //const feedbackDialog = () => {
+      //storage.readSettings('showFeedbackDialog', (err,value) => {
+        //if(!value) {
+          //Resting.showFeedbackDialog(true);
+        //}
+      //});
+    //};
+
+    //const dismissFeedbackDialog = () => {
+      //Resting.showFeedbackDialog(false);
+      //storage.saveSettings({showFeedbackDialog : true});
+    //};
+
+    const dismissCommunicationDialog = () => {
+      Resting.showCommunicationDialog(false);
+      const communicationSettings = {};
+      communicationSettings.survey = {};
+      communicationSettings.survey.read = true;
+      storage.saveSettings({communication : communicationSettings});
     };
 
     const activateTab = (tabActivated) => {
@@ -816,9 +834,12 @@ requirejs(['jquery','app/storage','knockout','knockout-secure-binding','hjls','a
     Resting.confirmDeleteContext = confirmDeleteContext;
     Resting.dismissConfirmDialog = dismissConfirmDialog;
 
-    Resting.feedbackDialog = feedbackDialog;
-    Resting.dismissFeedbackDialog = dismissFeedbackDialog;
+    // Resting.feedbackDialog = feedbackDialog;
+    // Resting.dismissFeedbackDialog = dismissFeedbackDialog;
+    Resting.communicationDialog = communicationDialog;
+    Resting.dismissCommunicationDialog = dismissCommunicationDialog;
 
+    Resting.surveyDialog = surveyDialog;
     return Resting;
   }
 
@@ -878,7 +899,8 @@ requirejs(['jquery','app/storage','knockout','knockout-secure-binding','hjls','a
     $(this).parent().toggleClass('open');
   });
 
-  appVM.feedbackDialog();
+  // appVM.feedbackDialog();
+  appVM.communicationDialog();
   appVM.loadContexts();
   });
 });
