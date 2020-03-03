@@ -247,25 +247,8 @@
        $(".row").on("click", function() {
         showContextMenu(false);
        });
+        _loadBookmarksNewFormat();
     });
-
-    // define the storage format conversion
-    // this function converts format of bookmarks to the new version
-    // consider to maintain the call until version <= 0.6.0 of web-extentsion for compatibility goal
-    (() => {
-      storage.iterate( value => {
-        try {
-         const bookmarkObj = bookmarkProvider.fromJson(value);
-         bookmarkProvider.save(bookmarkObj);
-        } catch(e) {
-          console.log('bookmark/folder already converted in new format');
-        }
-      }, (err,success) => {
-        if(!err) {
-          _loadBookmarksNewFormat();
-        }
-      });
-    })();
 
     /*
      * FIXME: subscribe to newFolder is a workaround:
