@@ -74,4 +74,6 @@ The project follows the semantic versioning
 
 ## License
 
-Resting is under MIT license
+Resting is released under GPL v3 license after commit [117e15a33e97bc9c0905139ca527398e77e79620](https://github.com/mirkoperillo/resting/commit/117e15a33e97bc9c0905139ca527398e77e79620)
+
+Resting has released under MIT license until [v1.0.2](https://github.com/mirkoperillo/resting/releases/tag/1.0.2)
