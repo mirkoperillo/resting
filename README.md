@@ -72,6 +72,10 @@ The project follows the semantic versioning
 * A cup of coffee: [paypal](https://www.paypal.me/owlcodesw) | [liberapay](https://liberapay.com/mirkoperillo)
 * Star the project :star2:
 
+## Contributors
+
+Project contributors [here](CONTRIBUTORS.md)
+
 ## License
 
 Resting is released under GPL v3 license after commit [117e15a33e97bc9c0905139ca527398e77e79620](https://github.com/mirkoperillo/resting/commit/117e15a33e97bc9c0905139ca527398e77e79620)
