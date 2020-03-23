@@ -15,7 +15,7 @@ To have a working dev environment you have to:
 
 ## Licence
 
-Your work is under project licence, currently MIT. It's easy to understand so please take a read.
+Your work is under the project licence GPLv3.
 
 ## Help needed
 

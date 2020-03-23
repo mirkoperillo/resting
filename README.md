@@ -72,8 +72,18 @@ The project follows the semantic versioning
 * A cup of coffee: [paypal](https://www.paypal.me/owlcodesw) | [liberapay](https://liberapay.com/mirkoperillo)
 * Star the project :star2:
 
+## Contributors
+
+Project contributors [here](CONTRIBUTORS.md)
+
 ## License
 
 Resting is released under GPL v3 license after commit [117e15a33e97bc9c0905139ca527398e77e79620](https://github.com/mirkoperillo/resting/commit/117e15a33e97bc9c0905139ca527398e77e79620)
 
 Resting has released under MIT license until [v1.0.2](https://github.com/mirkoperillo/resting/releases/tag/1.0.2)
+
+### Why I changed license
+
+I know Resting will never be a breakdown project, it is only a personal project and so the license change is only an ethical-political action.
+
+I created Resting to solve my needs and to help users with needs like me. My intent is to create a little community of users and contributors around the project to grow it up and  so I want the project to stay free and accessible forever even when I will be no longer the main maintainer.
