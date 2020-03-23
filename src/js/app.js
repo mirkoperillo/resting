@@ -80,10 +80,6 @@ requirejs(['jquery','app/storage','knockout','knockout-secure-binding','hjls','a
     };
   }
 
-/**
- * PROBLEMI con remove and active
- *
- */
   function TabContextVm(counter = 1) {
     const self = this;
     this.name = ko.observable('TAB ' + counter);
