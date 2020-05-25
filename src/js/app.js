@@ -90,7 +90,7 @@ requirejs(['jquery','app/storage','knockout','knockout-secure-binding','hjls','a
     this.folderName = ko.observable();
     this.bookmarkSelected = new BookmarkSelectedVm();
 
-    this.isActive = ko.observable(true);
+    this.isActive = ko.observable(false);
 
     this.reset = () => {
       this.request = {};
@@ -721,38 +721,32 @@ requirejs(['jquery','app/storage','knockout','knockout-secure-binding','hjls','a
     };
 
     const activateTab = (tabActivated) => {
-      _activateTab(tabActivated, Resting.activeTabIndex);
+      _activateTab(tabActivated);
     };
 
-    const _activateTab = (tabActivated, oldActiveIndex = -1) => {
+    const _activateTab = (tabActivated) => {
        const newActiveIndex = Resting.tabContexts().indexOf(tabActivated);
 
        Resting.tabContexts().forEach(function(tab, idx) {
-         tab.isActive(idx == newActiveIndex);
-       });
-       Resting.activeTabIndex = newActiveIndex;
-
-       if(oldActiveIndex == newActiveIndex) {
-         return;
-       }
-       // backup data old tab
-      const previousActiveTab = Resting.tabContexts()[oldActiveIndex];
-      // previousActiveTab is undefined when activateTab is used
-      // in removeTab and tab removed is the active one
-      if(previousActiveTab) {
-        previousActiveTab.request = request.makeRequest(
+        if(tab.isActive()) { // update old tab data
+          tab.request = request.makeRequest(
           Resting.request.method(), Resting.request.url(),
           _extractModelFromVM(Resting.request.headers()), _extractModelFromVM(Resting.request.querystring()), Resting.request.bodyType(),
           body(Resting.request.bodyType()),_authentication(), Resting.request.context());
 
-        if(Resting.bookmarkCopy) {
-          previousActiveTab.bookmarkSelected.id(Resting.bookmarkCopy.id);
-        } else {
-          previousActiveTab.bookmarkSelected.id('');
+          if(Resting.bookmarkCopy) {
+            tab.bookmarkSelected.id(Resting.bookmarkCopy.id);
+          } else {
+            tab.bookmarkSelected.id('');
+          }
+          tab.bookmarkSelected.name(Resting.bookmarkSelected.name());
+          tab.bookmarkSelected.folder(Resting.folderSelected());
         }
-        previousActiveTab.bookmarkSelected.name(Resting.bookmarkSelected.name());
-        previousActiveTab.bookmarkSelected.folder(Resting.folderSelected());
-      }
+         
+        // set new active tab
+        tab.isActive(idx == newActiveIndex);
+       });
+       Resting.activeTabIndex = newActiveIndex;
 
       // set new active tab data
       let bookmark = tabActivated.bookmarkSelected.toModel();
@@ -772,10 +766,11 @@ requirejs(['jquery','app/storage','knockout','knockout-secure-binding','hjls','a
     const _isEmptyObj = (obj) => {
       return Object.keys(obj).length == 0;
     };
+    
     const newTab = () => {
       const newTabContext = new TabContextVm(++Resting.tabCounter);
       Resting.tabContexts.push(newTabContext);
-      _activateTab(newTabContext, Resting.activeTabIndex);
+      _activateTab(newTabContext);
     };
 
     const removeTab = (tab) => {
@@ -793,7 +788,8 @@ requirejs(['jquery','app/storage','knockout','knockout-secure-binding','hjls','a
           newActiveTabIndex = Resting.activeTabIndex;
         }
       }
-      _activateTab(Resting.tabContexts()[newActiveTabIndex], removedTab.isActive() ? -1 : newActiveTabIndex);
+      
+      _activateTab(Resting.tabContexts()[newActiveTabIndex]);
     };
 
     const _activeTab =  () => Resting.tabContexts()[Resting.activeTabIndex];
