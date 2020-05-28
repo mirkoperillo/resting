@@ -107,9 +107,8 @@ requirejs(['jquery','app/storage','knockout','knockout-secure-binding','hjls','a
       bookmarkSelected : new BookmarkSelectedVm(),  // bookmark loaded
       tabCounter: 1,
       tabContexts : ko.observableArray([new TabContextVm()]),
-      activeTabIndex : 0,
+      activeTab : null,
       request : new RequestVm(),
-      //response : new ResponseVm(),
       bookmarkCopy: null,   // copy of bookmark object loaded
                             // used to match with modified version in _saveBookmark
       bookmarks: ko.observableArray(),
@@ -409,7 +408,7 @@ requirejs(['jquery','app/storage','knockout','knockout-secure-binding','hjls','a
     };
 
     const _tabReset = () => {
-      const tab = _activeTab();
+      const tab = Resting.activeTab;
       tab.reset();
     };
 
@@ -470,8 +469,7 @@ requirejs(['jquery','app/storage','knockout','knockout-secure-binding','hjls','a
     };
 
     const _manageResponse = (response) => {
-      const activeTab = _activeTab();
-      activeTab.response = response;
+      Resting.activeTab.response = response;
       _displayResponse(response);
     };
 
@@ -746,7 +744,7 @@ requirejs(['jquery','app/storage','knockout','knockout-secure-binding','hjls','a
         // set new active tab
         tab.isActive(idx == newActiveIndex);
        });
-       Resting.activeTabIndex = newActiveIndex;
+       Resting.activeTab = tabActivated;
 
       // set new active tab data
       let bookmark = tabActivated.bookmarkSelected.toModel();
@@ -775,26 +773,13 @@ requirejs(['jquery','app/storage','knockout','knockout-secure-binding','hjls','a
 
     const removeTab = (tab) => {
       const tabToRemoveIndex = Resting.tabContexts().indexOf(tab);
-      const [ removedTab ] = Resting.tabContexts.remove(tab);
       const tabs = Resting.tabContexts().length;
-      const activeBiggerThanRemoved = Resting.activeTabIndex > tabToRemoveIndex;
-      let newActiveTabIndex;
-      if(removedTab.isActive()) {
-        newActiveTabIndex = tabToRemoveIndex > 0 ? tabToRemoveIndex - 1 : 0;
-      } else {
-        if(Resting.activeTabIndex > tabToRemoveIndex) {
-          newActiveTabIndex = Resting.activeTabIndex - 1;
-        } else {
-          newActiveTabIndex = Resting.activeTabIndex;
-        }
-      }
-      
-      _activateTab(Resting.tabContexts()[newActiveTabIndex]);
+      if(tabs > 1 && tab.isActive()) {
+        _activateTab(Resting.tabContexts()[Math.abs(tabToRemoveIndex - 1)]);
+      } 
+      Resting.tabContexts.remove(tab);
     };
-
-    const _activeTab =  () => Resting.tabContexts()[Resting.activeTabIndex];
-
-
+    
    bacheca.subscribe('loadBookmark', loadBookmarkObj);
    bacheca.subscribe('addFolder', addFolder);
    bacheca.subscribe('deleteFolder', removeFolder);
