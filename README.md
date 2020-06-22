@@ -15,12 +15,13 @@ Resting doesn't save in any servers data about the APIs you invoke or any other 
 Everything is store offline on your device, all the data is saved locally in the Indexed DB of your browser
 
 ## Roadmap
+This is the road to Resting v2.0
 
-It' time to plan the next major version of Resting.
+- [ ] Support file uploading [#53](https://github.com/mirkoperillo/resting/issues/53)
+- [ ] Complete Oauth2.0 authentication [#110](https://github.com/mirkoperillo/resting/issues/110)
+- [ ] Headers completion suggestion [#52](https://github.com/mirkoperillo/resting/issues/52)
+- [ ] List available context variables fo the request [#114](https://github.com/mirkoperillo/resting/issues/114)
 
-Please help me filling the following quick [survey](https://forms.gle/TotSJZc6EUpiX9kQA) (only 5 questions)
-
-Any help is appreciated
 
 ## Quickstart
 

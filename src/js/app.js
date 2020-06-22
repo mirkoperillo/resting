@@ -90,7 +90,7 @@ requirejs(['jquery','app/storage','knockout','knockout-secure-binding','hjls','a
     this.folderName = ko.observable();
     this.bookmarkSelected = new BookmarkSelectedVm();
 
-    this.isActive = ko.observable(true);
+    this.isActive = ko.observable(false);
 
     this.reset = () => {
       this.request = {};
@@ -107,9 +107,8 @@ requirejs(['jquery','app/storage','knockout','knockout-secure-binding','hjls','a
       bookmarkSelected : new BookmarkSelectedVm(),  // bookmark loaded
       tabCounter: 1,
       tabContexts : ko.observableArray([new TabContextVm()]),
-      activeTabIndex : 0,
+      activeTab : null,
       request : new RequestVm(),
-      //response : new ResponseVm(),
       bookmarkCopy: null,   // copy of bookmark object loaded
                             // used to match with modified version in _saveBookmark
       bookmarks: ko.observableArray(),
@@ -133,8 +132,8 @@ requirejs(['jquery','app/storage','knockout','knockout-secure-binding','hjls','a
       showContextDialog: ko.observable(false),
       showCreateContextDialog: ko.observable(false),
       showConfirmDialog: ko.observable(false),
-      showFeedbackDialog: ko.observable(false),
-      showCommunicationDialog: ko.observable(false),
+      //showFeedbackDialog: ko.observable(false),
+      //showCommunicationDialog: ko.observable(false),
 
       saveAsNewBookmark: ko.observable(false),
 
@@ -409,7 +408,7 @@ requirejs(['jquery','app/storage','knockout','knockout-secure-binding','hjls','a
     };
 
     const _tabReset = () => {
-      const tab = _activeTab();
+      const tab = Resting.activeTab;
       tab.reset();
     };
 
@@ -470,8 +469,7 @@ requirejs(['jquery','app/storage','knockout','knockout-secure-binding','hjls','a
     };
 
     const _manageResponse = (response) => {
-      const activeTab = _activeTab();
-      activeTab.response = response;
+      Resting.activeTab.response = response;
       _displayResponse(response);
     };
 
@@ -687,17 +685,13 @@ requirejs(['jquery','app/storage','knockout','knockout-secure-binding','hjls','a
       Resting.folders.remove(f => f.id === folder.id);
     };
 
-    const communicationDialog = () => {
-      storage.readSettings('communication', (err,value) => {
-        if(!value || !value.survey || !value.survey.read) {
-           Resting.showCommunicationDialog(true);
-        }
-      })
-    };
-
-    const surveyDialog = () => {
-           Resting.showCommunicationDialog(true);
-    };
+    //const communicationDialog = () => {
+      //storage.readSettings('communication', (err,value) => {
+        //if(!value || !value.survey || !value.survey.read) {
+           //Resting.showCommunicationDialog(true);
+        //}
+      //})
+    //};
 
     //const feedbackDialog = () => {
       //storage.readSettings('showFeedbackDialog', (err,value) => {
@@ -712,47 +706,41 @@ requirejs(['jquery','app/storage','knockout','knockout-secure-binding','hjls','a
       //storage.saveSettings({showFeedbackDialog : true});
     //};
 
-    const dismissCommunicationDialog = () => {
-      Resting.showCommunicationDialog(false);
-      const communicationSettings = {};
-      communicationSettings.survey = {};
-      communicationSettings.survey.read = true;
-      storage.saveSettings({communication : communicationSettings});
-    };
+    //const dismissCommunicationDialog = () => {
+      //Resting.showCommunicationDialog(false);
+      //const communicationSettings = {};
+      //communicationSettings.survey = {};
+      //communicationSettings.survey.read = true;
+      //storage.saveSettings({communication : communicationSettings});
+    //};
 
     const activateTab = (tabActivated) => {
-      _activateTab(tabActivated, Resting.activeTabIndex);
+      _activateTab(tabActivated);
     };
 
-    const _activateTab = (tabActivated, oldActiveIndex = -1) => {
+    const _activateTab = (tabActivated) => {
        const newActiveIndex = Resting.tabContexts().indexOf(tabActivated);
 
        Resting.tabContexts().forEach(function(tab, idx) {
-         tab.isActive(idx == newActiveIndex);
-       });
-       Resting.activeTabIndex = newActiveIndex;
-
-       if(oldActiveIndex == newActiveIndex) {
-         return;
-       }
-       // backup data old tab
-      const previousActiveTab = Resting.tabContexts()[oldActiveIndex];
-      // previousActiveTab is undefined when activateTab is used
-      // in removeTab and tab removed is the active one
-      if(previousActiveTab) {
-        previousActiveTab.request = request.makeRequest(
+        if(tab.isActive()) { // update old tab data
+          tab.request = request.makeRequest(
           Resting.request.method(), Resting.request.url(),
           _extractModelFromVM(Resting.request.headers()), _extractModelFromVM(Resting.request.querystring()), Resting.request.bodyType(),
           body(Resting.request.bodyType()),_authentication(), Resting.request.context());
 
-        if(Resting.bookmarkCopy) {
-          previousActiveTab.bookmarkSelected.id(Resting.bookmarkCopy.id);
-        } else {
-          previousActiveTab.bookmarkSelected.id('');
+          if(Resting.bookmarkCopy) {
+            tab.bookmarkSelected.id(Resting.bookmarkCopy.id);
+          } else {
+            tab.bookmarkSelected.id('');
+          }
+          tab.bookmarkSelected.name(Resting.bookmarkSelected.name());
+          tab.bookmarkSelected.folder(Resting.folderSelected());
         }
-        previousActiveTab.bookmarkSelected.name(Resting.bookmarkSelected.name());
-        previousActiveTab.bookmarkSelected.folder(Resting.folderSelected());
-      }
+         
+        // set new active tab
+        tab.isActive(idx == newActiveIndex);
+       });
+       Resting.activeTab = tabActivated;
 
       // set new active tab data
       let bookmark = tabActivated.bookmarkSelected.toModel();
@@ -772,33 +760,22 @@ requirejs(['jquery','app/storage','knockout','knockout-secure-binding','hjls','a
     const _isEmptyObj = (obj) => {
       return Object.keys(obj).length == 0;
     };
+    
     const newTab = () => {
       const newTabContext = new TabContextVm(++Resting.tabCounter);
       Resting.tabContexts.push(newTabContext);
-      _activateTab(newTabContext, Resting.activeTabIndex);
+      _activateTab(newTabContext);
     };
 
     const removeTab = (tab) => {
       const tabToRemoveIndex = Resting.tabContexts().indexOf(tab);
-      const [ removedTab ] = Resting.tabContexts.remove(tab);
       const tabs = Resting.tabContexts().length;
-      const activeBiggerThanRemoved = Resting.activeTabIndex > tabToRemoveIndex;
-      let newActiveTabIndex;
-      if(removedTab.isActive()) {
-        newActiveTabIndex = tabToRemoveIndex > 0 ? tabToRemoveIndex - 1 : 0;
-      } else {
-        if(Resting.activeTabIndex > tabToRemoveIndex) {
-          newActiveTabIndex = Resting.activeTabIndex - 1;
-        } else {
-          newActiveTabIndex = Resting.activeTabIndex;
-        }
-      }
-      _activateTab(Resting.tabContexts()[newActiveTabIndex], removedTab.isActive() ? -1 : newActiveTabIndex);
+      if(tabs > 1 && tab.isActive()) {
+        _activateTab(Resting.tabContexts()[Math.abs(tabToRemoveIndex - 1)]);
+      } 
+      Resting.tabContexts.remove(tab);
     };
-
-    const _activeTab =  () => Resting.tabContexts()[Resting.activeTabIndex];
-
-
+    
    bacheca.subscribe('loadBookmark', loadBookmarkObj);
    bacheca.subscribe('addFolder', addFolder);
    bacheca.subscribe('deleteFolder', removeFolder);
@@ -850,10 +827,9 @@ requirejs(['jquery','app/storage','knockout','knockout-secure-binding','hjls','a
 
     // Resting.feedbackDialog = feedbackDialog;
     // Resting.dismissFeedbackDialog = dismissFeedbackDialog;
-    Resting.communicationDialog = communicationDialog;
-    Resting.dismissCommunicationDialog = dismissCommunicationDialog;
+    //Resting.communicationDialog = communicationDialog;
+    //Resting.dismissCommunicationDialog = dismissCommunicationDialog;
 
-    Resting.surveyDialog = surveyDialog;
     return Resting;
   }
 
@@ -914,7 +890,7 @@ requirejs(['jquery','app/storage','knockout','knockout-secure-binding','hjls','a
   });
 
   // appVM.feedbackDialog();
-  appVM.communicationDialog();
+  // appVM.communicationDialog();
   appVM.loadContexts();
   });
 });
