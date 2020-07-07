@@ -19,6 +19,9 @@
  
 define(['localforage'],function(localforage){
 
+    // set by loadAll function
+    let indexes = [];
+    
     localforage.config({
       name: 'resting',
       storeName: 'bookmarks',
@@ -35,7 +38,11 @@ define(['localforage'],function(localforage){
     });
 
     const deleteById = (id, callback) => {
-      localforage.removeItem(id, callback);
+      localforage.removeItem(id, callback).then(() => {
+        const indexToDel = indexes.indexOf(id);
+        indexes.splice(indexToDel, 1);
+        localforage.setItem('bookmark-order', indexes);
+      });
     };
 
     const deleteContextById = (id, callback) => {
@@ -47,9 +54,42 @@ define(['localforage'],function(localforage){
         return { result: 'KO', message: 'id must be set'};
       }
       localforage.setItem(bookmark.id, bookmark);
-      return { result: 'OK', message: ''};
+      if(indexes.indexOf(bookmark.id) == -1) {
+        indexes.push(bookmark.id);
+        localforage.setItem('bookmark-order', indexes);
+      }
     };
-
+    
+    const loadAll = (callback) => {
+      localforage.getItem('bookmark-order').then((value) => {
+        if(value) {
+          indexes = value;
+          const promises = value.map(id => localforage.getItem(id));
+          Promise.all(promises).then( bookmarks => callback(bookmarks));
+        } else {
+          console.log('try to create the indexes array');
+          _indexesCreation().then( () => loadAll(callback));
+        }
+      });
+    };
+    
+    const _indexesCreation = () => {
+      return localforage.getItem('bookmark-order').then((value) => {
+        if(!value) {
+          let indexes = [];
+          return localforage.iterate(function(v,k,index) {
+            if(k != 'bookmark-order') {
+              indexes.push(k);
+            }
+          })
+          .then( () => { 
+            localforage.setItem('bookmark-order', indexes)
+            console.log('indexes array created');
+          }); 
+        }
+      });
+    };
+    
     const iterate = (callback, callbackResult) => {
       if(!callbackResult) {
        localforage.iterate(function(value,key,iterationNumber) {
@@ -105,5 +145,6 @@ define(['localforage'],function(localforage){
       saveSettings,
       readSettings,
       generateId,
+      loadAll,
     };
 });
