@@ -76,12 +76,16 @@ define(['knockout', 'app/bookmark', 'app/storage', 'app/bacheca', 'component/boo
     };
 
     const _loadBookmarksNewFormat = () =>
-      storage.iterate( value => {
-        bookmarks.push(new BookmarkVm(value));
-        if(value.isFolder) {
-          bacheca.publish('addFolder', value);
-        }
-    });
+      storage.loadAll( stored => {
+        stored.forEach(value => {
+          if(value) {
+            bookmarks.push(new BookmarkVm(value));
+            if(value.isFolder) {
+              bacheca.publish('addFolder', value);
+            }
+          }
+        });
+      });
 
     const deleteBookmarkFromView = () => {
       deleteBookmark(bookmarkToDelete, deleteChildrenBookmarks());

@@ -19,7 +19,7 @@
  
 define(['knockout'],function(ko) {
 
-   return function BookmarkViewModel(bookmark) {
+   return function BookmarkViewModel(bookmark = {}) {
     const self = this;
     this.id = bookmark.id;
     this.name = bookmark.name;
