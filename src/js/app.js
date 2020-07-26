@@ -105,8 +105,8 @@ requirejs(['jquery','app/storage','knockout','knockout-secure-binding','hjls','a
       contexts : ko.observableArray(),
       selectedContext: new ContextVm(),
       bookmarkSelected : new BookmarkSelectedVm(),  // bookmark loaded
-      tabCounter: 1,
-      tabContexts : ko.observableArray([new TabContextVm()]),
+      tabCounter: 0,
+      tabContexts : ko.observableArray(),
       activeTab : null,
       request : new RequestVm(),
       bookmarkCopy: null,   // copy of bookmark object loaded
@@ -140,7 +140,7 @@ requirejs(['jquery','app/storage','knockout','knockout-secure-binding','hjls','a
       dialogConfirmMessage: ko.observable(),
       contextName: ko.observable(),
     };
-
+    
     const bookmarkProvider = makeBookmarkProvider(storage);
 
     const convertToFormData = (data = [], context = {}) =>
@@ -878,7 +878,11 @@ requirejs(['jquery','app/storage','knockout','knockout-secure-binding','hjls','a
    ko.bindingProvider.instance = new ksb(options);
 
    const appVM = new AppVm();
+   
    ko.applyBindings(appVM);
+   
+   // add the first tab
+   appVM.newTab();
 
 
 
