@@ -560,7 +560,8 @@ requirejs(['jquery','app/storage','knockout','knockout-secure-binding','hjls','a
     const saveBookmarkDialog = () => {
       Resting.showBookmarkDialog(true);
       Resting.saveAsNewBookmark(false);
-      Resting.bookmarkName(Resting.bookmarkSelected.name());
+      const requestURL = Resting.request.url();
+      Resting.bookmarkName(requestURL ? `${Resting.request.method()} - ${requestURL}` : Resting.bookmarkSelected.name());
     };
 
     const saveAsBookmarkDialog = () => {
