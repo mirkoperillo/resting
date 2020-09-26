@@ -219,7 +219,7 @@
     </div>
     <div class="panel-body">
       <div class="form-group">
-        Name <input type="text" class="form-control" data-bind="value: bookmarkName"></input>
+        Name <input type="text" class="form-control" data-bind="attr: { placeholder: bookmarkName || request.method + ' ' + (request.url || '') }, value: bookmarkName"></input>
       </div>
       <div class="form-group">
         Folder <select class="form-control" data-bind="options: folders, optionsText: 'name', optionsValue: 'id', optionsCaption: 'None', value: folderSelected"></select>
