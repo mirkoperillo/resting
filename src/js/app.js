@@ -775,7 +775,12 @@ requirejs(['jquery','app/storage','knockout','knockout-secure-binding','hjls','a
       } 
       Resting.tabContexts.remove(tab);
     };
-    
+
+   const disableSaveButton = (value) => {
+    console.log(value)
+    if(value.trim()) document.getElementById('save-button').disabled = false        
+   }
+
    bacheca.subscribe('loadBookmark', loadBookmarkObj);
    bacheca.subscribe('addFolder', addFolder);
    bacheca.subscribe('deleteFolder', removeFolder);
@@ -897,4 +902,13 @@ requirejs(['jquery','app/storage','knockout','knockout-secure-binding','hjls','a
   // appVM.communicationDialog();
   appVM.loadContexts();
   });
+  
+  $('#url-input-field').on('input', function (event) {
+    const btn = $('#save-button')[0]
+    if (this.value.trim()) {
+      btn.disabled = false;
+    } else {
+      btn.disabled = true
+    }
+  })
 });
