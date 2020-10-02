@@ -718,6 +718,8 @@ requirejs(['jquery','app/storage','knockout','knockout-secure-binding','hjls','a
       _activateTab(tabActivated);
     };
 
+    const enableSend = () => true
+
     const _activateTab = (tabActivated) => {
        const newActiveIndex = Resting.tabContexts().indexOf(tabActivated);
 
@@ -776,10 +778,13 @@ requirejs(['jquery','app/storage','knockout','knockout-secure-binding','hjls','a
       Resting.tabContexts.remove(tab);
     };
 
-   const disableSaveButton = (value) => {
-    console.log(value)
-    if(value.trim()) document.getElementById('save-button').disabled = false        
-   }
+    const enableSaveButton = () => {
+      if (Resting.request.url() && Resting.request.url().trim().length != 0) {
+        return true;
+      }
+      return false;  
+    }
+   
 
    bacheca.subscribe('loadBookmark', loadBookmarkObj);
    bacheca.subscribe('addFolder', addFolder);
@@ -829,6 +834,7 @@ requirejs(['jquery','app/storage','knockout','knockout-secure-binding','hjls','a
     Resting.deleteContext = deleteContext;
     Resting.confirmDeleteContext = confirmDeleteContext;
     Resting.dismissConfirmDialog = dismissConfirmDialog;
+    Resting.enableSaveButton = enableSaveButton;
 
     // Resting.feedbackDialog = feedbackDialog;
     // Resting.dismissFeedbackDialog = dismissFeedbackDialog;
@@ -903,12 +909,5 @@ requirejs(['jquery','app/storage','knockout','knockout-secure-binding','hjls','a
   appVM.loadContexts();
   });
   
-  $('#url-input-field').on('input', function (event) {
-    const btn = $('#save-button')[0]
-    if (this.value.trim()) {
-      btn.disabled = false;
-    } else {
-      btn.disabled = true
-    }
-  })
+
 });
