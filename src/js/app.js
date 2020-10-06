@@ -718,7 +718,6 @@ requirejs(['jquery','app/storage','knockout','knockout-secure-binding','hjls','a
       _activateTab(tabActivated);
     };
 
-    const enableSend = () => true
 
     const _activateTab = (tabActivated) => {
        const newActiveIndex = Resting.tabContexts().indexOf(tabActivated);
