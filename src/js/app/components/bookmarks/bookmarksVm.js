@@ -63,6 +63,10 @@ define(['knockout', 'app/bookmark', 'app/storage', 'app/bacheca', 'component/boo
       showBookmarkDeleteDialog(true);
     };
 
+    const confirmDeleteFromCtxMenu = () => {
+      confirmDelete(bookmarkOfContextMenu);
+    }
+
     const _serializeBookmark = (bookmarkObj) => {
       return bookmarkProvider.fromJson(JSON.stringify(bookmarkObj));
     }
@@ -298,6 +302,7 @@ define(['knockout', 'app/bookmark', 'app/storage', 'app/bacheca', 'component/boo
       deleteChildrenBookmarks,
       deleteBookmark,
       confirmDelete,
+      confirmDeleteFromCtxMenu,
       dismissDeleteBookmarkDialog,
       deleteBookmarkFromView,
       loadBookmarkObj,
