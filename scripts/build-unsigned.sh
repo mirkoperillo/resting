@@ -28,7 +28,12 @@ else
   exit -1
 fi
 
-sed -i 's/^}/,"applications": {\n\t"gecko": {\n\t\t"id": "resting@owlcode.eu"\n\t}\n}\n}/g' ../dist/tmp/manifest.json
+if [[ "$OSTYPE" == "darwin"* ]]; then
+  sed -i '' 's/^}/,"applications": {\n\t"gecko": {\n\t\t"id": "resting@owlcode.eu"\n\t}\n}\n}/g' ../dist/tmp/manifest.json
+else
+  sed -i 's/^}/,"applications": {\n\t"gecko": {\n\t\t"id": "resting@owlcode.eu"\n\t}\n}\n}/g' ../dist/tmp/manifest.json
+fi
+
 if [ $? -eq 0 ]; then
   echo "editing manifest.json"
 else
