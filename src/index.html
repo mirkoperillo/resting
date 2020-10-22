@@ -185,6 +185,15 @@
         </div>
         </div>
         </div>
+        <div class="row">
+          <div class="col-md-12">
+            <div class="progress">
+              <div data-bind="css: { animate-progress: requestInProgress() }" style="height: 20px; text-indent: -10000px;">
+                <div class="progress-bar progress-bar-striped" data-bind="css: { active: requestInProgress(), progress-bar-animated: requestInProgress() }, attr: { aria-busy: requestInProgress() }, text: progressBarAriaText()" aria-role="alert" style="width: 100%"></div>
+              </div>
+            </div>
+          </div>
+        </div>
         <response-panel></response-panel>
     </div>
     </div>

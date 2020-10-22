@@ -135,12 +135,20 @@ requirejs(['jquery','app/storage','knockout','knockout-secure-binding','hjls','a
       //showFeedbackDialog: ko.observable(false),
       //showCommunicationDialog: ko.observable(false),
 
+      requestInProgress: ko.observable(false),
+      progressBarAriaText: ko.observable('Awaiting request'),
+
       saveAsNewBookmark: ko.observable(false),
 
       dialogConfirmMessage: ko.observable(),
       contextName: ko.observable(),
     };
     
+    // update progress bar aria text when request in progress
+    Resting.requestInProgress.subscribe(function(isRequestInProgress){
+      Resting.progressBarAriaText(isRequestInProgress ? 'Request progress: Waiting for response' : 'Request progress: No request in progress')
+    })
+
     const bookmarkProvider = makeBookmarkProvider(storage);
 
     const convertToFormData = (data = [], context = {}) =>
@@ -466,10 +474,12 @@ requirejs(['jquery','app/storage','knockout','knockout-secure-binding','hjls','a
         Resting.dataToSend(mapping),
         _authentication(mapping), _manageResponse
       );
+      Resting.requestInProgress(true);
     };
 
     const _manageResponse = (response) => {
       Resting.activeTab.response = response;
+      Resting.requestInProgress(false);
       _displayResponse(response);
     };
 
