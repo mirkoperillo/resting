@@ -31,6 +31,24 @@ requirejs.config({
 
 requirejs(['jquery','app/storage','knockout','knockout-secure-binding','hjls','app/request','app/bookmark','app/clipboard', 'app/bacheca', 'bootstrap','component/entry-list/entryItemVm', 'component/bookmarks/bookmarkVm'], function($,storage,ko,ksb,hjls,request,makeBookmarkProvider,clipboard,bacheca,bootstrap, EntryItemVm, BookmarkVm) {
 
+const REQUEST_STATE_MAP = {
+  NOT_STARTED: {
+    ariaText: 'No request sent',
+    value: 'NOT_STARTED',
+    progressWidth: '0.01%'
+  },
+  IN_PROGRESS: {
+    ariaText: 'request in progress',
+    value: 'IN_PROGRESS',
+    progressWidth: '100%'
+  },
+  COMPLETE: {
+    ariaText: 'Request complete',
+    value: 'COMPLETE',
+    progressWidth: '100%'
+  },
+}
+
   function ContextVm(name = 'default',variables = []) {
     const self = this;
     this.name = ko.observable(name);
@@ -135,19 +153,13 @@ requirejs(['jquery','app/storage','knockout','knockout-secure-binding','hjls','a
       //showFeedbackDialog: ko.observable(false),
       //showCommunicationDialog: ko.observable(false),
 
-      requestInProgress: ko.observable(false),
-      progressBarAriaText: ko.observable('Awaiting request'),
+      requestState: ko.observable(REQUEST_STATE_MAP.NOT_STARTED),
 
       saveAsNewBookmark: ko.observable(false),
 
       dialogConfirmMessage: ko.observable(),
       contextName: ko.observable(),
     };
-    
-    // update progress bar aria text when request in progress
-    Resting.requestInProgress.subscribe(function(isRequestInProgress){
-      Resting.progressBarAriaText(isRequestInProgress ? 'Request progress: Waiting for response' : 'Request progress: No request in progress')
-    })
 
     const bookmarkProvider = makeBookmarkProvider(storage);
 
@@ -474,12 +486,12 @@ requirejs(['jquery','app/storage','knockout','knockout-secure-binding','hjls','a
         Resting.dataToSend(mapping),
         _authentication(mapping), _manageResponse
       );
-      Resting.requestInProgress(true);
+      Resting.requestState(REQUEST_STATE_MAP.IN_PROGRESS);
     };
 
     const _manageResponse = (response) => {
       Resting.activeTab.response = response;
-      Resting.requestInProgress(false);
+      Resting.requestState(REQUEST_STATE_MAP.COMPLETE);
       _displayResponse(response);
     };
 
