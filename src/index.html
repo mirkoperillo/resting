@@ -109,6 +109,11 @@
       <div class="col-md-8">
         <div class="form-group">
           <input type="text" class="form-control" placeholder="http://" data-bind="value: request.url, event: { keyup: callSendOnEnter}">
+          <div class="progress" style="margin-top: 10px">
+            <div data-bind="css: { animate-progress: requestState().value === 'IN_PROGRESS' }" style="height: 20px; text-indent: -10000px;">
+              <div class="progress-bar progress-bar-striped" data-bind="css: { active: requestState().value === 'IN_PROGRESS', progress-bar-animated: requestState().value === 'IN_PROGRESS' }, attr: { aria-busy: requestState().value === 'IN_PROGRESS' }, text: requestState().ariaText, style: { width: requestState().progressWidth }" aria-role="alert"></div>
+            </div>
+          </div>
         </div>
       </div>
 
