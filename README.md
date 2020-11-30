@@ -2,17 +2,17 @@
 
 Resting is a rest client WebExtension actually available for Firefox.
 
-It is a very young project under an heavy developement.
+It is a very young project under an heavy development.
 
 ## Mission
-The mission of Resting is to simplify daily work of developer in testing and analyzing HTTP/Rest requests.
+The mission of Resting is to simplify daily work of developer in testing and analyzing HTTP/REST requests.
 
 Resting takes inspiration from Postman with the goal to be light and focused on the management of saved requests.
 
 ## Privacy
 Data is yours.
 Resting doesn't save in any servers data about the APIs you invoke or any other data about the usage of Resting.
-Everything is store offline on your device, all the data is saved locally in the Indexed DB of your browser
+Everything is stored offline on your device, all the data is saved locally in the Indexed DB of your browser.
 
 ## Roadmap
 This is the road to Resting v2.0
@@ -27,7 +27,7 @@ This is the road to Resting v2.0
 
 ### Official release
 
-Actually Resting is released only for Mozilla Firefox.
+Currently Resting is released only for Mozilla Firefox.
 You can install it here [here](https://addons.mozilla.org/en-US/firefox/addon/resting?src=external-github)
 
 ### Test development version 
@@ -58,8 +58,8 @@ You can install Resting from the source code following these instructions:
 * JQuery 3.x:  essentially used to perform http requests
 
 ## Principles
-Project tries to follow these principles:
-* KISS and YAGNI trying to maintain project light in code and libraries
+Resting tries to follow these principles:
+* KISS and YAGNI, trying to maintain project light in code and libraries
 * Keep the focus on result: the development cycle is composed by two steps: the first takes deliberately technological debt to ship features in a quick way, the second applies a phase of refactor to maintain the code clean.
 
 The project follows the semantic versioning
@@ -81,10 +81,10 @@ Project contributors [here](CONTRIBUTORS.md)
 
 Resting is released under GPL v3 license after commit [117e15a33e97bc9c0905139ca527398e77e79620](https://github.com/mirkoperillo/resting/commit/117e15a33e97bc9c0905139ca527398e77e79620)
 
-Resting has released under MIT license until [v1.0.2](https://github.com/mirkoperillo/resting/releases/tag/1.0.2)
+Resting was released under MIT license until [v1.0.2](https://github.com/mirkoperillo/resting/releases/tag/1.0.2)
 
 ### Why I changed license
 
 I know Resting will never be a breakdown project, it is only a personal project and so the license change is only an ethical-political action.
 
-I created Resting to solve my needs and to help users with needs like me. My intent is to create a little community of users and contributors around the project to grow it up and  so I want the project to stay free and accessible forever even when I will be no longer the main maintainer.
+I created Resting to solve my needs and to help users with needs like mine. My intent is to create a little community of users and contributors around the project to grow it up and so I want the project to stay free and accessible forever even when I will be no longer the main maintainer.

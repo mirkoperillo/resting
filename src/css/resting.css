@@ -165,3 +165,23 @@ label.disabled {
   background-color: #337ab7;
   color: white;
 }
+
+.animate-progress {
+  animation: progress 1s 1;
+}
+@keyframes progress {
+  from {
+    width: 1%;
+  }
+  to {
+    width: 100%;
+  }
+}
+@-webkit-keyframes progress {
+  from {
+    width: 1%;
+  }
+  to {
+    width: 100%;
+  }
+}
