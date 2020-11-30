@@ -740,6 +740,7 @@ const REQUEST_STATE_MAP = {
       _activateTab(tabActivated);
     };
 
+
     const _activateTab = (tabActivated) => {
        const newActiveIndex = Resting.tabContexts().indexOf(tabActivated);
 
@@ -797,7 +798,15 @@ const REQUEST_STATE_MAP = {
       } 
       Resting.tabContexts.remove(tab);
     };
-    
+
+    const enableSaveButton = () => {
+      if (Resting.request.url() && Resting.request.url().trim().length != 0) {
+        return true;
+      }
+      return false;  
+    }
+   
+
    bacheca.subscribe('loadBookmark', loadBookmarkObj);
    bacheca.subscribe('addFolder', addFolder);
    bacheca.subscribe('deleteFolder', removeFolder);
@@ -846,6 +855,7 @@ const REQUEST_STATE_MAP = {
     Resting.deleteContext = deleteContext;
     Resting.confirmDeleteContext = confirmDeleteContext;
     Resting.dismissConfirmDialog = dismissConfirmDialog;
+    Resting.enableSaveButton = enableSaveButton;
 
     // Resting.feedbackDialog = feedbackDialog;
     // Resting.dismissFeedbackDialog = dismissFeedbackDialog;
@@ -919,4 +929,6 @@ const REQUEST_STATE_MAP = {
   // appVM.communicationDialog();
   appVM.loadContexts();
   });
+  
+
 });
