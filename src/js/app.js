@@ -150,6 +150,7 @@ const REQUEST_STATE_MAP = {
       showContextDialog: ko.observable(false),
       showCreateContextDialog: ko.observable(false),
       showConfirmDialog: ko.observable(false),
+      showDonateDialog: ko.observable(false),
       //showFeedbackDialog: ko.observable(false),
       //showCommunicationDialog: ko.observable(false),
 
@@ -181,6 +182,10 @@ const REQUEST_STATE_MAP = {
       Resting.showCreditsDialog(true);
     };
 
+    const donateDialog = () => {
+      Resting.showDonateDialog(true);
+    };
+
      const contextDialog = (context) => {
       Resting.selectedContext.name(context.name());
       Resting.selectedContext.variables(context.variables());
@@ -193,6 +198,10 @@ const REQUEST_STATE_MAP = {
 
     const dismissAboutDialog = () => {
       Resting.showAboutDialog(false);
+    };
+
+    const dismissDonateDialog = () => {
+      Resting.showDonateDialog(false);
     };
 
     const dismissContextDialog = () => {
@@ -832,10 +841,12 @@ const REQUEST_STATE_MAP = {
     Resting.contextDialog = contextDialog;
     Resting.saveBookmarkDialog = saveBookmarkDialog;
     Resting.saveAsBookmarkDialog = saveAsBookmarkDialog;
+    Resting.donateDialog = donateDialog;
 
     Resting.dismissSaveBookmarkDialog = dismissSaveBookmarkDialog;
     Resting.dismissCreditsDialog = dismissCreditsDialog;
     Resting.dismissAboutDialog = dismissAboutDialog;
+    Resting.dismissDonateDialog = dismissDonateDialog;
     Resting.dismissContextDialog = dismissContextDialog;
     Resting.closeDialogOnExcape = closeDialogOnExcape;
     Resting.saveContext = saveContext;
