@@ -628,7 +628,8 @@ const REQUEST_STATE_MAP = {
         Resting.showCreateContextDialog(false),
         Resting.showConfirmDialog(false),
         Resting.saveAsNewBookmark(false),
-        Resting.showFeedbackDialog(false)
+        Resting.showDonateDialog(false)
+        //Resting.showFeedbackDialog(false)
       }
     };
 
