@@ -21,6 +21,11 @@ body {
   padding-top: 10px;
 }
 
+.pre-scrollable {
+  min-height: 340px;
+  max-height: 1000px;
+}
+
 .response-metric, .response-metric-value {
   font-size: 0.9em;
 }
