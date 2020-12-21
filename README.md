@@ -1,6 +1,6 @@
 ![Icon](src/icons/letter-r_64.png)
 
-Resting is a rest client WebExtension actually available for Firefox.
+Resting is a rest client WebExtension.
 
 It is a very young project under an heavy development.
 
@@ -27,8 +27,9 @@ This is the road to Resting v2.0
 
 ### Official release
 
-Currently Resting is released only for Mozilla Firefox.
-You can install it here [here](https://addons.mozilla.org/en-US/firefox/addon/resting?src=external-github)
+Resting is available for:
+* [Mozilla Firefox](https://addons.mozilla.org/en-US/firefox/addon/resting?src=external-github)
+* [Google Chrome](https://chrome.google.com/webstore/detail/resting/egklacbpeeiooeclkpghepnohaidpeok?hl=en&authuser=0)
 
 ### Test development version 
 
