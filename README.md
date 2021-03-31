@@ -28,7 +28,7 @@ This is the road to Resting v2.0
 ### Official release
 
 Resting is available for:
-* [Mozilla Firefox](https://addons.mozilla.org/en-US/firefox/addon/resting?src=external-github)
+* [Mozilla Firefox](https://addons.mozilla.org/en-US/firefox/addon/resting?utm_source=github.com)
 * [Google Chrome](https://chrome.google.com/webstore/detail/resting/egklacbpeeiooeclkpghepnohaidpeok?hl=en&authuser=0)
 
 ### Test development version 
