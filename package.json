@@ -11,6 +11,6 @@
   "devDependencies": {
     "jasmine": "~3.0.0",
     "requirejs": "~2.3.5",
-    "lodash": "^4.17.11"
+    "lodash": "^4.17.21"
   }
 }
