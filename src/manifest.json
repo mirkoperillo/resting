@@ -2,7 +2,7 @@
   "description": "rest client focused on organization of the saved requests",
   "manifest_version": 2,
   "name": "Resting",
-  "version": "1.2.0",
+  "version": "1.2.1",
   "author" : "Mirko Perillo",
   "homepage_url": "https://github.com/mirkoperillo/resting",
   "icons": {
