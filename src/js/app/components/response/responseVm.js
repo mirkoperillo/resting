@@ -17,7 +17,7 @@
     along with Resting.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-define(['knockout','jquery','hjls','app/clipboard', 'app/bacheca'],function(ko,$,hjls,clipboard,bacheca) {
+define(['knockout','jquery','hjls','app/clipboard', 'app/bacheca','Vue','component/clip'],function(ko,$,hjls,clipboard,bacheca, Vue) {
 
   return function ResponseVm(params) {
 
@@ -112,6 +112,10 @@ define(['knockout','jquery','hjls','app/clipboard', 'app/bacheca'],function(ko,$
     bacheca.subscribe('reset', clear);
     bacheca.subscribe('loadBookmark', clear);
     bacheca.subscribe('deleteBookmark', clear);
+
+    var vueApp = new Vue({
+    el: '#vue-stuff'
+    })
 
   $(() => {
 

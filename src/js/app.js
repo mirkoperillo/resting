@@ -25,11 +25,12 @@ requirejs.config({
         'knockout': 'knockout-3.4.2',
         'knockout-secure-binding': 'knockout-secure-binding',
         'localforage': 'localforage.nopromises.min',
-        'hjls': 'highlight.pack'
+        'hjls': 'highlight.pack',
+        'Vue': 'vue'
     }
 });
 
-requirejs(['jquery','app/storage','knockout','knockout-secure-binding','hjls','app/request','app/bookmark','app/clipboard', 'app/bacheca', 'bootstrap','component/entry-list/entryItemVm', 'component/bookmarks/bookmarkVm'], function($,storage,ko,ksb,hjls,request,makeBookmarkProvider,clipboard,bacheca,bootstrap, EntryItemVm, BookmarkVm) {
+requirejs(['jquery','app/storage','knockout','knockout-secure-binding','hjls','app/request','app/bookmark','app/clipboard', 'app/bacheca', 'bootstrap', 'Vue', 'component/entry-list/entryItemVm', 'component/bookmarks/bookmarkVm', 'component/clip'], function($,storage,ko,ksb,hjls,request,makeBookmarkProvider,clipboard,bacheca,bootstrap, Vue, EntryItemVm, BookmarkVm) {
 
 const REQUEST_STATE_MAP = {
   NOT_STARTED: {
@@ -876,6 +877,10 @@ const REQUEST_STATE_MAP = {
 
     return Resting;
   }
+
+  /*var vueApp = new Vue({
+    el: '#vue-stuff'
+  })*/
 
   // init application
   $(() => {

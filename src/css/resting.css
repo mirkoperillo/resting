@@ -151,10 +151,12 @@ label.disabled {
   border-radius: 6px 0 6px 6px;
 }
 
+/*
 .copy-n-paste {
   cursor: pointer;
   float: left;
 }
+*/
 
 .ctx-menu {
   width: 200px;
