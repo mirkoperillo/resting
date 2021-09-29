@@ -20,6 +20,7 @@
 define(['jquery'], function($) {
     var handlers = [];
 
+    // replace by click event on vue.js component
     function bindOn(selector) {
         $(selector).on('click', function(event) {
             event.preventDefault();
@@ -30,10 +31,10 @@ define(['jquery'], function($) {
 
     function copyClipboardHandler(contentSelector, copyButtonClass) {
         return function(event) {
-            if (!$(event.target).hasClass(copyButtonClass)) {
+            // move from clickable div to click event
+            /*if (!$(event.target).hasClass(copyButtonClass)) {
                 return;
-            }
-
+            }*/
             event.preventDefault();
             event.stopPropagation();
 
