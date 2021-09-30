@@ -232,38 +232,10 @@
     </div>
   </div>
 
-
-  <div id="about-dialog" class="panel panel-primary dialog" data-bind="visible: showAboutDialog">
-    <div class="panel-heading">
-      About Resting<span style="cursor: pointer;" class="glyphicon glyphicon-remove pull-right" data-bind="click: dismissAboutDialog"></span>
-    </div>
-    <div class="panel-body">
-      <h4>Resting v1.2.0</h4>
-      <p>License: <a href="https://github.com/mirkoperillo/resting/blob/master/LICENSE" target="_blank">GPLv3</a></p>
-      <a target="_blank" href="https://github.com/mirkoperillo/resting">Project Website</a> --
-      <a target="_blank" href="https://github.com/mirkoperillo/resting/issues">Issue tracker</a>
-    </div>
-  </div>
-
-  <div id="credits-dialog" class="panel panel-primary dialog" data-bind="visible: showCreditsDialog">
-    <div class="panel-heading">
-      Credits<span style="cursor: pointer;" class="glyphicon glyphicon-remove pull-right" data-bind="click: dismissCreditsDialog"></span>
-    </div>
-    <div class="panel-body">
-      <p>Thank you to all the project <a href="https://github.com/mirkoperillo/resting/blob/master/CONTRIBUTORS.md" target="_blank">contributors</a></p>
-      <p>Addon icon made by <a href="http://www.freepik.com" target="_blank">Freepik</a> from <a href="http://www.flaticon.com" target="_blank">www.flaticon.com</a></p>
-    </div>
-  </div>
-
-  <div id="donate-dialog" class="panel panel-primary dialog" data-bind="visible: showDonateDialog">
-    <div class="panel-heading">
-      Donate<span style="cursor: pointer;" class="glyphicon glyphicon-remove pull-right" data-bind="click: dismissDonateDialog"></span>
-    </div>
-    <div class="panel-body">
-        <p>If Resting helps you in your daily job, consider supporting the project</p>
-        <a class="donate-link" href="https://www.paypal.me/owlcodesw" target="_blank"><i class="fa fa-paypal"></i>&nbsp;Paypal</a>
-        <a class="donate-link" href="https://liberapay.com/mirkoperillo" target="_blank"><i class="fa fa-liberapay"></i>&nbsp;Liberapay</a>
-    </div>
+  <div id="v-dialogs">
+    <about-dialog v-show="showAboutDialog" @dismiss-dialog="showAboutDialog = false" /></about-dialog>
+    <credits-dialog v-show="showCreditsDialog" @dismiss-dialog="showCreditsDialog = false"></credits-dialog>
+    <donate-dialog v-show="showDonateDialog" @dismiss-dialog="showDonateDialog = false"></donate-dialog>
   </div>
 
    <div id="context-dialog" class="panel panel-primary context-dialog" data-bind="visible: showContextDialog">

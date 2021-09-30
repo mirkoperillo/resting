@@ -58,16 +58,15 @@
             </div>
 
             <div class="col-md-9">
+              <div id="v-response-b-group">
+                <div class="btn-group" role="group">
+                  <clipboard-button></clipboard-button>
+                </div>
+              </div>
+              <div class="alert alert-success hide" role="alert">
+                <p>Response copied successfully!</p>
+              </div>
               <pre class="pre-scrollable">
-                <!-- div class="copy-n-paste" title="Copy Response">📋</div-->
-                <div class="alert alert-success hide" role="alert">
-                  <p>Response copied successfully!</p>
-                </div>
-                <div id="vue-stuff">
-                  <div class="btn-group" style="float: left" role="group">
-                    <hello></hello>
-                  </div>
-                </div>
                 <code id="highlighted-response" data-bind="visible: showBody, text: body"></code>
               </pre>
               <div data-bind="visible: showHeaders">

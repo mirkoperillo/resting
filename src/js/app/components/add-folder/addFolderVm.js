@@ -17,53 +17,26 @@
     along with Resting.  If not, see <http://www.gnu.org/licenses/>.
  */
  
-define(['knockout', 'app/bookmark', 'app/storage', 'app/bacheca'],function(ko, makeBookmarkProvider, storage, bacheca) {
+define(['Vue', 'app/bacheca', 'component/folder-dialog'],function(Vue, bacheca) {
 
   return function AddFolderVm(params) {
-    const folderName = ko.observable();
-    const bookmarkProvider = makeBookmarkProvider(storage);
-    const showFolderDialog = ko.observable(false);
-
-    const addFolder = () => {
-      const folder = bookmarkProvider.makeFolder(storage.generateId(), folderName());
-      storage.save(_serializeBookmark(folder));
-      dismissFolderDialog();
-
-      bacheca.publish('addFolder', folder);
-    /*
-     * FIXME: published to newFolder is a workaround:
-     * it permits to bookmarksVm to not duplicated folder items in view
-     */
-      bacheca.publish('newFolder', folder);
-    };
-
     const folderDialog = () => {
-      showFolderDialog(true);
+      bacheca.publish('showFolderDialog')
     };
 
-    const dismissFolderDialog = () => {
-      folderName('');
-      showFolderDialog(false);
-    };
-
-    const addFolderOnEnter = (data, event) => {
-      const enter = 13;
-      if(event.keyCode === enter) {
-        addFolder();
+    const vueApp = new Vue({
+      el: "#v-folder",
+      created() {
+        bacheca.subscribe('showFolderDialog', () => this.showFolderDialog = true)
+      },
+      data() {
+        return {
+          showFolderDialog: false
+        }
       }
-    };
-
-    const _serializeBookmark = (bookmarkObj) => {
-      return bookmarkProvider.fromJson(JSON.stringify(bookmarkObj));
-    }
-
+    })
     return {
-      addFolder,
-      addFolderOnEnter,
       folderDialog,
-      dismissFolderDialog,
-      showFolderDialog,
-      folderName,
     };
   }
 });

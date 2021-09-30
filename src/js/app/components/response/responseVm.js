@@ -17,7 +17,7 @@
     along with Resting.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-define(['knockout','jquery','hjls','app/clipboard', 'app/bacheca','Vue','component/clip'],function(ko,$,hjls,clipboard,bacheca, Vue) {
+define(['knockout','jquery','hjls', 'app/bacheca','Vue','component/clipboard-button'],function(ko,$,hjls, bacheca, Vue) {
 
   return function ResponseVm(params) {
 
@@ -114,18 +114,8 @@ define(['knockout','jquery','hjls','app/clipboard', 'app/bacheca','Vue','compone
     bacheca.subscribe('deleteBookmark', clear);
 
     var vueApp = new Vue({
-    el: '#vue-stuff'
+      el: '#v-response-b-group'
     })
-
-  $(() => {
-
-    clipboard.bindOn('div.copy-n-paste');
-    clipboard.copyFrom('#highlighted-response', 'copy-n-paste');
-    clipboard.onCopy(function() {
-      $('.alert').removeClass('hide');
-      setTimeout(function () { $('.alert').addClass('hide'); }, 2000);
-    });
-  });
 
     return {
       headersPanel,

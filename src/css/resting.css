@@ -150,14 +150,6 @@ label.disabled {
   -moz-border-radius: 6px 0 6px 6px;
   border-radius: 6px 0 6px 6px;
 }
-
-/*
-.copy-n-paste {
-  cursor: pointer;
-  float: left;
-}
-*/
-
 .ctx-menu {
   width: 200px;
   height: 100px;

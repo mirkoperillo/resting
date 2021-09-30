@@ -30,7 +30,7 @@ requirejs.config({
     }
 });
 
-requirejs(['jquery','app/storage','knockout','knockout-secure-binding','hjls','app/request','app/bookmark','app/clipboard', 'app/bacheca', 'bootstrap', 'Vue', 'component/entry-list/entryItemVm', 'component/bookmarks/bookmarkVm', 'component/clip'], function($,storage,ko,ksb,hjls,request,makeBookmarkProvider,clipboard,bacheca,bootstrap, Vue, EntryItemVm, BookmarkVm) {
+requirejs(['jquery','app/storage','knockout','knockout-secure-binding','hjls','app/request','app/bookmark','app/clipboard', 'app/bacheca', 'bootstrap', 'Vue', 'component/entry-list/entryItemVm', 'component/bookmarks/bookmarkVm', 'component/about-dialog', 'component/credits-dialog', 'component/credits-dialog', 'component/donate-dialog'], function($,storage,ko,ksb,hjls,request,makeBookmarkProvider,clipboard,bacheca,bootstrap, Vue, EntryItemVm, BookmarkVm) {
 
 const REQUEST_STATE_MAP = {
   NOT_STARTED: {
@@ -146,12 +146,10 @@ const REQUEST_STATE_MAP = {
 
       // Flags to show/hide dialogs
       showBookmarkDialog: ko.observable(false),
-      showAboutDialog: ko.observable(false),
-      showCreditsDialog: ko.observable(false),
       showContextDialog: ko.observable(false),
       showCreateContextDialog: ko.observable(false),
       showConfirmDialog: ko.observable(false),
-      showDonateDialog: ko.observable(false),
+      
       //showFeedbackDialog: ko.observable(false),
       //showCommunicationDialog: ko.observable(false),
 
@@ -176,33 +174,21 @@ const REQUEST_STATE_MAP = {
     }
 
     const aboutDialog = () => {
-      Resting.showAboutDialog(true);
+      bacheca.publish('showAboutDialog')
     };
 
     const creditsDialog = () => {
-      Resting.showCreditsDialog(true);
+      bacheca.publish('showCreditsDialog')
     };
 
     const donateDialog = () => {
-      Resting.showDonateDialog(true);
+      bacheca.publish('showDonateDialog')
     };
 
      const contextDialog = (context) => {
       Resting.selectedContext.name(context.name());
       Resting.selectedContext.variables(context.variables());
       Resting.showContextDialog(true);
-    };
-
-    const dismissCreditsDialog = () => {
-      Resting.showCreditsDialog(false);
-    };
-
-    const dismissAboutDialog = () => {
-      Resting.showAboutDialog(false);
-    };
-
-    const dismissDonateDialog = () => {
-      Resting.showDonateDialog(false);
     };
 
     const dismissContextDialog = () => {
@@ -623,13 +609,10 @@ const REQUEST_STATE_MAP = {
         Resting.showAuthentication(false),
         Resting.showActiveContext(false),
         Resting.showBookmarkDialog(false),
-        Resting.showAboutDialog(false),
-        Resting.showCreditsDialog(false),
         Resting.showContextDialog(false),
         Resting.showCreateContextDialog(false),
         Resting.showConfirmDialog(false),
-        Resting.saveAsNewBookmark(false),
-        Resting.showDonateDialog(false)
+        Resting.saveAsNewBookmark(false)
         //Resting.showFeedbackDialog(false)
       }
     };
@@ -840,15 +823,12 @@ const REQUEST_STATE_MAP = {
 
     Resting.aboutDialog = aboutDialog;
     Resting.creditsDialog = creditsDialog;
+    Resting.donateDialog = donateDialog;
     Resting.contextDialog = contextDialog;
     Resting.saveBookmarkDialog = saveBookmarkDialog;
     Resting.saveAsBookmarkDialog = saveAsBookmarkDialog;
-    Resting.donateDialog = donateDialog;
 
     Resting.dismissSaveBookmarkDialog = dismissSaveBookmarkDialog;
-    Resting.dismissCreditsDialog = dismissCreditsDialog;
-    Resting.dismissAboutDialog = dismissAboutDialog;
-    Resting.dismissDonateDialog = dismissDonateDialog;
     Resting.dismissContextDialog = dismissContextDialog;
     Resting.closeDialogOnExcape = closeDialogOnExcape;
     Resting.saveContext = saveContext;
@@ -878,9 +858,21 @@ const REQUEST_STATE_MAP = {
     return Resting;
   }
 
-  /*var vueApp = new Vue({
-    el: '#vue-stuff'
-  })*/
+  var vueApp = new Vue({
+    el: '#v-dialogs',
+    created() {
+      bacheca.subscribe('showAboutDialog', () => this.showAboutDialog = true)
+      bacheca.subscribe('showCreditsDialog', () => this.showCreditsDialog = true)
+      bacheca.subscribe('showDonateDialog', () => this.showDonateDialog = true)
+    },
+    data() {
+      return {
+        showAboutDialog: false,
+        showCreditsDialog: false,
+        showDonateDialog: false
+      }
+    }
+  })
 
   // init application
   $(() => {
@@ -933,8 +925,6 @@ const REQUEST_STATE_MAP = {
    // add the first tab
    appVM.newTab();
 
-
-
   $('ul.dropdown-menu [data-toggle=dropdown]').on('click', function(event) {
     event.preventDefault();
     event.stopPropagation();
@@ -946,6 +936,4 @@ const REQUEST_STATE_MAP = {
   // appVM.communicationDialog();
   appVM.loadContexts();
   });
-  
-
 });

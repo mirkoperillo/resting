@@ -168,7 +168,6 @@ define(['knockout', 'app/bookmark', 'app/storage', 'app/bacheca', 'component/boo
       const excape = 27;
       if(event.keyCode === excape) {
         showBookmarkDeleteDialog(false);
-        showFolderDialog(false);
         showImportDialog(false);
         showExportDialog(false);
         showContextMenu(false);

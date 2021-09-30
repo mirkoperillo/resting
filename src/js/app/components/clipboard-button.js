@@ -1,6 +1,6 @@
 
 define(['Vue','app/clipboard'],function(Vue, clipboard) {
-  Vue.component('hello', {
+  Vue.component('clipboard-button', {
       created: function() {
         clipboard.copyFrom('#highlighted-response', 'copy-n-paste');
         clipboard.onCopy(function() {
