@@ -35,6 +35,7 @@ define(['jquery'], function($) {
             /*if (!$(event.target).hasClass(copyButtonClass)) {
                 return;
             }*/
+            
             event.preventDefault();
             event.stopPropagation();
 

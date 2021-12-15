@@ -17,24 +17,11 @@
     along with Resting.  If not, see <http://www.gnu.org/licenses/>.
  */
  
-define(['Vue', 'app/bacheca', 'component/folder-dialog'],function(Vue, bacheca) {
-
+define(['app/bacheca'],function(bacheca) {
   return function AddFolderVm(params) {
     const folderDialog = () => {
       bacheca.publish('showFolderDialog')
     };
-
-    const vueApp = new Vue({
-      el: "#v-folder",
-      created() {
-        bacheca.subscribe('showFolderDialog', () => this.showFolderDialog = true)
-      },
-      data() {
-        return {
-          showFolderDialog: false
-        }
-      }
-    })
     return {
       folderDialog,
     };

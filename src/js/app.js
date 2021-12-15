@@ -20,7 +20,8 @@ requirejs.config({
     baseUrl: 'js/vendor',
     paths: {
          app : '../app',
-         component : '../app/components',
+         component : '../app/components',        
+         vuecomp : 'vue-stuff',
         'jquery': 'jquery-3.3.1.min',
         'knockout': 'knockout-3.4.2',
         'knockout-secure-binding': 'knockout-secure-binding',
@@ -30,7 +31,25 @@ requirejs.config({
     }
 });
 
-requirejs(['jquery','app/storage','knockout','knockout-secure-binding','hjls','app/request','app/bookmark','app/clipboard', 'app/bacheca', 'bootstrap', 'Vue', 'component/entry-list/entryItemVm', 'component/bookmarks/bookmarkVm', 'component/about-dialog', 'component/credits-dialog', 'component/credits-dialog', 'component/donate-dialog'], function($,storage,ko,ksb,hjls,request,makeBookmarkProvider,clipboard,bacheca,bootstrap, Vue, EntryItemVm, BookmarkVm) {
+requirejs([
+  'jquery',
+  'app/storage',
+  'knockout',
+  'knockout-secure-binding',
+  'hjls',
+  'app/request',
+  'app/bookmark',
+  'app/clipboard',
+  'app/bacheca',
+  'bootstrap',
+  'Vue',
+  'component/entry-list/entryItemVm',
+  'component/bookmarks/bookmarkVm',
+  'vuecomp/about-dialog.umd',
+  'vuecomp/credits-dialog.umd',
+  'vuecomp/donate-dialog.umd',
+  'vuecomp/folder-dialog.umd'],
+  function($,storage,ko,ksb,hjls,request,makeBookmarkProvider,clipboard,bacheca,bootstrap, Vue, EntryItemVm, BookmarkVm, AboutDialog, CreditsDialog, DonateDialog, FolderDialog) {
 
 const REQUEST_STATE_MAP = {
   NOT_STARTED: {
@@ -864,13 +883,17 @@ const REQUEST_STATE_MAP = {
       bacheca.subscribe('showAboutDialog', () => this.showAboutDialog = true)
       bacheca.subscribe('showCreditsDialog', () => this.showCreditsDialog = true)
       bacheca.subscribe('showDonateDialog', () => this.showDonateDialog = true)
+      bacheca.subscribe('showFolderDialog', () => this.showFolderDialog = true)
     },
     data() {
       return {
         showAboutDialog: false,
         showCreditsDialog: false,
-        showDonateDialog: false
+        showDonateDialog: false,
+        showFolderDialog: false
       }
+    }, components: {
+      AboutDialog, CreditsDialog, DonateDialog, FolderDialog
     }
   })
 
