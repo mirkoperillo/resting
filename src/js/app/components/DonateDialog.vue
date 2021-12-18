@@ -7,7 +7,7 @@
 </template>
 
 <script>
-import RDialog from '@/js/app/components/r-dialog.vue'
+import RDialog from '@/js/app/components/RDialog.vue'
 
 export default {
   name: 'DonateDialog',

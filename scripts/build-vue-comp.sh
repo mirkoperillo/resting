@@ -5,12 +5,12 @@ DIST_FOLDER="src/js/vendor/vue-stuff"
 CLI_PATH="node_modules/.bin"
 
 # APPS
-${CLI_PATH}/vue-cli-service build --target lib --formats umd --dest ${DIST_FOLDER} --no-clean --name dialogs-app  ${COMPONENTS_FOLDER}/apps/dialogsApp.vue
+${CLI_PATH}/vue-cli-service build --target lib --formats umd --dest ${DIST_FOLDER} --no-clean --name dialogs-app  ${COMPONENTS_FOLDER}/apps/DialogsApp.vue
 
 # COMPONENTS
-${CLI_PATH}/vue-cli-service build --target lib --formats umd --dest ${DIST_FOLDER} --no-clean --name clipboard-button  ${COMPONENTS_FOLDER}/clipboard-button.vue
-${CLI_PATH}/vue-cli-service build --target lib --formats umd --dest ${DIST_FOLDER} --no-clean --name r-dialog  ${COMPONENTS_FOLDER}/r-dialog.vue
-${CLI_PATH}/vue-cli-service build --target lib --formats umd --dest ${DIST_FOLDER} --no-clean --name donate-dialog  ${COMPONENTS_FOLDER}/donate-dialog.vue
-${CLI_PATH}/vue-cli-service build --target lib --formats umd --dest ${DIST_FOLDER} --no-clean --name credits-dialog  ${COMPONENTS_FOLDER}/credits-dialog.vue
-${CLI_PATH}/vue-cli-service build --target lib --formats umd --dest ${DIST_FOLDER} --no-clean --name about-dialog  ${COMPONENTS_FOLDER}/about-dialog.vue
-${CLI_PATH}/vue-cli-service build --target lib --formats umd --dest ${DIST_FOLDER} --no-clean --name folder-dialog  ${COMPONENTS_FOLDER}/folder-dialog.vue
+${CLI_PATH}/vue-cli-service build --target lib --formats umd --dest ${DIST_FOLDER} --no-clean --name clipboard-button  ${COMPONENTS_FOLDER}/ClipboardButton.vue
+${CLI_PATH}/vue-cli-service build --target lib --formats umd --dest ${DIST_FOLDER} --no-clean --name r-dialog  ${COMPONENTS_FOLDER}/RDialog.vue
+${CLI_PATH}/vue-cli-service build --target lib --formats umd --dest ${DIST_FOLDER} --no-clean --name donate-dialog  ${COMPONENTS_FOLDER}/DonateDialog.vue
+${CLI_PATH}/vue-cli-service build --target lib --formats umd --dest ${DIST_FOLDER} --no-clean --name credits-dialog  ${COMPONENTS_FOLDER}/CreditsDialog.vue
+${CLI_PATH}/vue-cli-service build --target lib --formats umd --dest ${DIST_FOLDER} --no-clean --name about-dialog  ${COMPONENTS_FOLDER}/AboutDialog.vue
+${CLI_PATH}/vue-cli-service build --target lib --formats umd --dest ${DIST_FOLDER} --no-clean --name folder-dialog  ${COMPONENTS_FOLDER}/FolderDialog.vue

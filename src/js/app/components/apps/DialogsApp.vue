@@ -9,10 +9,10 @@
 
 <script>
 import bacheca from '@/js/app/bacheca'
-import AboutDialog from '../about-dialog.vue'
-import CreditsDialog from '../credits-dialog.vue'
-import DonateDialog from '../donate-dialog.vue'
-import FolderDialog from '../folder-dialog.vue'
+import AboutDialog from '../AboutDialog.vue'
+import CreditsDialog from '../CreditsDialog.vue'
+import DonateDialog from '../DonateDialog.vue'
+import FolderDialog from '../FolderDialog.vue'
 
 export default {
     name: 'DialogsApp',

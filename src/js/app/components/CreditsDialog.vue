@@ -6,7 +6,7 @@
 </template>
 
 <script>
-import RDialog from 'Components/r-dialog.vue'
+import RDialog from 'Components/RDialog.vue'
 
 export default {
   name: 'CreditsDialog',
