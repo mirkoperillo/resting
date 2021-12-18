@@ -27,7 +27,7 @@ requirejs.config({
         'knockout-secure-binding': 'knockout-secure-binding',
         'localforage': 'localforage.nopromises.min',
         'hjls': 'highlight.pack',
-        'Vue': 'vue'
+        'Vue': 'vue.runtime.min'
     }
 });
 
@@ -45,11 +45,8 @@ requirejs([
   'Vue',
   'component/entry-list/entryItemVm',
   'component/bookmarks/bookmarkVm',
-  'vuecomp/about-dialog.umd',
-  'vuecomp/credits-dialog.umd',
-  'vuecomp/donate-dialog.umd',
-  'vuecomp/folder-dialog.umd'],
-  function($,storage,ko,ksb,hjls,request,makeBookmarkProvider,clipboard,bacheca,bootstrap, Vue, EntryItemVm, BookmarkVm, AboutDialog, CreditsDialog, DonateDialog, FolderDialog) {
+  'vuecomp/dialogs-app.umd'],
+  function($,storage,ko,ksb,hjls,request,makeBookmarkProvider,clipboard,bacheca,bootstrap, Vue, EntryItemVm, BookmarkVm, DialogsApp) {
 
 const REQUEST_STATE_MAP = {
   NOT_STARTED: {
@@ -877,26 +874,6 @@ const REQUEST_STATE_MAP = {
     return Resting;
   }
 
-  var vueApp = new Vue({
-    el: '#v-dialogs',
-    created() {
-      bacheca.subscribe('showAboutDialog', () => this.showAboutDialog = true)
-      bacheca.subscribe('showCreditsDialog', () => this.showCreditsDialog = true)
-      bacheca.subscribe('showDonateDialog', () => this.showDonateDialog = true)
-      bacheca.subscribe('showFolderDialog', () => this.showFolderDialog = true)
-    },
-    data() {
-      return {
-        showAboutDialog: false,
-        showCreditsDialog: false,
-        showDonateDialog: false,
-        showFolderDialog: false
-      }
-    }, components: {
-      AboutDialog, CreditsDialog, DonateDialog, FolderDialog
-    }
-  })
-
   // init application
   $(() => {
     // seems that this below must be the last instructions to permit component to be registered
@@ -944,6 +921,16 @@ const REQUEST_STATE_MAP = {
    const appVM = new AppVm();
    
    ko.applyBindings(appVM);
+
+   const vueApp = new Vue({
+    el: '#v-dialogs',
+    components: {
+      DialogsApp
+    },
+    render: function(createElement) {
+      return createElement('dialogs-app')
+    }
+  })
    
    // add the first tab
    appVM.newTab();

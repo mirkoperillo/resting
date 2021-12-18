@@ -8,21 +8,10 @@ module.exports = {
       }
     },
     externals: {
-      /*'Vue': {
-        root: 'Vue',
-        amd: 'vue'
-      },*/
-      '../clipboard': 'app/clipboard',
-      '../storage': 'app/storage',
-      '../bacheca': 'app/bacheca',
-      '@/js/app/components/r-dialog.vue': 'vuecomp/r-dialog.umd',
-      // 'localforage': 'localforage',
-      /*'jquery': {
-        root: '$',
-        amd: 'jquery',
-        commonjs: 'jquery',
-        commonjs2: 'jquery'
-      }*/
+      '@/js/app/clipboard': 'app/clipboard',
+      '@/js/app/storage': 'app/storage',
+      '@/js/app/bacheca': 'app/bacheca',
+      '@/js/app/components/r-dialog.vue': 'vuecomp/r-dialog.umd'
     }      
   }
 }

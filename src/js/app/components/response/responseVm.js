@@ -113,10 +113,22 @@ define(['knockout','jquery','hjls', 'app/bacheca','Vue','app/clipboard', 'vuecom
     bacheca.subscribe('loadBookmark', clear);
     bacheca.subscribe('deleteBookmark', clear);
 
-    var vueApp = new Vue({
+    new Vue({
       el: '#v-response-b-group',
       components: {
         ClipboardButton
+      },
+      render: function(createElement) {
+        return createElement(
+          'div',
+          {
+            class: 'btn-group',
+            role: 'group'
+          },
+          [
+            createElement('clipboard-button')
+          ]
+        )
       }
     })
 

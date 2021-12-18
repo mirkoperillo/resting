@@ -4,7 +4,10 @@ COMPONENTS_FOLDER="src/js/app/components"
 DIST_FOLDER="src/js/vendor/vue-stuff"
 CLI_PATH="node_modules/.bin"
 
+# APPS
+${CLI_PATH}/vue-cli-service build --target lib --formats umd --dest ${DIST_FOLDER} --no-clean --name dialogs-app  ${COMPONENTS_FOLDER}/apps/dialogsApp.vue
 
+# COMPONENTS
 ${CLI_PATH}/vue-cli-service build --target lib --formats umd --dest ${DIST_FOLDER} --no-clean --name clipboard-button  ${COMPONENTS_FOLDER}/clipboard-button.vue
 ${CLI_PATH}/vue-cli-service build --target lib --formats umd --dest ${DIST_FOLDER} --no-clean --name r-dialog  ${COMPONENTS_FOLDER}/r-dialog.vue
 ${CLI_PATH}/vue-cli-service build --target lib --formats umd --dest ${DIST_FOLDER} --no-clean --name donate-dialog  ${COMPONENTS_FOLDER}/donate-dialog.vue

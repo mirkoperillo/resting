@@ -9,7 +9,7 @@
 import RDialog from 'Components/r-dialog.vue'
 
 export default {
-  name: 'DonateDialog',
+  name: 'CreditsDialog',
   components: {
     RDialog
   }
