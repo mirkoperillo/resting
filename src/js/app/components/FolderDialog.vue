@@ -8,10 +8,10 @@
 </template>
 
 <script>
-import RDialog from './RDialog.vue'
-import makeBookmarkProvider from '../bookmark'
-import storage from '@/js/app/storage'
-import bacheca from '@/js/app/bacheca'
+import RDialog from 'Components/RDialog.vue'
+import makeBookmarkProvider from 'Services/bookmark'
+import storage from 'Services/storage'
+import bacheca from 'Services/bacheca'
 
 export default {
   name: 'FolderDialog',

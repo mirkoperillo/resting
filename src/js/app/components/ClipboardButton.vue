@@ -6,7 +6,7 @@
 
 <script>
 
-import clipboard from '@/js/app/clipboard'
+import clipboard from 'Services/clipboard'
 
 export default {
   name: 'ClipBoardButton',

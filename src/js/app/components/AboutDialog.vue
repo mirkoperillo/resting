@@ -8,7 +8,7 @@
 </template>
 
 <script>
-import RDialog from './RDialog.vue'
+import RDialog from 'Components/RDialog.vue'
 
 export default {
   name: 'AboutDialog',

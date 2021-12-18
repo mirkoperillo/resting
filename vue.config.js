@@ -4,14 +4,15 @@ module.exports = {
   configureWebpack: {
     resolve: {
       alias: {
-        Components: path.resolve(__dirname, 'src/js/app/components')
+        Components: path.resolve(__dirname, 'src/js/app/components'),
+        Services: path.resolve(__dirname, 'src/js/app')
       }
     },
     externals: {
-      '@/js/app/clipboard': 'app/clipboard',
-      '@/js/app/storage': 'app/storage',
-      '@/js/app/bacheca': 'app/bacheca',
-      '@/js/app/components/RDialog.vue': 'vuecomp/r-dialog.umd'
+      'Services/clipboard': 'app/clipboard',
+      'Services/storage': 'app/storage',
+      'Services/bacheca': 'app/bacheca',
+      'Components/RDialog.vue': 'vuecomp/r-dialog.umd'
     }      
   }
 }

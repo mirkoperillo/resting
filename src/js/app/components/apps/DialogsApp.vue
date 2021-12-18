@@ -8,17 +8,17 @@
 </template>
 
 <script>
-import bacheca from '@/js/app/bacheca'
-import AboutDialog from '../AboutDialog.vue'
-import CreditsDialog from '../CreditsDialog.vue'
-import DonateDialog from '../DonateDialog.vue'
-import FolderDialog from '../FolderDialog.vue'
+import bacheca from 'Services/bacheca'
+import AboutDialog from 'Components/AboutDialog.vue'
+import CreditsDialog from 'Components/CreditsDialog.vue'
+import DonateDialog from 'Components/DonateDialog.vue'
+import FolderDialog from 'Components/FolderDialog.vue'
 
 export default {
     name: 'DialogsApp',
     created() {
       bacheca.subscribe('showAboutDialog', () => this.showAboutDialog = true)
-      bacheca.subscribe('showCreditsDialog', () => {this.showCreditsDialog = true; console.log('rispondo')})
+      bacheca.subscribe('showCreditsDialog', () => this.showCreditsDialog = true)
       bacheca.subscribe('showDonateDialog', () => this.showDonateDialog = true)
       bacheca.subscribe('showFolderDialog', () => this.showFolderDialog = true)
     },
