@@ -17,6 +17,7 @@
     along with Resting.  If not, see <http://www.gnu.org/licenses/>.
  */
  
+// ATTENTION: in this moment this service class is unused
 define(['jquery'], function($) {
     var handlers = [];
 

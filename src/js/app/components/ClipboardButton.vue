@@ -5,22 +5,14 @@
 </template>
 
 <script>
-
-import clipboard from 'Services/clipboard'
+import bacheca from 'Services/bacheca'
 
 export default {
   name: 'ClipBoardButton',
-  created: function() {
-        clipboard.copyFrom('#highlighted-response', 'copy-n-paste');
-        clipboard.onCopy(function() {
-          $('.alert').removeClass('hide');
-          setTimeout(function () { $('.alert').addClass('hide'); }, 2000);
-        });
-      },
-      methods: {
-        push() {
-          document.execCommand('copy')
-        }
-      }
+  methods: {
+    push(event) {
+      bacheca.publish('copyResponse')
+    }
+  }
 }
 </script>

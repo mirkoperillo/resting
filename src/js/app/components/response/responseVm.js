@@ -108,10 +108,21 @@ define(['knockout','jquery','hjls', 'app/bacheca','Vue','app/clipboard', 'vuecom
       callSize('-');
     };
 
+    const copyResponse = () => {
+      responseContent = $('#highlighted-response').text()
+      navigator.clipboard.writeText(responseContent)
+        .then(() =>{
+          $('.alert').removeClass('hide')
+          setTimeout(function () { $('.alert').addClass('hide'); }, 2000)
+        })
+        .catch(() => console.log('Error copying to clipboard'))
+    }
+
     bacheca.subscribe('responseReady', display);
     bacheca.subscribe('reset', clear);
     bacheca.subscribe('loadBookmark', clear);
     bacheca.subscribe('deleteBookmark', clear);
+    bacheca.subscribe('copyResponse', copyResponse);
 
     new Vue({
       el: '#v-response-b-group',
