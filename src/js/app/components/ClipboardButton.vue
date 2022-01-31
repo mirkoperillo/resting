@@ -1,7 +1,7 @@
 <template>
   <button @click.prevent.stop="push" title="Copy to clipboard" class="copy-n-paste">
-          <i class="fa fa-clipboard" aria-hidden="true"></i>
-        </button>
+    <i class="fa fa-clipboard" aria-hidden="true"></i>
+  </button>
 </template>
 
 <script>

@@ -32,6 +32,10 @@
               <button type="button" class="btn btn-default btn-sm" data-bind="click: exportDialog" title="Export">
                   <span class="glyphicon glyphicon-export" aria-hidden="true"></span>
               </button>
+              <div id="v-bookmarks-buttons">
+                <sort-button />
+              </div>
+            </div>
             </div>
             <div data-bind="foreach: bookmarks">
                 <div class="folder panel panel-default" data-bind="visible: isFolder">

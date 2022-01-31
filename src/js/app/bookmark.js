@@ -45,6 +45,12 @@ define(function() {
 
   const bookmarkById = ({ id }) => b => (b.id === id);
 
+  const sortBookmarks = (folder, criteria) => {
+    const bookmarks = folder.bookmarks
+    bookmarks.sort(criteria)
+    return Object.assign({}, folder, {bookmarks})
+  }
+
   const replaceBookmark = (folder,bookmark) => {
     const bookmarks = folder.bookmarks.slice();
     const indexToReplace = bookmarks.findIndex(bookmarkById(bookmark));
@@ -365,6 +371,7 @@ define(function() {
         removeBookmarks : removeBookmarks,
         copyBookmark : copyBookmark,
         replaceBookmark : replaceBookmark,
+        sortBookmarks,
         save : bookmark => storageProvider.save(bookmark),
         importHAR : importHAR(storageProvider),
         exportObj,

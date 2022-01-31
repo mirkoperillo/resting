@@ -14,3 +14,4 @@ ${CLI_PATH}/vue-cli-service build --target lib --formats umd --dest ${DIST_FOLDE
 ${CLI_PATH}/vue-cli-service build --target lib --formats umd --dest ${DIST_FOLDER} --no-clean --name credits-dialog  ${COMPONENTS_FOLDER}/CreditsDialog.vue
 ${CLI_PATH}/vue-cli-service build --target lib --formats umd --dest ${DIST_FOLDER} --no-clean --name about-dialog  ${COMPONENTS_FOLDER}/AboutDialog.vue
 ${CLI_PATH}/vue-cli-service build --target lib --formats umd --dest ${DIST_FOLDER} --no-clean --name folder-dialog  ${COMPONENTS_FOLDER}/FolderDialog.vue
+${CLI_PATH}/vue-cli-service build --target lib --formats umd --dest ${DIST_FOLDER} --no-clean --name sort-button  ${COMPONENTS_FOLDER}/SortButton.vue

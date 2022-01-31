@@ -17,7 +17,7 @@
     along with Resting.  If not, see <http://www.gnu.org/licenses/>.
  */
  
-define(['knockout', 'app/bookmark', 'app/storage', 'app/bacheca', 'component/bookmarks/bookmarkVm','component/entry-list/entryItemVm'],function(ko, makeBookmarkProvider, storage, bacheca, BookmarkVm, EntryItemVm) {
+define(['Vue','knockout', 'app/bookmark', 'app/storage', 'app/bacheca', 'component/bookmarks/bookmarkVm','component/entry-list/entryItemVm', 'vuecomp/sort-button.umd'],function(Vue, ko, makeBookmarkProvider, storage, bacheca, BookmarkVm, EntryItemVm, SortButton) {
 
   // FIXME app.js duplication
   function ContextVm(name = 'default',variables = []) {
@@ -268,12 +268,46 @@ define(['knockout', 'app/bookmark', 'app/storage', 'app/bacheca', 'component/boo
     };
 
 
+    const sortCriteria = (b1, b2) => {
+      const bookmarkName1 = b1.viewName()
+      const bookmarkName2 = b2.viewName()
+      console.log(`${bookmarkName1.toUpperCase()} -- ${bookmarkName2.toUpperCase()}`)
+      if (bookmarkName1.toUpperCase() < bookmarkName2.toUpperCase()) {
+        return -1
+      }
+      if (bookmarkName1.toUpperCase() > bookmarkName2.toUpperCase()) {
+        return 1
+      }
+      return 0
+    }
+
+    const _sortBookmarks = () => {
+      bookmarks.sort(sortCriteria)
+      bookmarks().forEach(b => {
+        if (b.isFolder) {
+          const sortedFolder = bookmarkProvider.sortBookmarks(b, sortCriteria)
+          const originalFolder = bookmarks().find(bookmark => bookmark.id === b.id)
+          bookmarks.replace(originalFolder, sortedFolder)
+        }
+      })
+    }
+
     $(() => {
        // hide context menu on every click on page
        $(".row").on("click", function() {
         showContextMenu(false);
        });
         _loadBookmarksNewFormat();
+
+        new Vue({
+          el: '#v-bookmarks-buttons',
+          components: {
+            SortButton
+          },
+          render: function(createElement) {
+            return createElement('sort-button')
+          }
+        })
     });
 
     /*
@@ -283,6 +317,7 @@ define(['knockout', 'app/bookmark', 'app/storage', 'app/bacheca', 'component/boo
      * and this duplicates (only in view) all folder elements
      */
     bacheca.subscribe('newFolder', _addFolder);
+    bacheca.subscribe('sortBookmarks', _sortBookmarks)
 
     return {
       closeDialogOnExcape,
