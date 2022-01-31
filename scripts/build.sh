@@ -10,7 +10,11 @@ then
  rm ../dist/resting.xpi
 fi
 
-cd ../src
+cd ..
+./scripts/build-vue-comp.sh
+echo "vue components built"
+
+cd src
 zip -r ../dist/resting.xpi *
 cd ..
 zip dist/resting.xpi LICENSE README.md

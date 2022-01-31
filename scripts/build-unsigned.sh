@@ -12,7 +12,11 @@ then
  rm ../dist/resting.xpi
 fi
 
-cd ../src
+cd ..
+./scripts/build-vue-comp.sh
+echo "vue components built"
+
+cd src
 
 # patch the manifest
 mkdir -p ../dist/tmp
