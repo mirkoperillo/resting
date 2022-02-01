@@ -271,7 +271,6 @@ define(['Vue','knockout', 'app/bookmark', 'app/storage', 'app/bacheca', 'compone
     const sortCriteria = (b1, b2) => {
       const bookmarkName1 = b1.viewName()
       const bookmarkName2 = b2.viewName()
-      console.log(`${bookmarkName1.toUpperCase()} -- ${bookmarkName2.toUpperCase()}`)
       if (bookmarkName1.toUpperCase() < bookmarkName2.toUpperCase()) {
         return -1
       }
