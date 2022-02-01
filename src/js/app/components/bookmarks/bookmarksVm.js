@@ -17,7 +17,17 @@
     along with Resting.  If not, see <http://www.gnu.org/licenses/>.
  */
  
-define(['Vue','knockout', 'app/bookmark', 'app/storage', 'app/bacheca', 'component/bookmarks/bookmarkVm','component/entry-list/entryItemVm', 'vuecomp/sort-button.umd', 'vuecomp/add-folder-button.umd'],function(Vue, ko, makeBookmarkProvider, storage, bacheca, BookmarkVm, EntryItemVm, SortButton, AddFolderButton) {
+define([
+  'Vue',
+  'knockout', 
+  'app/bookmark', 
+  'app/storage', 
+  'app/bacheca', 
+  'component/bookmarks/bookmarkVm',
+  'component/entry-list/entryItemVm', 
+  'vuecomp/sort-button.umd', 
+  'vuecomp/add-folder-button.umd',
+  'vuecomp/export-button.umd'],function(Vue, ko, makeBookmarkProvider, storage, bacheca, BookmarkVm, EntryItemVm, SortButton, AddFolderButton, ExportButton) {
 
   // FIXME app.js duplication
   function ContextVm(name = 'default',variables = []) {
@@ -160,7 +170,7 @@ define(['Vue','knockout', 'app/bookmark', 'app/storage', 'app/bacheca', 'compone
       showImportDialog(true);
     };
 
-    const exportDialog = () => {
+    const _exportDialog = () => {
       showExportDialog(true);
     };
 
@@ -301,13 +311,14 @@ define(['Vue','knockout', 'app/bookmark', 'app/storage', 'app/bacheca', 'compone
         new Vue({
           el: '#v-bookmarks-buttons',
           components: {
-            SortButton, AddFolderButton
+            ExportButton, SortButton, AddFolderButton
           },
           render: function(h) {
             return h(
               'span', 
               {},
               [
+                h('export-button'),
                 h('add-folder-button'),
                 h('sort-button')
               ])
@@ -323,13 +334,13 @@ define(['Vue','knockout', 'app/bookmark', 'app/storage', 'app/bacheca', 'compone
      */
     bacheca.subscribe('newFolder', _addFolder);
     bacheca.subscribe('sortBookmarks', _sortBookmarks)
+    bacheca.subscribe('exportDialog', _exportDialog)
 
     return {
       closeDialogOnExcape,
       showImportDialog,
       showExportDialog,
       importDialog,
-      exportDialog,
       dismissImportDialog,
       dismissExportDialog,
       importSrc,
