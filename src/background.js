@@ -17,19 +17,13 @@
     along with Resting.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-/*
-Open a new tab, and load "my-page.html" into it.
-*/
-function openMyPage() {
-  console.log("injecting");
+
+// Open a new tab, and load Resting
+function openResting() {
    chrome.tabs.create({
      "url": "/index.html"
    });
 }
 
-
-/*
-Add openMyPage() as a listener to clicks on the browser action.
-*/
-chrome.browserAction.onClicked.addListener(openMyPage);
+chrome.browserAction.onClicked.addListener(openResting);
  
