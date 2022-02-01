@@ -1,5 +1,5 @@
 <template>
-  <button @click.prevent.stop="sort" title="Sort bookmarks">
+  <button class="btn btn-default btn-sm" @click.prevent.stop="sort" title="Sort bookmarks">
     <i class="fa fa-sort-alpha-asc" aria-hidden="true"></i>
   </button>
 </template>

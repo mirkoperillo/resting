@@ -17,7 +17,7 @@
     along with Resting.  If not, see <http://www.gnu.org/licenses/>.
  */
  
-define(['Vue','knockout', 'app/bookmark', 'app/storage', 'app/bacheca', 'component/bookmarks/bookmarkVm','component/entry-list/entryItemVm', 'vuecomp/sort-button.umd'],function(Vue, ko, makeBookmarkProvider, storage, bacheca, BookmarkVm, EntryItemVm, SortButton) {
+define(['Vue','knockout', 'app/bookmark', 'app/storage', 'app/bacheca', 'component/bookmarks/bookmarkVm','component/entry-list/entryItemVm', 'vuecomp/sort-button.umd', 'vuecomp/add-folder-button.umd'],function(Vue, ko, makeBookmarkProvider, storage, bacheca, BookmarkVm, EntryItemVm, SortButton, AddFolderButton) {
 
   // FIXME app.js duplication
   function ContextVm(name = 'default',variables = []) {
@@ -301,10 +301,16 @@ define(['Vue','knockout', 'app/bookmark', 'app/storage', 'app/bacheca', 'compone
         new Vue({
           el: '#v-bookmarks-buttons',
           components: {
-            SortButton
+            SortButton, AddFolderButton
           },
-          render: function(createElement) {
-            return createElement('sort-button')
+          render: function(h) {
+            return h(
+              'span', 
+              {},
+              [
+                h('add-folder-button'),
+                h('sort-button')
+              ])
           }
         })
     });

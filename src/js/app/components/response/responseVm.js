@@ -129,15 +129,15 @@ define(['knockout','jquery','hjls', 'app/bacheca','Vue','app/clipboard', 'vuecom
       components: {
         ClipboardButton
       },
-      render: function(createElement) {
-        return createElement(
+      render: function(h) {
+        return h(
           'div',
           {
             class: 'btn-group',
             role: 'group'
           },
           [
-            createElement('clipboard-button')
+            h('clipboard-button')
           ]
         )
       }

@@ -25,16 +25,13 @@
           </div>
           <div class="panel-body">          
             <div class="btn-group" role="group" style="margin-bottom: 2px;">
-              <add-folder-button />
               <button type="button" class="btn btn-default btn-sm" data-bind="click: importDialog" title="Import">
                 <span class="glyphicon glyphicon-import" aria-hidden="true"></span>
               </button>
               <button type="button" class="btn btn-default btn-sm" data-bind="click: exportDialog" title="Export">
                   <span class="glyphicon glyphicon-export" aria-hidden="true"></span>
               </button>
-              <div id="v-bookmarks-buttons">
-                <sort-button />
-              </div>
+              <div id="v-bookmarks-buttons"></div>
             </div>
             </div>
             <div data-bind="foreach: bookmarks">

@@ -45,8 +45,9 @@ requirejs([
   'Vue',
   'component/entry-list/entryItemVm',
   'component/bookmarks/bookmarkVm',
-  'vuecomp/dialogs-app.umd'],
-  function($,storage,ko,ksb,hjls,request,makeBookmarkProvider,clipboard,bacheca,bootstrap, Vue, EntryItemVm, BookmarkVm, DialogsApp) {
+  'vuecomp/dialogs-app.umd',
+  'vuecomp/add-folder-button.umd'],
+  function($,storage,ko,ksb,hjls,request,makeBookmarkProvider,clipboard,bacheca,bootstrap, Vue, EntryItemVm, BookmarkVm, DialogsApp, AddFolderButton) {
 
 const REQUEST_STATE_MAP = {
   NOT_STARTED: {
@@ -902,12 +903,6 @@ const REQUEST_STATE_MAP = {
       template: { require: 'text!app/components/response/response_view.html' }
     });
 
-    ko.components.register('add-folder-button', {
-      viewModel: { require: 'app/components/add-folder/addFolderVm' },
-      template: { require: 'text!app/components/add-folder/addFolder_view.html' }
-    });
-
-
    // Show all options, more restricted setup than the Knockout regular binding.
    var options = {
      attribute: "data-bind",        // default "data-sbind"
@@ -927,8 +922,18 @@ const REQUEST_STATE_MAP = {
     components: {
       DialogsApp
     },
-    render: function(createElement) {
-      return createElement('dialogs-app')
+    render: function(h) {
+      return h('dialogs-app')
+    }
+  })
+
+  const saveBookmarkVueApp = new Vue({
+    el: '#v-save-bookmark',
+    components: {
+      AddFolderButton
+    },
+    render: function(h) {
+      return h('add-folder-button')
     }
   })
    
