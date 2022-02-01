@@ -25,10 +25,7 @@ define([
   'app/bacheca', 
   'component/bookmarks/bookmarkVm',
   'component/entry-list/entryItemVm', 
-  'vuecomp/sort-button.umd', 
-  'vuecomp/add-folder-button.umd',
-  'vuecomp/export-button.umd',
-  'vuecomp/import-button.umd'],function(Vue, ko, makeBookmarkProvider, storage, bacheca, BookmarkVm, EntryItemVm, SortButton, AddFolderButton, ExportButton, ImportButton) {
+  'vuecomp/bookmarks-menu.umd'],function(Vue, ko, makeBookmarkProvider, storage, bacheca, BookmarkVm, EntryItemVm, BookmarksMenu) {
 
   // FIXME app.js duplication
   function ContextVm(name = 'default',variables = []) {
@@ -310,6 +307,15 @@ define([
         _loadBookmarksNewFormat();
 
         new Vue({
+          el: '#v-bookmarks-menu',
+          components: {
+            BookmarksMenu
+          },
+          render: function(h) {
+            return h('bookmarks-menu')
+          }
+        })
+        /*new Vue({
           el: '#v-bookmarks-buttons',
           components: {
             ImportButton, ExportButton, SortButton, AddFolderButton
@@ -325,7 +331,7 @@ define([
                 h('sort-button')
               ])
           }
-        })
+        })*/
     });
 
     /*
