@@ -27,7 +27,8 @@ define([
   'component/entry-list/entryItemVm', 
   'vuecomp/sort-button.umd', 
   'vuecomp/add-folder-button.umd',
-  'vuecomp/export-button.umd'],function(Vue, ko, makeBookmarkProvider, storage, bacheca, BookmarkVm, EntryItemVm, SortButton, AddFolderButton, ExportButton) {
+  'vuecomp/export-button.umd',
+  'vuecomp/import-button.umd'],function(Vue, ko, makeBookmarkProvider, storage, bacheca, BookmarkVm, EntryItemVm, SortButton, AddFolderButton, ExportButton, ImportButton) {
 
   // FIXME app.js duplication
   function ContextVm(name = 'default',variables = []) {
@@ -166,7 +167,7 @@ define([
       dismissExportDialog();
     };
 
-    const importDialog = () => {
+    const _importDialog = () => {
       showImportDialog(true);
     };
 
@@ -311,15 +312,16 @@ define([
         new Vue({
           el: '#v-bookmarks-buttons',
           components: {
-            ExportButton, SortButton, AddFolderButton
+            ImportButton, ExportButton, SortButton, AddFolderButton
           },
           render: function(h) {
             return h(
-              'span', 
+              'div', 
               {},
               [
-                h('export-button'),
                 h('add-folder-button'),
+                h('import-button'),
+                h('export-button'),
                 h('sort-button')
               ])
           }
@@ -335,12 +337,12 @@ define([
     bacheca.subscribe('newFolder', _addFolder);
     bacheca.subscribe('sortBookmarks', _sortBookmarks)
     bacheca.subscribe('exportDialog', _exportDialog)
+    bacheca.subscribe('importDialog', _importDialog)
 
     return {
       closeDialogOnExcape,
       showImportDialog,
       showExportDialog,
-      importDialog,
       dismissImportDialog,
       dismissExportDialog,
       importSrc,

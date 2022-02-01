@@ -1,5 +1,5 @@
 <template>
-  <button class="btn btn-default btn-sm" @click.prevent.stop="sort" title="Export">
+  <button class="btn btn-default btn-sm" @click.prevent.stop="action" title="Export">
     <span class="glyphicon glyphicon-export" aria-hidden="true"></span>
   </button>
 </template>
@@ -9,7 +9,7 @@ import bacheca from 'Services/bacheca'
 
 export default {
   methods: {
-    sort() {
+    action() {
       bacheca.publish('exportDialog')
     }
   }

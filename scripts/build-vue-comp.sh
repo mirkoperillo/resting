@@ -17,3 +17,4 @@ ${CLI_PATH}/vue-cli-service build --target lib --formats umd --dest ${DIST_FOLDE
 ${CLI_PATH}/vue-cli-service build --target lib --formats umd --dest ${DIST_FOLDER} --no-clean --name sort-button  ${COMPONENTS_FOLDER}/SortButton.vue
 ${CLI_PATH}/vue-cli-service build --target lib --formats umd --dest ${DIST_FOLDER} --no-clean --name add-folder-button  ${COMPONENTS_FOLDER}/AddFolderButton.vue
 ${CLI_PATH}/vue-cli-service build --target lib --formats umd --dest ${DIST_FOLDER} --no-clean --name export-button  ${COMPONENTS_FOLDER}/ExportButton.vue
+${CLI_PATH}/vue-cli-service build --target lib --formats umd --dest ${DIST_FOLDER} --no-clean --name import-button  ${COMPONENTS_FOLDER}/ImportButton.vue
