@@ -9,12 +9,5 @@ ${CLI_PATH}/vue-cli-service build --target lib --formats umd --dest ${DIST_FOLDE
 
 # COMPONENTS
 ${CLI_PATH}/vue-cli-service build --target lib --formats umd --dest ${DIST_FOLDER} --no-clean --name clipboard-button  ${COMPONENTS_FOLDER}/ClipboardButton.vue
-${CLI_PATH}/vue-cli-service build --target lib --formats umd --dest ${DIST_FOLDER} --no-clean --name r-dialog  ${COMPONENTS_FOLDER}/RDialog.vue
-${CLI_PATH}/vue-cli-service build --target lib --formats umd --dest ${DIST_FOLDER} --no-clean --name donate-dialog  ${COMPONENTS_FOLDER}/DonateDialog.vue
-${CLI_PATH}/vue-cli-service build --target lib --formats umd --dest ${DIST_FOLDER} --no-clean --name credits-dialog  ${COMPONENTS_FOLDER}/CreditsDialog.vue
-${CLI_PATH}/vue-cli-service build --target lib --formats umd --dest ${DIST_FOLDER} --no-clean --name about-dialog  ${COMPONENTS_FOLDER}/AboutDialog.vue
-${CLI_PATH}/vue-cli-service build --target lib --formats umd --dest ${DIST_FOLDER} --no-clean --name folder-dialog  ${COMPONENTS_FOLDER}/FolderDialog.vue
-${CLI_PATH}/vue-cli-service build --target lib --formats umd --dest ${DIST_FOLDER} --no-clean --name sort-button  ${COMPONENTS_FOLDER}/SortButton.vue
 ${CLI_PATH}/vue-cli-service build --target lib --formats umd --dest ${DIST_FOLDER} --no-clean --name add-folder-button  ${COMPONENTS_FOLDER}/AddFolderButton.vue
-${CLI_PATH}/vue-cli-service build --target lib --formats umd --dest ${DIST_FOLDER} --no-clean --name export-button  ${COMPONENTS_FOLDER}/ExportButton.vue
-${CLI_PATH}/vue-cli-service build --target lib --formats umd --dest ${DIST_FOLDER} --no-clean --name import-button  ${COMPONENTS_FOLDER}/ImportButton.vue
+${CLI_PATH}/vue-cli-service build --target lib --formats umd --dest ${DIST_FOLDER} --no-clean --name bookmarks-menu  ${COMPONENTS_FOLDER}/BookmarksMenu.vue

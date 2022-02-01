@@ -11,8 +11,7 @@ module.exports = {
     externals: {
       'Services/clipboard': 'app/clipboard',
       'Services/storage': 'app/storage',
-      'Services/bacheca': 'app/bacheca',
-      'Components/RDialog.vue': 'vuecomp/r-dialog.umd'
+      'Services/bacheca': 'app/bacheca'
     }      
   }
 }
