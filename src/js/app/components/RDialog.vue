@@ -17,6 +17,13 @@
 <script>
 export default {
   name: 'RDialog',
+  mounted() {
+    document.addEventListener('keyup', (event) => {
+      if (event.key === 'Esc' || event.key === 'Escape') {
+        this.$emit('dismiss-dialog')
+      }
+    })
+  },
   props: {
     title: {
       type: String,
