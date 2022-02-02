@@ -28,6 +28,11 @@ requirejs.config({
         'localforage': 'localforage.nopromises.min',
         'hjls': 'highlight.pack',
         'Vue': 'vue.runtime.min'
+    },
+    shim: {
+      bootstrap: {
+        deps: ['jquery']
+      }
     }
 });
 
