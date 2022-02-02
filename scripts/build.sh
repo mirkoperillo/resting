@@ -5,9 +5,9 @@ then
   mkdir ../dist
 fi
 
-if [ -e ../dist/resting.xpi ]
+if [ -e ../dist/resting.zip ]
 then
- rm ../dist/resting.xpi
+ rm ../dist/resting.zip
 fi
 
 cd ..
@@ -15,6 +15,6 @@ cd ..
 echo "vue components built"
 
 cd src
-zip -r ../dist/resting.xpi *
+zip -r ../dist/resting.zip *
 cd ..
-zip dist/resting.xpi LICENSE README.md
+zip dist/resting.zip LICENSE README.md
