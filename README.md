@@ -17,7 +17,7 @@ Everything is stored offline on your device, all the data is saved locally in th
 ## Roadmap
 This is the road to Resting v2.0
 
-- [ ] Support file uploading [#53](https://github.com/mirkoperillo/resting/issues/53)
+- [x] Support file uploading [#53](https://github.com/mirkoperillo/resting/issues/53)
 - [ ] Complete Oauth2.0 authentication [#110](https://github.com/mirkoperillo/resting/issues/110)
 - [ ] Headers completion suggestion [#52](https://github.com/mirkoperillo/resting/issues/52)
 - [ ] List available context variables fo the request [#114](https://github.com/mirkoperillo/resting/issues/114)
