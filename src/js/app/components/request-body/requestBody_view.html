@@ -29,7 +29,7 @@
   </div>
   <div class="row" style="margin-top: 10px;">
     <div class="col-md-12">
-      <entry-list params="entryList : formDataParams" data-bind="visible : bodyType() == 'form-data'"></entry-list>
+      <entry-list params="entryList : formDataParams, enableFileEntry: true" data-bind="visible : bodyType() == 'form-data'"></entry-list>
       <entry-list params="entryList : formEncodedParams" data-bind="visible : bodyType() == 'x-www-form-urlencoded'"></entry-list>
       <div class="form-group" data-bind="visible : bodyType() == 'raw'">
         <textarea class="form-control" rows="20" data-bind="value: rawBody"></textarea>

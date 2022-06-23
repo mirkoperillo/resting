@@ -25,7 +25,7 @@ define(['jquery','app/response'],function($,response){
 
 
   const contentTypesFromBodyTypes = {
-      'form-data': 'multipart/form-data',
+      'form-data': false, // leave false to permit insertion of multipart boundary
       'x-www-form-urlencoded': 'application/x-www-form-urlencoded',
       'raw': 'application/json',
   };
@@ -57,7 +57,7 @@ define(['jquery','app/response'],function($,response){
       method: method,
       url: requestUrl,
       headers: headers,
-      processData: (bodyType === 'form-data'),
+      processData: false,
       cache: false,
       crossDomain: true,
       contentType: contentTypesFromBodyTypes[bodyType],

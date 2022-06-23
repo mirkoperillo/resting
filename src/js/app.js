@@ -185,11 +185,17 @@ const REQUEST_STATE_MAP = {
 
     const bookmarkProvider = makeBookmarkProvider(storage);
 
-    const convertToFormData = (data = [], context = {}) =>
-      data.filter(param => param.enabled()).reduce((acc, record) => {
-        acc[record.name()] = _applyContext(record.value(),context);
-        return acc;
-      }, {});
+    const convertToFormData = (data = [], context = {}) => {
+      const formdata = new FormData()
+      data.filter(param => param.enabled()).forEach(item => {
+        if (item.isFileEntry()) {
+          formdata.append(item.name(), item.valueFile, item.valueFile.name)
+        } else {
+          formdata.append(item.name(), _applyContext(item.value(),context))
+        }
+      })
+      return formdata
+    }
 
     const serializeBookmark = (bookmarkObj) => {
       return bookmarkProvider.fromJson(JSON.stringify(bookmarkObj));

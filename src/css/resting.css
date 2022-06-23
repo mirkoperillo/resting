@@ -181,6 +181,27 @@ a.donate-link:hover {
   color: white;
 }
 
+#resting-file {
+  display: none;
+}
+
+.file-label {
+  border: 1px solid #204d74;
+  border-radius: 3px;
+  color: #204d74;
+  cursor: pointer;
+  padding: 6px 12px;
+}
+
+.file-label:hover {
+  background-color: #337ab7;
+  color: white;
+}
+
+#file-chosen, #file-remove-button {
+  display: none;
+}
+
 .animate-progress {
   animation: progress 1s 1;
 }

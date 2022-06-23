@@ -18,21 +18,36 @@
 */
 
 define(['knockout', 'component/entry-list/entryItemVm','app/bacheca'],function(ko, EntryItemVm, bacheca) {
+  'use strict';
+  return function EntryListVm(params) {   
+    const entryList = params.entryList
+    const enableFileEntry = params.enableFileEntry !== undefined && params.enableFileEntry
+    const entryName = ko.observable()
+    const entryValue = ko.observable()
+    const focusToNameField = ko.observable(true)
+    const entryType = ko.observable('Text')
+    const entryTypes = ko.observableArray(['Text', 'File'])
+    let entryFile = null
 
-  return function EntryListVm(params) {
+    const onFileSelectedEvent = function(vm, evt) {
+      entryFile = evt.target.files[0]
+      const loadedFile = document.getElementById('file-name')
+      loadedFile.innerHTML = entryFile.name
+      loadedFile.style.display = 'inline'
+      document.getElementById('file-remove-button').style.display = 'inline'
+      document.getElementById('select-file-button').style.display = 'none'
+      console.log(JSON.stringify(entryFile))
+    }
 
-    const EntryList = {
-      entryList: params.entryList,
-      entryName: ko.observable(),
-      entryValue: ko.observable(),
-      focusToNameField: ko.observable(true),
-    };
+    const isFileEntry = ko.computed(function () {
+      return entryType() === 'File'
+    }, this);
 
     const addOnEnter = (data, event) => {
       const enter = 13;
       if(event.keyCode === enter) {
         add();
-        EntryList.focusToNameField(true);
+        focusToNameField(true);
       }
     };
 
@@ -40,30 +55,59 @@ define(['knockout', 'component/entry-list/entryItemVm','app/bacheca'],function(k
       name.trim().length > 0 && value.trim().length > 0;
 
     const add = () => {
-      if (!checkValidEntry(EntryList.entryName(), EntryList.entryValue())) return false;
-
-      EntryList.entryList.push(new EntryItemVm(EntryList.entryName(), EntryList.entryValue(), true ));
-      EntryList.entryName('');
-      EntryList.entryValue('');
-
-      return true;
+      console.log(JSON.stringify(entryFile))
+      if (entryType() === 'Text' && !checkValidEntry(entryName(), entryValue())) return false
+      if (entryType() === 'File' && (entryName().trim().length == 0 || entryFile == null)) return false
+      let item
+      if (entryType() === 'Text') {
+        item = new EntryItemVm(entryName(), entryValue(), true, null, enableFileEntry, entryType())
+      }
+      if (entryType() === 'File') {
+        item = new EntryItemVm(entryName(), entryValue(), true, entryFile, enableFileEntry, entryType())
+      }
+      entryList.push(item)
+     _cleanFields()
+      return true
     };
 
     const remove = entry =>
-      EntryList.entryList.remove(entry);
+      entryList.remove(entry);
 
     const _cleanFields = () => {
-      EntryList.entryName('');
-      EntryList.entryValue('');
+      entryName('');
+      entryValue('');
+      entryType('Text');
+      removeFile()
     };
+
+    const removeFile = () => {
+      if (document.getElementById('file-name')) {
+        document.getElementById('file-name').innerHTML = ''
+        document.getElementById('file-name').style.display = 'none'
+        document.getElementById('file-remove-button').style.display = 'none'
+        document.getElementById('select-file-button').style.display = 'inline'
+        entryFile = null
+      }
+    }
     
     bacheca.subscribe('reset', _cleanFields);
-    
-    EntryList.add = add;
-    EntryList.remove = remove;
-    EntryList.addOnEnter = addOnEnter;
 
-    return EntryList;
+    return {
+      entryList,
+      entryName,
+      entryValue,
+      enableFileEntry,
+      focusToNameField,
+      entryType,
+      entryTypes,
+      isFileEntry,
+
+      add,
+      remove,
+      addOnEnter,
+      removeFile,
+      onFileSelectedEvent
+    };
   }
 });
 
