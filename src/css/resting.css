@@ -73,6 +73,7 @@ body {
  display: block;
  padding: 10px 15px;
  cursor: pointer;
+ border-bottom: 1px dotted #337ab7;
 }
 
 .folder {
