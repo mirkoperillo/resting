@@ -235,7 +235,9 @@ define([
 
             importedBookmarks.contexts.forEach(c => _saveContext(c));
         };
-        fr.readAsText(f[0]);
+        if(f[0]) {
+          fr.readAsText(f[0]);
+        }
         document.getElementById("import-file").value = '';
       };
 
