@@ -81,15 +81,14 @@ define(function() {
   };
 
   const importHAR = (storageProvider, harContent) => (harContent) => {
-    const har = JSON.parse(_escapeJsonContent(harContent));
+    const har = JSON.parse(_escapeJsonContent(harContent))
     if(_isRestingFormat(har.log.creator)) {
-      return importObj(har);
+      return importObj(har)
     } else {
-      const harEntries = har.log.entries;
-      const bookmarks = harEntries.map(entry => _convertHarEntry(storageProvider, entry));
-      return {bookmarks : bookmarks, contexts : []};
+      const harEntries = har.log.entries
+      const bookmarks = harEntries.map(entry => _convertHarEntry(storageProvider, entry))
+      return {bookmarks : bookmarks, contexts : []}
     }
-    // return bookmarks;
   };
 
   const _isRestingFormat = (creatorFields = {}) => {
@@ -97,23 +96,24 @@ define(function() {
   };
 
   const _escapeJsonContent = (content) => {
-    /*if(content) {
+    if(content) {
       content = content.replace(/\n/g,'');
       content = content.replace(/\t/g,'');
       content = content.replace(/\r/g,'');
-      content = content.replace(/"response":\s?{.*},"/,'"response": {},"');
+      //content = content.replace(/"response":\s?{.*},"/,'"response": {},"');
     }
-    return content;*/
+    return content;
 
-    return content.replace(/\\n/g, "\\n")
+/*    return content.replace(/\\n/g, "\\n")
         .replace(/\\'/g, "\\'")
         .replace(/\\"/g, '\\"')
         .replace(/\\&/g, "\\&")
         .replace(/\\r/g, "\\r")
         .replace(/\\t/g, "\\t")
         .replace(/\\b/g, "\\b")
-        .replace(/\\f/g, "\\f");
+        .replace(/\\f/g, "\\f");*/
   };
+  
   const _convertHarEntry = (storage, entry) => {
     const bookmark = {};
     bookmark.id = storage.generateId();
@@ -156,14 +156,13 @@ define(function() {
   };
 
   const _contextsToHar = (contexts = []) => {
-
       return contexts.map(c => {
         let contextHarField = {};
         contextHarField.name = c.name;
         contextHarField.variables = c.variables.map(v => ({name: v.name, value: v.value, enabled: v.enabled}));
         return contextHarField;
         }
-      );
+      )
   };
 
   const _bookmarkToHar = (sources = []) => {
@@ -266,44 +265,40 @@ define(function() {
   };
 
   const _fixStructure = (bookmarks, mapping) => {
-    let indexBookmarks = {};
-    let i = 0;
-    let bookmark;
-    for(bookmark of bookmarks) {
-      const bookmarkId = bookmark.id;
-      indexBookmarks[bookmarkId] = {obj: bookmark, position: i};
-      i++;
+    let indexBookmarks = {}
+    let i = 0
+    for(let bookmark of bookmarks) {
+      const bookmarkId = bookmark.id
+      indexBookmarks[bookmarkId] = bookmark
+      i++
     }
-    let folderId;
-    for( folderId of Object.keys(mapping) ) {
-      const insideBookmarkIds = mapping[folderId];
+    for(let folderId of Object.keys(mapping)) {
+      const insideBookmarkIds = mapping[folderId]
       insideBookmarkIds.forEach(id => {
-        if(!indexBookmarks[folderId].obj.bookmarks) {
-          indexBookmarks[folderId].obj.bookmarks = [];
+        if(indexBookmarks.hasOwnProperty(folderId) && !indexBookmarks[folderId].bookmarks) {
+          indexBookmarks[folderId].bookmarks = []
         }
-        indexBookmarks[folderId].obj.bookmarks.push(indexBookmarks[id].obj);
-        bookmarks.splice(indexBookmarks[id].position,1);
+        indexBookmarks[folderId].bookmarks.push(indexBookmarks[id])
+        bookmarks.splice(bookmarks.indexOf(indexBookmarks[id]), 1)
       });
     }
-
     return bookmarks;
   }
 
   const _extractRelationship = (entries = []) => {
-    let relationMapping = {};
+    let relationMapping = {}
     entries.forEach((e) => {
-      const id = e._id;
-      const folderId = e._folder;
+      const id = e._id
+      const folderId = e._folder
       if(folderId) {
-        if(!relationMapping.folderId) {
-          relationMapping[folderId] = [];
+        if(!relationMapping.hasOwnProperty(folderId)) {
+          relationMapping[folderId] = []
         }
-        relationMapping[folderId].push(id);
+        relationMapping[folderId].push(id)
       }
-    });
-
-    return relationMapping;
-  };
+    })
+    return relationMapping
+  }
 
   const _importEntry = (entry = {}) => {
     let bookmark = {};
@@ -349,18 +344,15 @@ define(function() {
   };
 
   const _importContext = (entry = {}) => {
-    let context = {};
+    let context = {}
     if(entry.name) {
-      context.name = entry.name;
+      context.name = entry.name
     }
     if(entry.variables) {
-      context.variables = entry.variables.map(v => ({name: v.name, value: v.value, enabled: v.enabled}));
+      context.variables = entry.variables.map(v => ({name: v.name, value: v.value, enabled: v.enabled}))
     }
-
-    return context;
-  };
-
-
+    return context
+  }
 
   return function(storageProvider) {
       return {
@@ -376,6 +368,6 @@ define(function() {
         importHAR : importHAR(storageProvider),
         exportObj,
         importObj,
-      };
-  };
-});
+      }
+  }
+})
