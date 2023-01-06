@@ -12,7 +12,7 @@
     "jasmine": "~3.0.0",
     "requirejs": "~2.3.5",
     "lodash": "^4.17.21",
-    "@vue/cli-service": "~4.5.0",
+    "@vue/cli-service": "~5.0.8",
     "vue-template-compiler": "^2.6.11"
   },
   "dependencies": {
