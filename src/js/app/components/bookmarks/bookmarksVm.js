@@ -290,6 +290,10 @@ define([
       return 0
     }
 
+    const openInTab = () => {
+      bacheca.publish('openInTab', bookmarkOfContextMenu)
+    }
+
     const _sortBookmarks = () => {
       bookmarks.sort(sortCriteria)
       bookmarks().forEach(b => {
@@ -375,6 +379,7 @@ define([
       contextMenuPosX,
       contextMenuPosY,
       // context menu actions
+      openInTab,
       duplicate,
     };
   }
