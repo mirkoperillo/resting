@@ -1,13 +1,32 @@
 ![Icon](src/icons/letter-r_64.png)
 
-Resting is a rest client WebExtension.
-
-It is a very young project under an heavy development.
+Resting is a visual HTTP client browser extension.
 
 ## Mission
-The mission of Resting is to simplify daily work of developer in testing and analyzing HTTP/REST requests.
+The mission of Resting is to simplify the daily work of developer in debugging, testing and inspecting HTTP requests.
 
-Resting takes inspiration from Postman with the goal to be light and focused on the management of saved requests.
+The goal of Resting is to be light and focused on the management of saved requests.
+
+## Main Features
+
+### Request
+* Support multipart, x-www-form-urlencoded, raw data request body, file upload.
+* BASIC, Oauth2.0, JWT  Authentication.
+* Work with multiple requests using Tabs.
+
+### Response
+* Highlight the response.
+* Copy to clipboard.
+
+### Contexts and variables
+* Use variables to generalize part of the request.
+* Organize variables into contexts.
+
+### Bookmarks
+* Save requests as bookmarks to future usage.
+* Collect bookmarks into folders.
+* Import/Export your bookmarks as HAR archives.
+
 
 ## Privacy
 Data is yours.
