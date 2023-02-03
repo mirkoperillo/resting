@@ -81,6 +81,7 @@
 
   <div class="ctx-menu" data-bind="visible: showContextMenu, style: {'position':'fixed', 'top': contextMenuPosX, 'left': contextMenuPosY }, clickBubble: false">
     <ul class="list-group">
+      <li class="list-group-item ctx-menu-item" data-bind="click: openInTab">Open in new tab</li>
       <li class="list-group-item ctx-menu-item" data-bind="click: duplicate">Duplicate</li>
       <li class="list-group-item ctx-menu-item" data-bind="click: confirmDeleteFromCtxMenu">Remove<i class="glyphicon glyphicon-trash pull-right"></i></li>
       <li class="list-group-item ctx-menu-item"></li>

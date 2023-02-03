@@ -222,3 +222,7 @@ a.donate-link:hover {
     width: 100%;
   }
 }
+
+#plus-tab:hover {
+  background-color: #286090;
+}

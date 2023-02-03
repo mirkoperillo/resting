@@ -81,20 +81,22 @@
 
     <!-- FIRST ROW -->
 
-    <ul class="nav nav-tabs" data-bind="foreach: tabContexts">
-      <li role="presentation" data-bind="css: {active : isActive}">
-          <a href="#" data-bind="click: $parent.activateTab"><span data-bind="text: name"></span>
+    <ul class="nav nav-tabs">
+      <!-- ko foreach: tabContexts -->
+      <li role="presentation" data-bind="css: {active : $data.isActive}">
+          <a href="#" data-bind="click: $parent.activateTab"><span data-bind="text: $data.name"></span>
             <button type="button" class="btn btn-xs btn-danger" data-bind="click: $parent.removeTab, clickBubble: false">
             <span class="glyphicon glyphicon-remove"></span>
             </button>
           </a>
       </li>
-
+      <!-- /ko -->
+      <li>
+        <a id="plus-tab" style="margin-left: 2px;" class="btn btn-xs btn-primary" data-bind="click: newTab" title="new tab">
+          <span class="glyphicon glyphicon-plus"></span>
+        </a>
+      </li>
     </ul>
-    <button type="button" class="btn btn-xs btn-primary" data-bind="click: newTab" title="new tab">
-      <span class="glyphicon glyphicon-plus"></span>
-    </button>
-
 
     <div class="row" style="margin-top: 20px;">
       <div class="col-md-2">

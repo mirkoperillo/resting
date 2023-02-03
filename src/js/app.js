@@ -709,7 +709,12 @@ const REQUEST_STATE_MAP = {
       const name = _folderName(bookmarkObj.folder);
       Resting.folderName(name ? name : '--');
       return loadBookmarkData(bookmarkObj);
-    };
+    }
+
+    const _openInTab = (bookmarkObj) => {
+      newTab()
+      loadBookmarkObj(bookmarkObj)
+    }
 
     const _folderName = (id) => {
       const folderObj =  Resting.folders().find((elem) => elem.id === id);
@@ -761,7 +766,6 @@ const REQUEST_STATE_MAP = {
     const activateTab = (tabActivated) => {
       _activateTab(tabActivated);
     };
-
 
     const _activateTab = (tabActivated) => {
        const newActiveIndex = Resting.tabContexts().indexOf(tabActivated);
@@ -829,9 +833,10 @@ const REQUEST_STATE_MAP = {
     }
    
 
-   bacheca.subscribe('loadBookmark', loadBookmarkObj);
-   bacheca.subscribe('addFolder', addFolder);
-   bacheca.subscribe('deleteFolder', removeFolder);
+   bacheca.subscribe('openInTab', _openInTab) 
+   bacheca.subscribe('loadBookmark', loadBookmarkObj)
+   bacheca.subscribe('addFolder', addFolder)
+   bacheca.subscribe('deleteFolder', removeFolder)
 
     Resting.clearRequest = clearRequest;
     Resting.parseRequest = parseRequest;
