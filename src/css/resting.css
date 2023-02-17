@@ -40,6 +40,15 @@ body {
   font-size: 110%;
 }
 
+.nav-pills > li > a {
+  border-radius: 0px;
+}
+
+.nav-pills > li.active > a, .nav-pills > li.active > a:focus, .nav-pills > li.active > a:hover {
+	color: #337ab7;
+	background-color: #FFF;
+	border-bottom: solid 3px #337ab7;
+}
 
 .panel-heading > .panel-title > a {
   display: block;
