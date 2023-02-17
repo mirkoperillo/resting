@@ -81,7 +81,7 @@
 
     <!-- FIRST ROW -->
 
-    <ul class="nav nav-tabs">
+    <ul class="nav nav-pills">
       <!-- ko foreach: tabContexts -->
       <li role="presentation" data-bind="css: {active : $data.isActive}">
           <a href="#" data-bind="click: $parent.activateTab"><span data-bind="text: $data.name"></span>
@@ -98,16 +98,16 @@
       </li>
     </ul>
 
-    <div class="row" style="margin-top: 20px;">
-      <div class="col-md-2">
+    <div class="row row-no-gutters" style="margin-top: 5px;">
+      <div class="col-md-1">
         <select class="form-control" id="sel1" data-bind="options: methods, value: request.method">
         </select>
       </div>
 
-      <div class="col-md-8">
+      <div class="col-md-8" style="margin-left: 5px;">
         <div class="form-group">
         <input type="text" class="form-control" placeholder="http://" data-bind="textInput: request.url, event: { keyup: callSendOnEnter}">
-          <div class="progress" style="margin-top: 10px">
+          <div class="progress" style="margin-top: 5px">
             <div data-bind="css: { animate-progress: requestState().value === 'IN_PROGRESS' }" style="height: 20px; text-indent: -10000px;">
               <div class="progress-bar progress-bar-striped" data-bind="css: { active: requestState().value === 'IN_PROGRESS', progress-bar-animated: requestState().value === 'IN_PROGRESS' }, attr: { aria-busy: requestState().value === 'IN_PROGRESS' }, text: requestState().ariaText, style: { width: requestState().progressWidth }" aria-role="alert"></div>
             </div>
@@ -115,7 +115,7 @@
         </div>
       </div>
 
-      <div class="col-md-2">
+      <div class="col-md-2" style="margin-left: 5px;">
         <div class="btn-toolbar" role="toolbar">
           <div class="btn-group" role="group">
             <button type="button" class="btn btn-primary" data-bind="click: send">Send</button>

@@ -27,7 +27,8 @@ requirejs.config({
         'knockout-secure-binding': 'knockout-secure-binding',
         'localforage': 'localforage.nopromises.min',
         'hjls': 'highlight.pack',
-        'Vue': 'vue.runtime.min'
+        'Vue': 'vue.runtime.min',
+        'bootstrap': 'bootstrap.min'
     },
     shim: {
       bootstrap: {

@@ -17,7 +17,7 @@
     along with Resting.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-define(['knockout','jquery','hjls', 'app/bacheca','Vue','app/clipboard', 'vuecomp/clipboard-button.umd'],function(ko,$,hjls, bacheca, Vue, clipboard, ClipboardButton) {
+define(['knockout','jquery','hjls', 'app/bacheca','Vue','app/clipboard', 'vuecomp/response-menu.umd'],function(ko,$,hjls, bacheca, Vue, clipboard, ResponseMenu) {
 
   return function ResponseVm(params) {
 
@@ -118,28 +118,29 @@ define(['knockout','jquery','hjls', 'app/bacheca','Vue','app/clipboard', 'vuecom
         .catch(() => console.log('Error copying to clipboard'))
     }
 
-    bacheca.subscribe('responseReady', display);
-    bacheca.subscribe('reset', clear);
-    bacheca.subscribe('loadBookmark', clear);
-    bacheca.subscribe('deleteBookmark', clear);
-    bacheca.subscribe('copyResponse', copyResponse);
+    bacheca.subscribe('responseReady', display)
+    bacheca.subscribe('reset', clear)
+    bacheca.subscribe('loadBookmark', clear)
+    bacheca.subscribe('deleteBookmark', clear)
+    bacheca.subscribe('copyResponse', copyResponse)
+    bacheca.subscribe('showResponseBody', () => {
+      showBody(true)
+      showHeaders(false)
+    })
+    bacheca.subscribe('showResponseHeaders', () => {
+      showBody(false)
+      showHeaders(true)
+    })
+    bacheca.subscribe('formattedBody', formattedBody)
+    bacheca.subscribe('rawBody', rawBody)
 
     new Vue({
       el: '#v-response-b-group',
       components: {
-        ClipboardButton
+        ResponseMenu
       },
       render: function(h) {
-        return h(
-          'div',
-          {
-            class: 'btn-group',
-            role: 'group'
-          },
-          [
-            h('clipboard-button')
-          ]
-        )
+        return h('response-menu')
       }
     })
 
