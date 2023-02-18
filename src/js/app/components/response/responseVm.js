@@ -25,7 +25,7 @@ define(['knockout','jquery','hjls', 'app/bacheca','Vue','app/clipboard', 'vuecom
     const callStatus = ko.observable('-');
     const callSize = ko.observable('-');
     const headers = ko.observableArray();;
-    const content = ko.observable();
+    const content = ko.observable('');
 
     const showHeaders = ko.observable(false);
     const showBody = ko.observable(true);
