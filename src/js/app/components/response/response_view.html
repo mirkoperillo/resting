@@ -33,8 +33,8 @@
               <div class="alert alert-success hide" role="alert">
                 <p>Response copied successfully!</p>
               </div>
-              <pre class="pre-scrollable">
-                <code id="highlighted-response" data-bind="visible: showBody, text: body"></code>
+              <pre class="pre-scrollable" data-bind="visible: showBody">
+                <code id="highlighted-response" data-bind="text: body"></code>
               </pre>
               <div data-bind="visible: showHeaders">
                 <table class="table table-striped">

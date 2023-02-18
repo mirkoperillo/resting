@@ -83,10 +83,13 @@ define(['jquery','app/response'],function($,response){
         }
       },
       success: (data, status, jqXHR) => {
-        const endCall = new Date().getTime();
-        const callDuration = endCall - startCall;
-        onResponse(response.makeResponse({content: data, headers: response.parseHeaders(processedRequest.get(requestUrl)), status: jqXHR.status,duration: callDuration, size: jqXHR.responseText.length / 1024}));
-      },
+        const endCall = new Date().getTime()
+        const callDuration = endCall - startCall
+        // used to be sure to wait the webRequest.onResponseStarted complete the headers preprocess
+        setTimeout(function() {
+          onResponse(response.makeResponse({content: data, headers: response.parseHeaders(processedRequest.get(requestUrl)), status: jqXHR.status,duration: callDuration, size: jqXHR.responseText.length / 1024}))
+        }, 500)
+        },
       error: (jqXHR, status, errorMsg) => {
         const endCall = new Date().getTime();
         const callDuration = endCall - startCall;
@@ -98,25 +101,25 @@ define(['jquery','app/response'],function($,response){
         if (!content) {
           content = { status: status,  error: errorMsg };
         }
-        onResponse(response.makeResponse({content: content, headers: response.parseHeaders(jqXHR.getAllResponseHeaders()), status: jqXHR.status,duration: callDuration, size: responseSize }));
+         // used to be sure to wait the webRequest.onResponseStarted complete the headers preprocess
+        setTimeout(function() {
+          onResponse(response.makeResponse({content: content, headers: response.parseHeaders(processedRequest.get(requestUrl)), status: jqXHR.status,duration: callDuration, size: responseSize }))
+        }, 500)
       },
     });
   };
 
 chrome.tabs.getCurrent(currentTab =>
-  browser.webRequest.onHeadersReceived.addListener(
+  browser.webRequest.onResponseStarted.addListener(
     request => {
       const headers = [];
       for (let {name, value} of request.responseHeaders) {
         headers.push(name + ': ' + value);
       }
-
       const requestId = requestQueue.pop();
-      if (!processedRequest.has(requestId)) {
-        processedRequest.set(requestId, headers.join('\n'));
-      }
+      processedRequest.set(requestId, headers.join('\n'))
     },
-    { urls: ['<all_urls>'], tabId: currentTab.id },
+    { urls: ['<all_urls>'], tabId: currentTab.id, types: ['xmlhttprequest'] },
     ['responseHeaders'],
   ));
 
