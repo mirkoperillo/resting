@@ -49,7 +49,7 @@ define(['knockout','jquery','hjls', 'app/bacheca','Vue','app/clipboard', 'vuecom
     const formattedBody = () => {
       useFormattedBody(true);
       useRawBody(false);
-      if(content().length === 0) {
+      if(content().length === 0 && !Array.isArray(content())) {
         body('');
       } else {
         body(JSON.stringify(content(),null,2));
@@ -60,7 +60,7 @@ define(['knockout','jquery','hjls', 'app/bacheca','Vue','app/clipboard', 'vuecom
     const rawBody = () => {
       useFormattedBody(false);
       useRawBody(true);
-       if(content().length === 0) {
+      if(content().length === 0 && !Array.isArray(content())) {
         body('');
       } else {
         body(JSON.stringify(content()));
@@ -68,8 +68,8 @@ define(['knockout','jquery','hjls', 'app/bacheca','Vue','app/clipboard', 'vuecom
       _unhighlight();
     };
 
-    content.subscribe( newValue => {
-     if(newValue.length === 0) {
+    content.subscribe( newValue => { 
+     if(newValue.length === 0 && !Array.isArray(newValue)) {
         body('');
      }else if(useFormattedBody()) {
         body(JSON.stringify(newValue,null,2));
