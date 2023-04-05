@@ -24,7 +24,7 @@ define(function(){
   const parseHeaders = (headers = '') =>
       headers.trim().split('\n')
         .map(header =>
-          header.split(':')
+          header.split(/:(.*)/)
             .map(h => h.trim()))
         .map(headerFields => ({ name: headerFields[0], value: headerFields[1] }));
   
