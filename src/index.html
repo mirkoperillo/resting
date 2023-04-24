@@ -166,7 +166,7 @@
           <li role="presentation" data-bind="css: {active : showActiveContext()}"><a href="#" data-bind="click: contextPanel">Context</a></li>
         </ul>
 
-        <div class="panel panel-default" style="padding: 10px;">
+        <div class="panel panel-default" style="padding: 10px;" data-bind="event: { keyup: callSendOnCtrlEnter }">
           <div class="panel-body">
             <request-body params="request: request" data-bind="visible : showRequestBody"></request-body>
             <entry-list params="entryList : request.headers" data-bind="visible : showRequestHeaders"></entry-list>
