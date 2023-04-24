@@ -98,8 +98,8 @@ define(['jquery','app/response'],function($,response){
           responseSize = jqXHR.responseText.length / 1024;
         }
         let content = jqXHR.responseJSON;
-        if (!content) {
-          content = { status: status,  error: errorMsg };
+        if (content === undefined) {
+          content = jqXHR.responseText;
         }
          // used to be sure to wait the webRequest.onResponseStarted complete the headers preprocess
         setTimeout(function() {
