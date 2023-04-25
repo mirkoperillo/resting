@@ -632,6 +632,13 @@ const REQUEST_STATE_MAP = {
       }
     };
 
+    const callSendOnCtrlEnter = (data, event) => {
+      const enter = 13;
+      if(event.ctrlKey && event.keyCode === enter) {
+        send();
+      }
+    }
+
     const closeDialogOnExcape = (data, event) => {
       const excape = 27;
       if(event.keyCode === excape) {
@@ -844,6 +851,7 @@ const REQUEST_STATE_MAP = {
     Resting.dataToSend = dataToSend;
     Resting.deleteBookmark = deleteBookmark;
     Resting.callSendOnEnter = callSendOnEnter;
+    Resting.callSendOnCtrlEnter = callSendOnCtrlEnter;
 
     Resting.send = send;
     Resting.saveBookmark = saveBookmark;
