@@ -98,8 +98,12 @@ define(['jquery','app/response'],function($,response){
           responseSize = jqXHR.responseText.length / 1024;
         }
         let content = jqXHR.responseJSON;
-        if (!content) {
-          content = { status: status,  error: errorMsg };
+        if (content === undefined) {
+          content = jqXHR.responseText;
+        }
+        if (jqXHR.status === 0) {
+          // When connection is refused
+          content = 'ERROR_CONNECTION_REFUSED';
         }
          // used to be sure to wait the webRequest.onResponseStarted complete the headers preprocess
         setTimeout(function() {
