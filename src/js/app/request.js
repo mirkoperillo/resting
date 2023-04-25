@@ -101,6 +101,10 @@ define(['jquery','app/response'],function($,response){
         if (content === undefined) {
           content = jqXHR.responseText;
         }
+        if (jqXHR.status === 0) {
+          // When connection is refused
+          content = 'ERROR_CONNECTION_REFUSED';
+        }
          // used to be sure to wait the webRequest.onResponseStarted complete the headers preprocess
         setTimeout(function() {
           onResponse(response.makeResponse({content: content, headers: response.parseHeaders(processedRequest.get(requestUrl)), status: jqXHR.status,duration: callDuration, size: responseSize }))
