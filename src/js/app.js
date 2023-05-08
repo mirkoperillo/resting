@@ -734,8 +734,22 @@ const REQUEST_STATE_MAP = {
       loadBookmarkInView(bookmark);
     };
 
+
+    const sortCriteria = (f1, f2) => {
+      const folderName1 = f1.name
+      const folderName2 = f2.name
+      if (folderName1.toUpperCase() < folderName2.toUpperCase()) {
+        return -1
+      }
+      if (folderName1.toUpperCase() > folderName2.toUpperCase()) {
+        return 1
+      }
+      return 0
+    }
+
     const addFolder = (folder) => {
-      Resting.folders.push(folder);
+      Resting.folders.push(folder)
+      Resting.folders.sort(sortCriteria)
     };
 
     const removeFolder = (folder) => {
