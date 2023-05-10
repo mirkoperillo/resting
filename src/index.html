@@ -145,17 +145,17 @@
       </div>
 
       <div class="col-md-9">
-      <div class="row" data-bind="if: isBookmarkLoaded()">
-        <div class="col-md-12">
-         <div class="panel panel-default">
-          <div class="panel-body">
-            <div>Loaded <strong><span data-bind="text: bookmarkScreenName()"></span></strong></div>
-            <span style="margin-right: 15px;"><span class="glyphicon glyphicon-folder-close" aria-hidden="true"></span> <strong><span data-bind="text: folderName"></span></strong></span>
-            <span>Context: <strong><span data-bind="text: request.context"></span></strong></span>
+        <div class="row" data-bind="if: isBookmarkLoaded()">
+          <div class="col-md-12">
+          <div class="panel panel-default">
+            <div class="panel-body">
+              <div>Loaded <strong><span data-bind="text: bookmarkScreenName()"></span></strong></div>
+              <span style="margin-right: 15px;"><span class="glyphicon glyphicon-folder-close" aria-hidden="true"></span> <strong><span data-bind="text: folderName"></span></strong></span>
+              <span>Context: <a href="#" data-bind="click: contextDialogByName, text: request.context"></a></span>
+            </div>
           </div>
-         </div>
+          </div>
         </div>
-      </div>
       <div class="row">
         <div class="col-md-12">
         <ul class="nav nav-pills">

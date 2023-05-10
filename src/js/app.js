@@ -146,6 +146,7 @@ const REQUEST_STATE_MAP = {
     const Resting = {
       contexts : ko.observableArray(),
       selectedContext: new ContextVm(),
+      defaultContext: null,
       bookmarkSelected : new BookmarkSelectedVm(),  // bookmark loaded
       tabCounter: 0,
       tabContexts : ko.observableArray(),
@@ -214,11 +215,21 @@ const REQUEST_STATE_MAP = {
       bacheca.publish('showDonateDialog')
     };
 
-     const contextDialog = (context) => {
+    const contextDialog = (context) => {
       Resting.selectedContext.name(context.name());
       Resting.selectedContext.variables(context.variables());
       Resting.showContextDialog(true);
     };
+
+    const contextDialogByName = ({bookmarkCopy, bookmarkCopy: { request: {context} }}) => {
+      let ctxToLoad = Resting.contexts()
+          .find(ctx =>
+            ctx.name() === context)
+      if (ctxToLoad === undefined) {
+        ctxToLoad = Resting.defaultCtx
+      }
+      contextDialog(ctxToLoad)
+    }
 
     const dismissContextDialog = () => {
       Resting.showContextDialog(false);
@@ -682,15 +693,18 @@ const REQUEST_STATE_MAP = {
         Resting.contexts.push(new ContextVm(ctx.name,ctx.variables));
       },
       () => {
-        const isDefaultMissing = Resting.contexts().findIndex(ctx => ctx.name() === 'default') < 0;
-        if(isDefaultMissing) {
+        const defaultCtxIdx = Resting.contexts().findIndex(ctx => ctx.name() === 'default')
+        if(defaultCtxIdx < 0) {
           // default context
-          Resting.contexts.push(new ContextVm());
+          Resting.defaultCtx = new ContextVm()
+        } else {
+          Resting.defaultCtx = Resting.contexts()[defaultCtxIdx]
+          Resting.contexts.splice(1, defaultCtxIdx)
         }
+        Resting.contexts.unshift(Resting.defaultCtx)
       }
-      );
-
-    };
+      )
+    }
 
     const dismissConfirmDialog = () => {
       Resting.showConfirmDialog(false);
@@ -730,7 +744,7 @@ const REQUEST_STATE_MAP = {
     };
 
     const loadBookmarkData = (bookmark) => {
-      Resting.parseRequest(bookmark.request);
+      parseRequest(bookmark.request)
       loadBookmarkInView(bookmark);
     };
 
@@ -858,10 +872,10 @@ const REQUEST_STATE_MAP = {
     }
    
 
-   bacheca.subscribe('openInTab', _openInTab) 
-   bacheca.subscribe('loadBookmark', loadBookmarkObj)
-   bacheca.subscribe('addFolder', addFolder)
-   bacheca.subscribe('deleteFolder', removeFolder)
+    bacheca.subscribe('openInTab', _openInTab) 
+    bacheca.subscribe('loadBookmark', loadBookmarkObj)
+    bacheca.subscribe('addFolder', addFolder)
+    bacheca.subscribe('deleteFolder', removeFolder)
 
     Resting.clearRequest = clearRequest;
     Resting.parseRequest = parseRequest;
@@ -884,6 +898,7 @@ const REQUEST_STATE_MAP = {
     Resting.creditsDialog = creditsDialog;
     Resting.donateDialog = donateDialog;
     Resting.contextDialog = contextDialog;
+    Resting.contextDialogByName = contextDialogByName
     Resting.saveBookmarkDialog = saveBookmarkDialog;
     Resting.saveAsBookmarkDialog = saveAsBookmarkDialog;
 
@@ -991,6 +1006,6 @@ const REQUEST_STATE_MAP = {
 
   // appVM.feedbackDialog();
   // appVM.communicationDialog();
-  appVM.loadContexts();
+  appVM.loadContexts()
   });
 });
