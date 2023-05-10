@@ -747,10 +747,13 @@ const REQUEST_STATE_MAP = {
       return 0
     }
 
-    const addFolder = (folder) => {
+    const addFolder = ({folder, selectedFolder}) => {
       Resting.folders.push(folder)
       Resting.folders.sort(sortCriteria)
-    };
+      if (selectedFolder) {
+        Resting.folderSelected(folder.id)
+      }
+    }
 
     const removeFolder = (folder) => {
       Resting.folders.remove(f => f.id === folder.id);
@@ -972,7 +975,7 @@ const REQUEST_STATE_MAP = {
       AddFolderButton
     },
     render: function(h) {
-      return h('add-folder-button')
+      return h(AddFolderButton, { props: { selectedFolder: true } })
     }
   })
    
