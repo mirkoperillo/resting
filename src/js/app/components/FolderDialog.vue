@@ -15,6 +15,12 @@ import bacheca from 'Services/bacheca'
 
 export default {
   name: 'FolderDialog',
+  props: {
+    selectedFolder: {
+      type: Boolean,
+      default: false,
+    }
+  },
   data() {
     return {
       folderName: '',
@@ -30,8 +36,7 @@ export default {
       const folder = this.bookmarkProvider.makeFolder(storage.generateId(), this.folderName);
       storage.save(this._serializeBookmark(folder));
       this.dismissFolderDialog();
-   
-      bacheca.publish('addFolder', folder);
+      bacheca.publish('addFolder', { folder: folder, selectedFolder: this.selectedFolder })
       /*
        * FIXME: published to newFolder is a workaround:
        * it permits to bookmarksVm to not duplicated folder items in view

@@ -93,7 +93,7 @@ define([
           if(value) {
             bookmarks.push(new BookmarkVm(value));
             if(value.isFolder) {
-              bacheca.publish('addFolder', value);
+              bacheca.publish('addFolder', { folder: value });
             }
           }
         });
