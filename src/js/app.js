@@ -586,7 +586,7 @@ const REQUEST_STATE_MAP = {
       }
     }
 
-    const closeDialogOnExcape = (data, event) => {
+    const closeDialogOnEscape = (data, event) => {
       const excape = 27;
       if(event.keyCode === excape) {
         showBookmarkDialog(false),
@@ -801,84 +801,84 @@ const REQUEST_STATE_MAP = {
       selectedCtx,
       defaultCtx,
      
-     bookmarkSelected,
-     tabCounter,
-     tabContexts, 
-     activeTab, 
-     request, 
-     bookmarkCopy,
-     bookmarks,
-     folders,
-     folderSelected,
-     folderName,
-     bookmarkName,
-     methods,
+      bookmarkSelected,
+      tabCounter,
+      tabContexts, 
+      activeTab, 
+      request, 
+      bookmarkCopy,
+      bookmarks,
+      folders,
+      folderSelected,
+      folderName,
+      bookmarkName,
+      methods,
       showRequestHeaders,
       showRequestBody,
       showQuerystring,
-     showAuthentication,
-     showActiveContext,
+      showAuthentication,
+      showActiveContext,
 
       showBookmarkDialog,
       showContextDialog,
-     showCreateContextDialog,
-     showConfirmDialog,
+      showCreateContextDialog,
+      showConfirmDialog,
      
-     requestState,
+      requestState,
 
-     saveAsNewBookmark,
+      saveAsNewBookmark,
 
-     dialogConfirmMessage,
-     contextName,
+      dialogConfirmMessage,
+      contextName,
 
-     // functions
-     clearRequest,
-     parseRequest,
-     dataToSend,
-     deleteBookmark,
-     callSendOnEnter,
-     callSendOnCtrlEnter,
- 
-     send,
-     saveBookmark,
-     reset,
- 
-     requestBodyPanel,
-     requestHeadersPanel,
-     querystringPanel,
-     authenticationPanel,
-     contextPanel,
- 
-     aboutDialog,
-     creditsDialog,
-     donateDialog,
-     contextDialog,
-     defaultContextDialog,
-     contextDialogByName,
-     saveBookmarkDialog,
-     saveAsBookmarkDialog,
- 
-     dismissSaveBookmarkDialog,
-     dismissContextDialog,
-     closeDialogOnExcape,
-     saveContext,
-     // FIXME: not good to expose this internal function
-     _saveBookmark,
-     newTab,
-     removeTab,
-     activateTab,
- 
-     loadBookmarkInView,
-     isBookmarkLoaded,
-     bookmarkScreenName,
-     loadContexts,
-     createContextDialog,
-     dismissCreateContextDialog,
-     createContext,
-     deleteContext,
-     confirmDeleteContext,
-     dismissConfirmDialog,
-     enableSaveButton,
+      // functions
+      clearRequest,
+      parseRequest,
+      dataToSend,
+      deleteBookmark,
+      callSendOnEnter,
+      callSendOnCtrlEnter,
+  
+      send,
+      saveBookmark,
+      reset,
+  
+      requestBodyPanel,
+      requestHeadersPanel,
+      querystringPanel,
+      authenticationPanel,
+      contextPanel,
+  
+      aboutDialog,
+      creditsDialog,
+      donateDialog,
+      contextDialog,
+      defaultContextDialog,
+      contextDialogByName,
+      saveBookmarkDialog,
+      saveAsBookmarkDialog,
+  
+      dismissSaveBookmarkDialog,
+      dismissContextDialog,
+      closeDialogOnEscape,
+      saveContext,
+      // FIXME: not good to expose this internal function
+      _saveBookmark,
+      newTab,
+      removeTab,
+      activateTab,
+  
+      loadBookmarkInView,
+      isBookmarkLoaded,
+      bookmarkScreenName,
+      loadContexts,
+      createContextDialog,
+      dismissCreateContextDialog,
+      createContext,
+      deleteContext,
+      confirmDeleteContext,
+      dismissConfirmDialog,
+      enableSaveButton,
     }
   }
 
