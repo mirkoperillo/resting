@@ -229,7 +229,7 @@ define([
                 bookmarks.push(bookmarkVm);
               }
               if(b.isFolder) {
-                bacheca.publish('addFolder', b);
+                bacheca.publish('addFolder', { folder: b });
               }
             });
 
