@@ -48,12 +48,13 @@ requirejs([
   'app/clipboard',
   'app/bacheca',
   'bootstrap',
+  'app/contextVm',
   'Vue',
   'component/entry-list/entryItemVm',
   'component/bookmarks/bookmarkVm',
   'vuecomp/dialogs-app.umd',
   'vuecomp/add-folder-button.umd'],
-  function($,storage,ko,ksb,hjls,requestSrv,makeBookmarkProvider,clipboard,bacheca,bootstrap, Vue, EntryItemVm, BookmarkVm, DialogsApp, AddFolderButton) {
+  function($,storage,ko,ksb,hjls,requestSrv,makeBookmarkProvider,clipboard,bacheca,bootstrap, ContextVm, Vue, EntryItemVm, BookmarkVm, DialogsApp, AddFolderButton) {
 
 const REQUEST_STATE_MAP = {
   NOT_STARTED: {
@@ -72,15 +73,6 @@ const REQUEST_STATE_MAP = {
     progressWidth: '100%'
   },
 }
-
-  function ContextVm(name = 'default',variables = []) {
-    const self = this;
-    this.name = ko.observable(name);
-    this.variables = ko.observableArray(variables.map(v => new EntryItemVm(v.name, v.value, v.enabled)));
-    this.isDefault = ko.computed(function() {
-        return this.name() === 'default';
-    }, this);
-  };
 
   function RequestVm(request = {}) {
     const self = this;

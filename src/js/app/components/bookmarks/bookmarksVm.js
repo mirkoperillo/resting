@@ -23,19 +23,10 @@ define([
   'app/bookmark', 
   'app/storage', 
   'app/bacheca', 
+  'app/contextVm',
   'component/bookmarks/bookmarkVm',
   'component/entry-list/entryItemVm', 
-  'vuecomp/bookmarks-menu.umd'],function(Vue, ko, makeBookmarkProvider, storage, bacheca, BookmarkVm, EntryItemVm, BookmarksMenu) {
-
-  // FIXME app.js duplication
-  function ContextVm(name = 'default',variables = []) {
-    const self = this;
-    this.name = ko.observable(name);
-    this.variables = ko.observableArray(variables.map(v => new EntryItemVm(v.name, v.value, v.enabled)));
-    this.isDefault = ko.computed(function() {
-        return this.name() === 'default';
-    }, this);
-  };
+  'vuecomp/bookmarks-menu.umd'],function(Vue, ko, makeBookmarkProvider, storage, bacheca, ContextVm, BookmarkVm, EntryItemVm, BookmarksMenu) {
 
   return function BookmarksVm(params) {
 
