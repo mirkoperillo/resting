@@ -55,7 +55,6 @@ define(['knockout', 'component/entry-list/entryItemVm','app/bacheca'],function(k
       name.trim().length > 0 && value.trim().length > 0;
 
     const add = () => {
-      console.log(JSON.stringify(entryFile))
       if (entryType() === 'Text' && !checkValidEntry(entryName(), entryValue())) return false
       if (entryType() === 'File' && (entryName().trim().length == 0 || entryFile == null)) return false
       let item

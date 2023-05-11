@@ -55,7 +55,11 @@
                   <ul class="dropdown-menu">
                       <li class="dropdown dropdown-submenu"><a href="#" class="dropdown-toggle" data-toggle="dropdown">Contexts</a>
                         <ul class="dropdown-menu">
+                          <li><a href="#" data-bind="click: defaultContextDialog"><span data-bind="text: defaultCtx.name"></span></a></li>
+                          <!-- ko ifnot: noCtxs-->
+                          <li role="separator" class="divider"></li>
                           <li data-bind="foreach: contexts"><a href="#" data-bind="click: $parent.contextDialog"><span data-bind="text: name"></span></a></li>
+                          <!-- /ko -->
                           <li role="separator" class="divider"></li>
                           <li>
                             <a href="#" data-bind="click: createContextDialog">Create
@@ -177,8 +181,16 @@
               <div class="form-inline">
                 <div class="form-group">
                   <label for="active-context">Active Context</label>
-                  <select class="form-control" style="margin-left: 10px;" id="active-context" data-bind="options: contexts, optionsText: 'name', optionsValue: 'name', value: request.context"></select>
-                  <button type="button" class="btn btn-default" aria-label="Add context" data-bind="click: createContextDialog">
+                  <select class="form-control" style="margin-left: 10px;" id="active-context" data-bind="value: request.context">
+                    <option value="default">default</option>
+                    <!-- ko ifnot: noCtxs -->
+                    <option disabled="disabled">_______________</option>
+                    <!-- ko foreach: contexts -->
+                    <option data-bind="visible: !$data.isDefault, text: $data.name, attr: {value: $data.name}"></option>
+                    <!-- /ko -->
+                    <!-- /ko -->
+                  </select>
+                  <button type="button" class="btn btn-default" title="New context" data-bind="click: createContextDialog">
                     <span class="glyphicon glyphicon-plus" aria-hidden="true"></span>
                   </button>
                 </div>
@@ -197,24 +209,6 @@
   DIALOGS
 
   *************************************************************************** -->
-
- <div id="feedback-dialog" class="panel panel-primary dialog" data-bind="visible: showFeedbackDialog">
-    <div class="panel-heading">
-      Help Resting<span style="cursor: pointer;" class="glyphicon glyphicon-remove pull-right" data-bind="click: dismissFeedbackDialog"></span>
-    </div>
-    <div class="panel-body">
-      <p>
-      Hi, <br />
-      if you read this message you are a Resting user. <br />
-      First of all thank you for use it. <br />
-      As you know Resting is a community friendly project so I need your help: <br />
-      please provide me a feedback through a review about Resting using <a href="https://addons.mozilla.org/en- US/firefox/addon/resting" target="_blank">the addon page</a>. <br />
-      I need to know if the work on Resting goes in the right direction. <br />
-      Thank you <br />
-      Mirko <br />
-      </p>
-    </div>
-  </div>
 
   <div id="save-bookmark-dialog" class="panel panel-primary dialog" data-bind="visible: showBookmarkDialog">
     <div class="panel-heading">
@@ -238,7 +232,7 @@
 
    <div id="context-dialog" class="panel panel-primary context-dialog" data-bind="visible: showContextDialog">
     <div class="panel-heading">
-      Context <span data-bind="text: selectedContext.name"></span><span style="cursor: pointer;" class="glyphicon glyphicon-remove pull-right" data-bind="click: dismissContextDialog"></span>
+      Context <span data-bind="text: selectedCtx.name"></span><span style="cursor: pointer;" class="glyphicon glyphicon-remove pull-right" data-bind="click: dismissContextDialog"></span>
     </div>
     <div class="panel-body">
       <p>
@@ -251,11 +245,11 @@
           <li>as username and password in BASIC authentication</li>
         </ul>
       </p>
-      <entry-list params="entryList : selectedContext.variables"></entry-list>
+      <entry-list params="entryList : selectedCtx.variables"></entry-list>
     </div>
      <div class="panel-footer">
       <button class="btn btn-default" data-bind="click: saveContext">Save</button><button class="btn btn-default" data-bind="click: dismissContextDialog">Cancel</button>
-      <button class="btn btn-danger pull-right" data-bind="click: confirmDeleteContext, visible: !selectedContext.isDefault">Delete</button>
+      <button class="btn btn-danger pull-right" data-bind="click: confirmDeleteContext, visible: !selectedCtx.isDefault">Delete</button>
     </div>
   </div>
 

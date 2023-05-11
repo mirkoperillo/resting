@@ -145,8 +145,9 @@ const REQUEST_STATE_MAP = {
   function AppVm() {
     const Resting = {
       contexts : ko.observableArray(),
-      selectedContext: new ContextVm(),
-      defaultContext: null,
+      selectedCtx: new ContextVm(),
+      defaultCtx: new ContextVm(),
+     
       bookmarkSelected : new BookmarkSelectedVm(),  // bookmark loaded
       tabCounter: 0,
       tabContexts : ko.observableArray(),
@@ -174,9 +175,6 @@ const REQUEST_STATE_MAP = {
       showCreateContextDialog: ko.observable(false),
       showConfirmDialog: ko.observable(false),
       
-      //showFeedbackDialog: ko.observable(false),
-      //showCommunicationDialog: ko.observable(false),
-
       requestState: ko.observable(REQUEST_STATE_MAP.NOT_STARTED),
 
       saveAsNewBookmark: ko.observable(false),
@@ -184,6 +182,10 @@ const REQUEST_STATE_MAP = {
       dialogConfirmMessage: ko.observable(),
       contextName: ko.observable(),
     };
+
+    Resting.noCtxs = ko.computed(function() {
+      return Resting.contexts().length <= 0
+    })
 
     const bookmarkProvider = makeBookmarkProvider(storage);
 
@@ -216,10 +218,14 @@ const REQUEST_STATE_MAP = {
     };
 
     const contextDialog = (context) => {
-      Resting.selectedContext.name(context.name());
-      Resting.selectedContext.variables(context.variables());
+      Resting.selectedCtx.name(context.name());
+      Resting.selectedCtx.variables(context.variables());
       Resting.showContextDialog(true);
     };
+
+    const defaultContextDialog = () => {
+      contextDialog(Resting.defaultCtx)
+    }
 
     const contextDialogByName = ({bookmarkCopy, bookmarkCopy: { request: {context} }}) => {
       let ctxToLoad = Resting.contexts()
@@ -534,10 +540,7 @@ const REQUEST_STATE_MAP = {
     // Note that elements order is important
     const _mapContext = () =>
       [
-        Resting.contexts()
-          .find(ctx =>
-            ctx.name() === 'default')
-        ,
+        Resting.defaultCtx,
         Resting.request.context() !== 'default' &&
         Resting.contexts()
           .find(ctx =>
@@ -665,10 +668,10 @@ const REQUEST_STATE_MAP = {
     };
 
     const saveContext = () => {
-      storage.saveContext({name : Resting.selectedContext.name(), variables : _extractModelFromVM(Resting.selectedContext.variables()) });
-      const contextToEditIdx = Resting.contexts().find(ctx => ctx.name === Resting.selectedContext.name());
+      storage.saveContext({name : Resting.selectedCtx.name(), variables : _extractModelFromVM(Resting.selectedCtx.variables()) });
+      const contextToEditIdx = Resting.contexts().find(ctx => ctx.name === Resting.selectedCtx.name());
       if(contextToEditIdx > -1) {
-        Resting.contexts.replace(Resting.contexts[contextToEditIdx],Resting.selectedContext);
+        Resting.contexts.replace(Resting.contexts[contextToEditIdx],Resting.selectedCtx);
       }
 
       dismissContextDialog();
@@ -680,8 +683,8 @@ const REQUEST_STATE_MAP = {
     };
 
     const deleteContext = () => {
-       const ctxToRemove = Resting.contexts().find(ctx => ctx.name() === Resting.selectedContext.name());
-       storage.deleteContextById(Resting.selectedContext.name());
+       const ctxToRemove = Resting.contexts().find(ctx => ctx.name() === Resting.selectedCtx.name());
+       storage.deleteContextById(Resting.selectedCtx.name());
        Resting.contexts.remove(ctxToRemove);
        dismissConfirmDialog();
        dismissContextDialog();
@@ -689,19 +692,23 @@ const REQUEST_STATE_MAP = {
 
     const loadContexts = () => {
       // load contexts
+      const loadedCtxs = []
       storage.loadContexts( ctx => {
-        Resting.contexts.push(new ContextVm(ctx.name,ctx.variables));
+        // Resting.contexts.push(new ContextVm(ctx.name,ctx.variables));
+        loadedCtxs.push(new ContextVm(ctx.name,ctx.variables));
       },
       () => {
-        const defaultCtxIdx = Resting.contexts().findIndex(ctx => ctx.name() === 'default')
+        //const defaultCtxIdx = Resting.contexts().findIndex(ctx => ctx.name() === 'default')
+        const defaultCtxIdx = loadedCtxs.findIndex(ctx => ctx.name() === 'default')
         if(defaultCtxIdx < 0) {
           // default context
           Resting.defaultCtx = new ContextVm()
         } else {
           Resting.defaultCtx = Resting.contexts()[defaultCtxIdx]
-          Resting.contexts.splice(1, defaultCtxIdx)
+          //Resting.contexts.splice(1, defaultCtxIdx)
         }
-        Resting.contexts.unshift(Resting.defaultCtx)
+        loadedCtxs.forEach(ctx => Resting.contexts.push(ctx))
+        Resting.contexts.sort(sortCriteriaCtx)
       }
       )
     }
@@ -722,6 +729,7 @@ const REQUEST_STATE_MAP = {
     const createContext = () => {
       Resting.contexts.push(new ContextVm(Resting.contextName()));
       storage.saveContext({name : Resting.contextName(), variables : [] });
+      Resting.contexts.sort(sortCriteriaCtx)
       dismissCreateContextDialog();
 
     };
@@ -761,6 +769,16 @@ const REQUEST_STATE_MAP = {
       return 0
     }
 
+    const sortCriteriaCtx = (e1, e2) => {
+      if (e1.name().toUpperCase() < e2.name().toUpperCase()) {
+        return -1
+      }
+      if (e1.name().toUpperCase() > e2.name().toUpperCase()) {
+        return 1
+      }
+      return 0
+    }
+
     const addFolder = ({folder, selectedFolder}) => {
       Resting.folders.push(folder)
       Resting.folders.sort(sortCriteria)
@@ -772,35 +790,6 @@ const REQUEST_STATE_MAP = {
     const removeFolder = (folder) => {
       Resting.folders.remove(f => f.id === folder.id);
     };
-
-    //const communicationDialog = () => {
-      //storage.readSettings('communication', (err,value) => {
-        //if(!value || !value.survey || !value.survey.read) {
-           //Resting.showCommunicationDialog(true);
-        //}
-      //})
-    //};
-
-    //const feedbackDialog = () => {
-      //storage.readSettings('showFeedbackDialog', (err,value) => {
-        //if(!value) {
-          //Resting.showFeedbackDialog(true);
-        //}
-      //});
-    //};
-
-    //const dismissFeedbackDialog = () => {
-      //Resting.showFeedbackDialog(false);
-      //storage.saveSettings({showFeedbackDialog : true});
-    //};
-
-    //const dismissCommunicationDialog = () => {
-      //Resting.showCommunicationDialog(false);
-      //const communicationSettings = {};
-      //communicationSettings.survey = {};
-      //communicationSettings.survey.read = true;
-      //storage.saveSettings({communication : communicationSettings});
-    //};
 
     const activateTab = (tabActivated) => {
       _activateTab(tabActivated);
@@ -898,6 +887,7 @@ const REQUEST_STATE_MAP = {
     Resting.creditsDialog = creditsDialog;
     Resting.donateDialog = donateDialog;
     Resting.contextDialog = contextDialog;
+    Resting.defaultContextDialog = defaultContextDialog
     Resting.contextDialogByName = contextDialogByName
     Resting.saveBookmarkDialog = saveBookmarkDialog;
     Resting.saveAsBookmarkDialog = saveAsBookmarkDialog;
@@ -923,11 +913,6 @@ const REQUEST_STATE_MAP = {
     Resting.confirmDeleteContext = confirmDeleteContext;
     Resting.dismissConfirmDialog = dismissConfirmDialog;
     Resting.enableSaveButton = enableSaveButton;
-
-    // Resting.feedbackDialog = feedbackDialog;
-    // Resting.dismissFeedbackDialog = dismissFeedbackDialog;
-    //Resting.communicationDialog = communicationDialog;
-    //Resting.dismissCommunicationDialog = dismissCommunicationDialog;
 
     return Resting;
   }
