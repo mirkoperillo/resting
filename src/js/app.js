@@ -96,9 +96,9 @@ const REQUEST_STATE_MAP = {
     const methods= ko.observableArray(['GET','POST','PUT','DELETE','HEAD','OPTIONS','CONNECT','TRACE','PATCH'])
 
     // request panel flags
-    const  showRequestHeaders= ko.observable(true)
-    const  showRequestBody= ko.observable(false)
-    const  showQuerystring= ko.observable(false)
+    const showRequestHeaders= ko.observable(true)
+    const showRequestBody= ko.observable(false)
+    const showQuerystring= ko.observable(false)
     const showAuthentication= ko.observable(false)
     const showActiveContext= ko.observable(false)
 
@@ -321,7 +321,7 @@ const REQUEST_STATE_MAP = {
               bookmarks.replace(folderObj, modifiedFolder);
             } else if(!oldFolder) { //from no-folder to folderA
               const oldBookmark = bookmarks().find(b => b.id == bookmark.id); // I need the ref to bookmark saved in observable array
-                                                                                        //  either it is not removed from it
+                                                                              //  either it is not removed from it
               deleteBookmark(oldBookmark);
               let folderObj = bookmarks().find(b => b.id === bookmark.folder);
               const modifiedFolder = bookmarkProvider.replaceBookmark(folderObj, new BookmarkVm(bookmark));
@@ -589,14 +589,11 @@ const REQUEST_STATE_MAP = {
     const closeDialogOnExcape = (data, event) => {
       const excape = 27;
       if(event.keyCode === excape) {
-        showAuthentication(false),
-        showActiveContext(false),
         showBookmarkDialog(false),
         showContextDialog(false),
         showCreateContextDialog(false),
         showConfirmDialog(false),
         saveAsNewBookmark(false)
-        //showFeedbackDialog(false)
       }
     };
 
