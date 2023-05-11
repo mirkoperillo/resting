@@ -49,12 +49,15 @@ requirejs([
   'app/bacheca',
   'bootstrap',
   'app/contextVm',
+  'app/requestVm',
+  'app/tabContextVm',
+  'app/bookmarkSelectedVm',
   'Vue',
   'component/entry-list/entryItemVm',
   'component/bookmarks/bookmarkVm',
   'vuecomp/dialogs-app.umd',
   'vuecomp/add-folder-button.umd'],
-  function($,storage,ko,ksb,hjls,requestSrv,makeBookmarkProvider,clipboard,bacheca,bootstrap, ContextVm, Vue, EntryItemVm, BookmarkVm, DialogsApp, AddFolderButton) {
+  function($,storage,ko,ksb,hjls,requestSrv,makeBookmarkProvider,clipboard,bacheca,bootstrap, ContextVm, RequestVm, TabContextVm, BookmarkSelectedVm, Vue, EntryItemVm, BookmarkVm, DialogsApp, AddFolderButton) {
 
 const REQUEST_STATE_MAP = {
   NOT_STARTED: {
@@ -74,68 +77,7 @@ const REQUEST_STATE_MAP = {
   },
 }
 
-  function RequestVm(request = {}) {
-    const self = this;
-    this.method = ko.observable('');
-    this.url = ko.observable('');
-    this.headers = ko.observableArray();
-    this.querystring = ko.observableArray();
-
-    this.authenticationType = ko.observable();
-    this.username = ko.observable();
-    this.password = ko.observable();
-    this.jwtToken = ko.observable();
-    this.oauthAuthPosition = ko.observable();
-    this.oauthAccessToken = ko.observable();
-
-    this.bodyType = ko.observable();
-    this.formDataParams = ko.observableArray();
-    this.formEncodedParams = ko.observableArray();
-    this.rawBody = ko.observable();
-
-    this.context = ko.observable('default');
-  }
-
- // already exist a BookmarkVm, why this ??
-  function BookmarkSelectedVm(bookmark = {}) {
-    const self = this;
-    this.id = ko.observable('');
-    this.name = ko.observable('');
-    this.folder = ko.observable('');
-
-    this.toModel = () => {
-      return { id: this.id(), name : this.name(), folder : this.folder() };
-    }
-
-    this.reset = () => {
-      this.id('');
-      this.name('');
-      this.folder('');
-    };
-  }
-
-  function TabContextVm(counter = 1) {
-    const self = this;
-    this.name = ko.observable('TAB ' + counter);
-    this.request = {};
-    this.response = {};
-
-    // bookmark stuff
-    this.folderName = ko.observable();
-    this.bookmarkSelected = new BookmarkSelectedVm();
-
-    this.isActive = ko.observable(false);
-
-    this.reset = () => {
-      this.request = {};
-      this.response = {};
-      this.folderName('');
-      this.bookmarkSelected.reset();
-    };
-  }
-
   function AppVm() {
-
     const contexts = ko.observableArray()
     const selectedCtx= new ContextVm()
     let  defaultCtx= new ContextVm()
