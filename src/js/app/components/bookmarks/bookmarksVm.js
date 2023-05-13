@@ -23,19 +23,10 @@ define([
   'app/bookmark', 
   'app/storage', 
   'app/bacheca', 
+  'app/contextVm',
   'component/bookmarks/bookmarkVm',
   'component/entry-list/entryItemVm', 
-  'vuecomp/bookmarks-menu.umd'],function(Vue, ko, makeBookmarkProvider, storage, bacheca, BookmarkVm, EntryItemVm, BookmarksMenu) {
-
-  // FIXME app.js duplication
-  function ContextVm(name = 'default',variables = []) {
-    const self = this;
-    this.name = ko.observable(name);
-    this.variables = ko.observableArray(variables.map(v => new EntryItemVm(v.name, v.value, v.enabled)));
-    this.isDefault = ko.computed(function() {
-        return this.name() === 'default';
-    }, this);
-  };
+  'vuecomp/bookmarks-menu.umd'],function(Vue, ko, makeBookmarkProvider, storage, bacheca, ContextVm, BookmarkVm, EntryItemVm, BookmarksMenu) {
 
   return function BookmarksVm(params) {
 
@@ -229,7 +220,7 @@ define([
                 bookmarks.push(bookmarkVm);
               }
               if(b.isFolder) {
-                bacheca.publish('addFolder', b);
+                bacheca.publish('addFolder', { folder: b });
               }
             });
 
@@ -243,15 +234,15 @@ define([
 
      // FIXME: duplication of appVm function
     const _saveContext = (context = {}) => {
-      storage.saveContext({name : context.name, variables : context.variables});
-      const contextToEdit = contexts().find(ctx => ctx.name() === context.name);
-      const contextVm = new ContextVm(context.name, context.variables);
-      if(contextToEdit) {
-        contexts.replace(contextToEdit, contextVm);
-      } else {
-        contexts.push(contextVm);
+      storage.saveContext({name : context.name, variables : context.variables})
+      const contextToEdit = contexts().find(ctx => ctx.name() === context.name)
+      const contextVm = new ContextVm(context.name, context.variables)
+      if (contextToEdit) {
+        contexts.replace(contextToEdit, contextVm)
+      } else if (context.name != 'default') {
+        contexts.push(contextVm)
       }
-    };
+    }
 
     const _handleExport = () => {
         const contextsModels = _extractContextFromVM(contexts());

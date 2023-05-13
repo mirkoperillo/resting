@@ -48,12 +48,16 @@ requirejs([
   'app/clipboard',
   'app/bacheca',
   'bootstrap',
+  'app/contextVm',
+  'app/requestVm',
+  'app/tabContextVm',
+  'app/bookmarkSelectedVm',
   'Vue',
   'component/entry-list/entryItemVm',
   'component/bookmarks/bookmarkVm',
   'vuecomp/dialogs-app.umd',
   'vuecomp/add-folder-button.umd'],
-  function($,storage,ko,ksb,hjls,request,makeBookmarkProvider,clipboard,bacheca,bootstrap, Vue, EntryItemVm, BookmarkVm, DialogsApp, AddFolderButton) {
+  function($,storage,ko,ksb,hjls,requestSrv,makeBookmarkProvider,clipboard,bacheca,bootstrap, ContextVm, RequestVm, TabContextVm, BookmarkSelectedVm, Vue, EntryItemVm, BookmarkVm, DialogsApp, AddFolderButton) {
 
 const REQUEST_STATE_MAP = {
   NOT_STARTED: {
@@ -73,119 +77,43 @@ const REQUEST_STATE_MAP = {
   },
 }
 
-  function ContextVm(name = 'default',variables = []) {
-    const self = this;
-    this.name = ko.observable(name);
-    this.variables = ko.observableArray(variables.map(v => new EntryItemVm(v.name, v.value, v.enabled)));
-    this.isDefault = ko.computed(function() {
-        return this.name() === 'default';
-    }, this);
-  };
-
-  function RequestVm(request = {}) {
-    const self = this;
-    this.method = ko.observable('');
-    this.url = ko.observable('');
-    this.headers = ko.observableArray();
-    this.querystring = ko.observableArray();
-
-    this.authenticationType = ko.observable();
-    this.username = ko.observable();
-    this.password = ko.observable();
-    this.jwtToken = ko.observable();
-    this.oauthAuthPosition = ko.observable();
-    this.oauthAccessToken = ko.observable();
-
-    this.bodyType = ko.observable();
-    this.formDataParams = ko.observableArray();
-    this.formEncodedParams = ko.observableArray();
-    this.rawBody = ko.observable();
-
-    this.context = ko.observable('default');
-  }
-
- // already exist a BookmarkVm, why this ??
-  function BookmarkSelectedVm(bookmark = {}) {
-    const self = this;
-    this.id = ko.observable('');
-    this.name = ko.observable('');
-    this.folder = ko.observable('');
-
-    this.toModel = () => {
-      return { id: this.id(), name : this.name(), folder : this.folder() };
-    }
-
-    this.reset = () => {
-      this.id('');
-      this.name('');
-      this.folder('');
-    };
-  }
-
-  function TabContextVm(counter = 1) {
-    const self = this;
-    this.name = ko.observable('TAB ' + counter);
-    this.request = {};
-    this.response = {};
-
-    // bookmark stuff
-    this.folderName = ko.observable();
-    this.bookmarkSelected = new BookmarkSelectedVm();
-
-    this.isActive = ko.observable(false);
-
-    this.reset = () => {
-      this.request = {};
-      this.response = {};
-      this.folderName('');
-      this.bookmarkSelected.reset();
-    };
-  }
-
   function AppVm() {
-    const Resting = {
-      contexts : ko.observableArray(),
-      selectedCtx: new ContextVm(),
-      defaultCtx: new ContextVm(),
+    const contexts = ko.observableArray()
+    const selectedCtx = new ContextVm()
+    let  defaultCtx = new ContextVm()
      
-      bookmarkSelected : new BookmarkSelectedVm(),  // bookmark loaded
-      tabCounter: 0,
-      tabContexts : ko.observableArray(),
-      activeTab : null,
-      request : new RequestVm(),
-      bookmarkCopy: null,   // copy of bookmark object loaded
-                            // used to match with modified version in _saveBookmark
-      bookmarks: ko.observableArray(),
-      folders: ko.observableArray(),
-      folderSelected: ko.observable(),  // used by save dialog
-      folderName: ko.observable(),  // used by loadedBookmark div
-      bookmarkName: ko.observable(),  // used by save dialog
-      methods: ko.observableArray(['GET','POST','PUT','DELETE','HEAD','OPTIONS','CONNECT','TRACE','PATCH']),
+    const bookmarkSelected = new BookmarkSelectedVm()  // bookmark loaded
+    let tabCounter = 0
+    const tabContexts = ko.observableArray()
+    let activeTab = null
+    const request = new RequestVm()
+    let bookmarkCopy = null   // copy of bookmark object loaded used to match with modified version in _saveBookmark
+    const bookmarks = ko.observableArray()
+    const folders = ko.observableArray()
+    const folderSelected = ko.observable()  // used by save dialog
+    const folderName = ko.observable()  // used by loadedBookmark div
+    const bookmarkName = ko.observable()  // used by save dialog
+    const methods= ko.observableArray(['GET','POST','PUT','DELETE','HEAD','OPTIONS','CONNECT','TRACE','PATCH'])
 
-      // request panel flags
-      showRequestHeaders: ko.observable(true),
-      showRequestBody: ko.observable(false),
-      showQuerystring: ko.observable(false),
-      showAuthentication: ko.observable(false),
-      showActiveContext: ko.observable(false),
+    // request panel flags
+    const showRequestHeaders = ko.observable(true)
+    const showRequestBody = ko.observable(false)
+    const showQuerystring = ko.observable(false)
+    const showAuthentication = ko.observable(false)
+    const showActiveContext = ko.observable(false)
 
-      // Flags to show/hide dialogs
-      showBookmarkDialog: ko.observable(false),
-      showContextDialog: ko.observable(false),
-      showCreateContextDialog: ko.observable(false),
-      showConfirmDialog: ko.observable(false),
-      
-      requestState: ko.observable(REQUEST_STATE_MAP.NOT_STARTED),
+    // Flags to show/hide dialogs
+    const showBookmarkDialog = ko.observable(false)
+    const showContextDialog = ko.observable(false)
+    const showCreateContextDialog = ko.observable(false)
+    const showConfirmDialog = ko.observable(false)
+     
+    const requestState = ko.observable(REQUEST_STATE_MAP.NOT_STARTED)
 
-      saveAsNewBookmark: ko.observable(false),
+    const saveAsNewBookmark = ko.observable(false)
 
-      dialogConfirmMessage: ko.observable(),
-      contextName: ko.observable(),
-    };
-
-    Resting.noCtxs = ko.computed(function() {
-      return Resting.contexts().length <= 0
-    })
+    const dialogConfirmMessage = ko.observable()
+    const contextName = ko.observable()
 
     const bookmarkProvider = makeBookmarkProvider(storage);
 
@@ -218,27 +146,26 @@ const REQUEST_STATE_MAP = {
     };
 
     const contextDialog = (context) => {
-      Resting.selectedCtx.name(context.name());
-      Resting.selectedCtx.variables(context.variables());
-      Resting.showContextDialog(true);
+      selectedCtx.name(context.name());
+      selectedCtx.variables(context.variables());
+      showContextDialog(true);
     };
 
     const defaultContextDialog = () => {
-      contextDialog(Resting.defaultCtx)
+      contextDialog(defaultCtx)
     }
 
-    const contextDialogByName = ({bookmarkCopy, bookmarkCopy: { request: {context} }}) => {
-      let ctxToLoad = Resting.contexts()
-          .find(ctx =>
-            ctx.name() === context)
+    const contextDialogByName = () => {
+      let ctxToLoad = contexts()
+        .find(ctx => ctx.name() === request.context())
       if (ctxToLoad === undefined) {
-        ctxToLoad = Resting.defaultCtx
+        ctxToLoad = defaultCtx
       }
       contextDialog(ctxToLoad)
     }
 
     const dismissContextDialog = () => {
-      Resting.showContextDialog(false);
+      showContextDialog(false);
     };
 
     const convertToUrlEncoded = (data = [], context) =>
@@ -246,38 +173,38 @@ const REQUEST_STATE_MAP = {
 
     const updateBody = (bodyType, body) => {
       clearRequestBody();
-      Resting.request.bodyType(bodyType);
+      request.bodyType(bodyType);
       if (bodyType === 'form-data') {
-        return Resting.request.formDataParams(_convertToEntryItemVM(body));
+        return request.formDataParams(_convertToEntryItemVM(body));
       }
 
       if (bodyType === 'x-www-form-urlencoded') {
-        return Resting.request.formEncodedParams(_convertToEntryItemVM(body));
+        return request.formEncodedParams(_convertToEntryItemVM(body));
       }
 
-      return Resting.request.rawBody(body);
+      return request.rawBody(body);
     };
 
     const clearRequestBody = () => {
-      Resting.request.formDataParams.removeAll();
-      Resting.request.formEncodedParams.removeAll();
-      Resting.request.rawBody('');
-      Resting.request.bodyType('');
+      request.formDataParams.removeAll();
+      request.formEncodedParams.removeAll();
+      request.rawBody('');
+      request.bodyType('');
     };
 
     const clearRequest = () => {
-      Resting.request.method('GET');
-      Resting.request.url('');
+      request.method('GET');
+      request.url('');
       clearRequestBody();
-      Resting.request.headers.removeAll();
-      Resting.request.querystring.removeAll();
-      Resting.request.authenticationType('');
-      Resting.request.username('');
-      Resting.request.password('');
-      Resting.request.jwtToken('');
-      Resting.request.oauthAuthPosition('');
-      Resting.request.oauthAccessToken('');
-      Resting.request.context('default');
+      request.headers.removeAll();
+      request.querystring.removeAll();
+      request.authenticationType('');
+      request.username('');
+      request.password('');
+      request.jwtToken('');
+      request.oauthAuthPosition('');
+      request.oauthAccessToken('');
+      request.context('default');
     };
 
     const _convertToEntryItemVM = (items = []) => items.map(item => {
@@ -290,36 +217,36 @@ const REQUEST_STATE_MAP = {
 
 
     const bookmarkScreenName = () => {
-      return Resting.bookmarkSelected.name() && Resting.bookmarkSelected.name().length > 0 ? Resting.bookmarkSelected.name() : Resting.request.method() + ' ' + Resting.request.url();
+      return bookmarkSelected.name() && bookmarkSelected.name().length > 0 ? bookmarkSelected.name() : request.method() + ' ' + request.url();
     };
 
     const parseRequest = (req) => {
       if(req) {
-        Resting.request.method(req.method);
-        Resting.request.url(req.url);
-        Resting.request.bodyType(req.bodyType);
-        Resting.request.headers(_convertToEntryItemVM(req.headers));
-        Resting.request.querystring(req.querystring ?  _convertToEntryItemVM(req.querystring) : []);
+        request.method(req.method);
+        request.url(req.url);
+        request.bodyType(req.bodyType);
+        request.headers(_convertToEntryItemVM(req.headers));
+        request.querystring(req.querystring ?  _convertToEntryItemVM(req.querystring) : []);
         _updateAuthentication(req.authentication);
         updateBody(req.bodyType, req.body);
-        Resting.request.context(req.context);
+        request.context(req.context);
       }
     };
 
     const _updateAuthentication = authentication => {
      if(authentication) {
-        Resting.request.authenticationType(authentication.type);
+        request.authenticationType(authentication.type);
         switch(authentication.type) {
           case 'Basic':
-            Resting.request.username(authentication.username);
-            Resting.request.password(authentication.password);
+            request.username(authentication.username);
+            request.password(authentication.password);
             break;
           case 'JWT':
-            Resting.request.jwtToken(authentication.jwtToken);
+            request.jwtToken(authentication.jwtToken);
             break;
           case 'Oauth 2.0':
-            Resting.request.oauthAuthPosition(authentication.oauthAuthPosition);
-            Resting.request.oauthAccessToken(authentication.oauthAccessToken);
+            request.oauthAuthPosition(authentication.oauthAuthPosition);
+            request.oauthAccessToken(authentication.oauthAccessToken);
             break;
 
           default:
@@ -329,35 +256,35 @@ const REQUEST_STATE_MAP = {
     };
 
     const dataToSend = (context) => {
-      if (Resting.request.bodyType() === 'form-data') {
-        return convertToFormData(Resting.request.formDataParams(),context);
-      } else if (Resting.request.bodyType() === 'x-www-form-urlencoded') {
-        return convertToUrlEncoded(Resting.request.formEncodedParams(), context);
-      } else if (Resting.request.bodyType() === 'raw') {
-        return _applyContext(Resting.request.rawBody().trim(),context);
+      if (request.bodyType() === 'form-data') {
+        return convertToFormData(request.formDataParams(),context);
+      } else if (request.bodyType() === 'x-www-form-urlencoded') {
+        return convertToUrlEncoded(request.formEncodedParams(), context);
+      } else if (request.bodyType() === 'raw') {
+        return _applyContext(request.rawBody().trim(),context);
       }
     };
 
     const _authentication = (contexts = []) => ({
-      type: Resting.request.authenticationType(),
-      username: _applyContext(Resting.request.username(), contexts),
-      password: _applyContext(Resting.request.password(), contexts),
-      jwtToken: _applyContext(Resting.request.jwtToken(), contexts),
-      oauthAuthPosition: _applyContext(Resting.request.oauthAuthPosition(), contexts),
-      oauthAccessToken: _applyContext(Resting.request.oauthAccessToken(), contexts),
+      type: request.authenticationType(),
+      username: _applyContext(request.username(), contexts),
+      password: _applyContext(request.password(), contexts),
+      jwtToken: _applyContext(request.jwtToken(), contexts),
+      oauthAuthPosition: _applyContext(request.oauthAuthPosition(), contexts),
+      oauthAccessToken: _applyContext(request.oauthAccessToken(), contexts),
     });
 
     const body = (bodyType) => {
       if (bodyType === 'form-data') {
-        return _extractModelFromVM(Resting.request.formDataParams());
+        return _extractModelFromVM(request.formDataParams());
       }
 
       if (bodyType === 'x-www-form-urlencoded') {
-        return _extractModelFromVM(Resting.request.formEncodedParams());
+        return _extractModelFromVM(request.formEncodedParams());
       }
 
       if (bodyType === 'raw') {
-        return Resting.request.rawBody();
+        return request.rawBody();
       }
 
       return undefined;
@@ -373,59 +300,59 @@ const REQUEST_STATE_MAP = {
     };
 
     const isBookmarkLoaded = () => {
-      return Resting.bookmarkSelected.id().length > 0;
+      return bookmarkSelected.id().length > 0;
     }
 
     const _saveBookmark = (bookmark, internal=false) => {
-       if(Resting.bookmarkCopy && !Resting.saveAsNewBookmark() && !internal) {
+       if(bookmarkCopy && !saveAsNewBookmark() && !internal) {
           // if edit a bookmark
           if(bookmark.folder) {
-            const oldFolder = Resting.bookmarkCopy.folder;
+            const oldFolder = bookmarkCopy.folder;
             if(oldFolder == bookmark.folder) { // folderA to folderA
-              let folderObj = Resting.bookmarks().find(b => b.id === bookmark.folder);
+              let folderObj = bookmarks().find(b => b.id === bookmark.folder);
               const modifiedFolder = bookmarkProvider.replaceBookmark(folderObj, new BookmarkVm(bookmark));
               bookmarkProvider.save(serializeBookmark(modifiedFolder));
-              Resting.bookmarks.replace(folderObj, modifiedFolder);
+              bookmarks.replace(folderObj, modifiedFolder);
             } else if(!oldFolder) { //from no-folder to folderA
-              const oldBookmark = Resting.bookmarks().find(b => b.id == bookmark.id); // I need the ref to bookmark saved in observable array
-                                                                                        //  either it is not removed from it
+              const oldBookmark = bookmarks().find(b => b.id == bookmark.id); // I need the ref to bookmark saved in observable array
+                                                                              //  either it is not removed from it
               deleteBookmark(oldBookmark);
-              let folderObj = Resting.bookmarks().find(b => b.id === bookmark.folder);
+              let folderObj = bookmarks().find(b => b.id === bookmark.folder);
               const modifiedFolder = bookmarkProvider.replaceBookmark(folderObj, new BookmarkVm(bookmark));
               bookmarkProvider.save(serializeBookmark(modifiedFolder));
-              Resting.bookmarks.replace(folderObj, modifiedFolder);
+              bookmarks.replace(folderObj, modifiedFolder);
             } else if( oldFolder != bookmark.folder) { // from folderA to folderB
-              deleteBookmark(Resting.bookmarkCopy);
-              let folderObj = Resting.bookmarks().find(b => b.id === bookmark.folder);
+              deleteBookmark(bookmarkCopy);
+              let folderObj = bookmarks().find(b => b.id === bookmark.folder);
               const modifiedFolder = bookmarkProvider.replaceBookmark(folderObj, new BookmarkVm(bookmark));
               bookmarkProvider.save(serializeBookmark(modifiedFolder));
-              Resting.bookmarks.replace(folderObj, modifiedFolder);
+              bookmarks.replace(folderObj, modifiedFolder);
             }
           } else {
-            if(Resting.bookmarkCopy.folder) { // from folderA to no-folder
-              deleteBookmark(Resting.bookmarkCopy);
-              Resting.bookmarks.push(new BookmarkVm(bookmark));
+            if(bookmarkCopy.folder) { // from folderA to no-folder
+              deleteBookmark(bookmarkCopy);
+              bookmarks.push(new BookmarkVm(bookmark));
             } else { // from no-folder to no-folder
-              const oldBookmark = Resting.bookmarks().find(b => b.id === bookmark.id);
-              Resting.bookmarks.replace(oldBookmark, new BookmarkVm(bookmark));
+              const oldBookmark = bookmarks().find(b => b.id === bookmark.id);
+              bookmarks.replace(oldBookmark, new BookmarkVm(bookmark));
             }
             bookmarkProvider.save(serializeBookmark(bookmark));
           }
-          Resting.bookmarkCopy = bookmarkProvider.copyBookmark(bookmark);
+          bookmarkCopy = bookmarkProvider.copyBookmark(bookmark);
         } else { // if new bookmark
           if(bookmark.folder) {
-            let folderObj = Resting.bookmarks().find(b => b.id === bookmark.folder);
+            let folderObj = bookmarks().find(b => b.id === bookmark.folder);
             const modifiedFolder = bookmarkProvider.addBookmarks(folderObj, new BookmarkVm(bookmark));
             bookmarkProvider.save(serializeBookmark(modifiedFolder));
-            Resting.bookmarks.replace(folderObj, modifiedFolder);
+            bookmarks.replace(folderObj, modifiedFolder);
           } else {
              bookmarkProvider.save(serializeBookmark(bookmark));
-             Resting.bookmarks.push(new BookmarkVm(bookmark));
+             bookmarks.push(new BookmarkVm(bookmark));
           }
 
           if(!internal) {
-            Resting.bookmarkSelected.id(bookmark.id);
-            Resting.bookmarkCopy = bookmarkProvider.copyBookmark(bookmark);
+            bookmarkSelected.id(bookmark.id);
+            bookmarkCopy = bookmarkProvider.copyBookmark(bookmark);
           }
         }
     };
@@ -436,32 +363,32 @@ const REQUEST_STATE_MAP = {
 
 
     const saveBookmark = () => {
-      const req = request.makeRequest(
-        Resting.request.method(), Resting.request.url(),
-        _extractModelFromVM(Resting.request.headers()), _extractModelFromVM(Resting.request.querystring()), Resting.request.bodyType(),
-        body(Resting.request.bodyType()),_authentication(), Resting.request.context());
+      const req = requestSrv.makeRequest(
+        request.method(), request.url(),
+        _extractModelFromVM(request.headers()), _extractModelFromVM(request.querystring()), request.bodyType(),
+        body(request.bodyType()),_authentication(), request.context());
 
-      const bookmarkId = Resting.bookmarkCopy && !Resting.saveAsNewBookmark() ? Resting.bookmarkCopy.id : storage.generateId();
-      const creationDate = Resting.bookmarkCopy && !Resting.saveAsNewBookmark() ? Resting.bookmarkCopy.created : new Date();
-      const bookmarkObj = bookmarkProvider.makeBookmark(bookmarkId, req, validateBookmarkName(Resting.bookmarkName()), Resting.folderSelected(), creationDate);
-      Resting.bookmarkSelected.name(Resting.bookmarkName());
-      Resting.bookmarkSelected.folder(Resting.folderSelected());
-      const name = _folderName(Resting.folderSelected());
-      Resting.folderName(name ? name : '--');
+      const bookmarkId = bookmarkCopy && !saveAsNewBookmark() ? bookmarkCopy.id : storage.generateId();
+      const creationDate = bookmarkCopy && !saveAsNewBookmark() ? bookmarkCopy.created : new Date();
+      const bookmarkObj = bookmarkProvider.makeBookmark(bookmarkId, req, validateBookmarkName(bookmarkName()), folderSelected(), creationDate);
+      bookmarkSelected.name(bookmarkName());
+      bookmarkSelected.folder(folderSelected());
+      const name = _folderName(folderSelected());
+      folderName(name ? name : '--');
       _saveBookmark(bookmarkObj);
 
       // close the dialog
-      Resting.showBookmarkDialog(false);
+      showBookmarkDialog(false);
     };
 
 
     const reset = (tabReset = true) => {
-      Resting.bookmarkCopy = null;
-      Resting.folderSelected('');
-      Resting.folderName('--');
-      Resting.bookmarkName('');
-      Resting.bookmarkSelected.name('');
-      Resting.bookmarkSelected.id('');
+      bookmarkCopy = null;
+      folderSelected('');
+      folderName('--');
+      bookmarkName('');
+      bookmarkSelected.name('');
+      bookmarkSelected.id('');
       clearRequest();
       if(tabReset) {
         _tabReset();
@@ -470,18 +397,18 @@ const REQUEST_STATE_MAP = {
     };
 
     const _tabReset = () => {
-      const tab = Resting.activeTab;
+      const tab = activeTab;
       tab.reset();
     };
 
     // used by _saveBookmark...why ?
     const deleteBookmark = (bookmark, deleteChildrenBookmarks) => {
       if(bookmark.folder) {
-        const containerFolder = Resting.bookmarks().find( b => b.id === bookmark.folder);
+        const containerFolder = bookmarks().find( b => b.id === bookmark.folder);
         let modifiedFolder = Object.assign({},containerFolder);
         modifiedFolder.bookmarks = containerFolder.bookmarks.filter(b => b.id !== bookmark.id);
         bookmarkProvider.save(serializeBookmark(modifiedFolder));
-        Resting.bookmarks.replace(containerFolder,modifiedFolder);
+        bookmarks.replace(containerFolder,modifiedFolder);
       } else {
         if(bookmark.isFolder && !deleteChildrenBookmarks) {
           const childrenBookmarks = bookmark.bookmarks.map( child => {
@@ -490,7 +417,7 @@ const REQUEST_STATE_MAP = {
           });
           childrenBookmarks.forEach(child => _saveBookmark(child));
         }
-        storage.deleteById(bookmark.id, () => Resting.bookmarks.remove(bookmark));
+        storage.deleteById(bookmark.id, () => bookmarks.remove(bookmark));
       }
     };
 
@@ -510,41 +437,41 @@ const REQUEST_STATE_MAP = {
     };
 
     const send = () => {
-      if (!Resting.request.url() || Resting.request.url().trim().length === 0) {
+      if (!request.url() || request.url().trim().length === 0) {
         return;
       }
 
       const mapping = _mapContext();
-      request.execute(
-        Resting.request.method(),
-        _applyContext(Resting.request.url().trim(), mapping),
+      requestSrv.execute(
+        request.method(),
+        _applyContext(request.url().trim(), mapping),
         convertToHeaderObj(
-          Resting.request.headers(), mapping
+          request.headers(), mapping
         ),
         _convertToQueryString(
-          Resting.request.querystring(), mapping
+          request.querystring(), mapping
         ),
-        Resting.request.bodyType(),
-        Resting.dataToSend(mapping),
+        request.bodyType(),
+        dataToSend(mapping),
         _authentication(mapping), _manageResponse
       );
-      Resting.requestState(REQUEST_STATE_MAP.IN_PROGRESS);
+      requestState(REQUEST_STATE_MAP.IN_PROGRESS);
     };
 
     const _manageResponse = (response) => {
-      Resting.activeTab.response = response;
-      Resting.requestState(REQUEST_STATE_MAP.COMPLETE);
+      activeTab.response = response;
+      requestState(REQUEST_STATE_MAP.COMPLETE);
       _displayResponse(response);
     };
 
     // Note that elements order is important
     const _mapContext = () =>
       [
-        Resting.defaultCtx,
-        Resting.request.context() !== 'default' &&
-        Resting.contexts()
+        defaultCtx,
+        request.context() !== 'default' &&
+        contexts()
           .find(ctx =>
-            ctx.name() === Resting.request.context())
+            ctx.name() === request.context())
       ]
         .filter(ctx => !!ctx)
         .map(ctx =>
@@ -569,73 +496,73 @@ const REQUEST_STATE_MAP = {
     };
 
     const loadBookmarkInView = (bookmark = {}) => {
-      Resting.bookmarkSelected.id(bookmark.id);
-      Resting.bookmarkSelected.name(bookmark.name);
-      Resting.bookmarkSelected.folder(bookmark.folder);
+      bookmarkSelected.id(bookmark.id);
+      bookmarkSelected.name(bookmark.name);
+      bookmarkSelected.folder(bookmark.folder);
       if(bookmark.request) {
-        Resting.request.method(bookmark.request.method);
-        Resting.request.url(bookmark.request.url);
+        request.method(bookmark.request.method);
+        request.url(bookmark.request.url);
       }
     };
 
     const requestHeadersPanel = () => {
-      Resting.showRequestHeaders(true);
-      Resting.showRequestBody(false);
-      Resting.showQuerystring(false);
-      Resting.showAuthentication(false);
-      Resting.showActiveContext(false);
+      showRequestHeaders(true);
+      showRequestBody(false);
+      showQuerystring(false);
+      showAuthentication(false);
+      showActiveContext(false);
     };
 
     const requestBodyPanel = () => {
-      Resting.showRequestHeaders(false);
-      Resting.showRequestBody(true);
-      Resting.showQuerystring(false);
-      Resting.showAuthentication(false);
-      Resting.showActiveContext(false);
+      showRequestHeaders(false);
+      showRequestBody(true);
+      showQuerystring(false);
+      showAuthentication(false);
+      showActiveContext(false);
     };
 
     const querystringPanel = () => {
-      Resting.showRequestHeaders(false);
-      Resting.showRequestBody(false);
-      Resting.showQuerystring(true);
-      Resting.showAuthentication(false);
-      Resting.showActiveContext(false);
+      showRequestHeaders(false);
+      showRequestBody(false);
+      showQuerystring(true);
+      showAuthentication(false);
+      showActiveContext(false);
     };
 
     const authenticationPanel = () => {
-      Resting.showRequestHeaders(false);
-      Resting.showRequestBody(false);
-      Resting.showQuerystring(false);
-      Resting.showAuthentication(true);
-      Resting.showActiveContext(false);
+      showRequestHeaders(false);
+      showRequestBody(false);
+      showQuerystring(false);
+      showAuthentication(true);
+      showActiveContext(false);
     };
 
     const contextPanel = () => {
-      Resting.showRequestHeaders(false);
-      Resting.showRequestBody(false);
-      Resting.showQuerystring(false);
-      Resting.showAuthentication(false);
-      Resting.showActiveContext(true);
+      showRequestHeaders(false);
+      showRequestBody(false);
+      showQuerystring(false);
+      showAuthentication(false);
+      showActiveContext(true);
     };
 
     const saveBookmarkDialog = () => {
-      Resting.showBookmarkDialog(true);
-      Resting.saveAsNewBookmark(false);
-      Resting.bookmarkName(Resting.bookmarkSelected.name());
+      showBookmarkDialog(true);
+      saveAsNewBookmark(false);
+      bookmarkName(bookmarkSelected.name());
     };
 
     const saveAsBookmarkDialog = () => {
-      Resting.showBookmarkDialog(true);
-      Resting.saveAsNewBookmark(true);
-      Resting.bookmarkName('');
+      showBookmarkDialog(true);
+      saveAsNewBookmark(true);
+      bookmarkName('');
     };
 
     const dismissSaveBookmarkDialog = () => {
-      Resting.showBookmarkDialog(false);
-      if(Resting.bookmarkCopy == null) {
-        Resting.bookmarkSelected.name('');
-        Resting.folderSelected('');
-        Resting.folderName('--');
+      showBookmarkDialog(false);
+      if(bookmarkCopy == null) {
+        bookmarkSelected.name('');
+        folderSelected('');
+        folderName('--');
       }
     };
 
@@ -653,91 +580,87 @@ const REQUEST_STATE_MAP = {
       }
     }
 
-    const closeDialogOnExcape = (data, event) => {
+    const closeDialogOnEscape = (data, event) => {
       const excape = 27;
       if(event.keyCode === excape) {
-        Resting.showAuthentication(false),
-        Resting.showActiveContext(false),
-        Resting.showBookmarkDialog(false),
-        Resting.showContextDialog(false),
-        Resting.showCreateContextDialog(false),
-        Resting.showConfirmDialog(false),
-        Resting.saveAsNewBookmark(false)
-        //Resting.showFeedbackDialog(false)
+        showBookmarkDialog(false),
+        showContextDialog(false),
+        showCreateContextDialog(false),
+        showConfirmDialog(false),
+        saveAsNewBookmark(false)
       }
     };
 
     const saveContext = () => {
-      storage.saveContext({name : Resting.selectedCtx.name(), variables : _extractModelFromVM(Resting.selectedCtx.variables()) });
-      const contextToEditIdx = Resting.contexts().find(ctx => ctx.name === Resting.selectedCtx.name());
+      storage.saveContext({name : selectedCtx.name(), variables : _extractModelFromVM(selectedCtx.variables()) });
+      const contextToEditIdx = contexts().find(ctx => ctx.name === selectedCtx.name());
       if(contextToEditIdx > -1) {
-        Resting.contexts.replace(Resting.contexts[contextToEditIdx],Resting.selectedCtx);
+        contexts.replace(contexts[contextToEditIdx],selectedCtx);
       }
 
       dismissContextDialog();
     };
 
     const confirmDeleteContext = () => {
-       Resting.showConfirmDialog(true);
-       Resting.dialogConfirmMessage("Confirm context delete ?");
+       showConfirmDialog(true);
+       dialogConfirmMessage("Confirm context delete ?");
     };
 
     const deleteContext = () => {
-       const ctxToRemove = Resting.contexts().find(ctx => ctx.name() === Resting.selectedCtx.name());
-       storage.deleteContextById(Resting.selectedCtx.name());
-       Resting.contexts.remove(ctxToRemove);
-       dismissConfirmDialog();
-       dismissContextDialog();
+       const ctxToRemove = contexts().find(ctx => ctx.name() === selectedCtx.name())
+       storage.deleteContextById(selectedCtx.name())
+       contexts.remove(ctxToRemove)
+       dismissConfirmDialog()
+       dismissContextDialog()
     };
 
     const loadContexts = () => {
       // load contexts
       const loadedCtxs = []
       storage.loadContexts( ctx => {
-        // Resting.contexts.push(new ContextVm(ctx.name,ctx.variables));
-        loadedCtxs.push(new ContextVm(ctx.name,ctx.variables));
+        loadedCtxs.push(new ContextVm(ctx.name,ctx.variables))
       },
       () => {
-        //const defaultCtxIdx = Resting.contexts().findIndex(ctx => ctx.name() === 'default')
         const defaultCtxIdx = loadedCtxs.findIndex(ctx => ctx.name() === 'default')
         if(defaultCtxIdx < 0) {
           // default context
-          Resting.defaultCtx = new ContextVm()
+          defaultCtx = new ContextVm()
         } else {
-          Resting.defaultCtx = Resting.contexts()[defaultCtxIdx]
-          //Resting.contexts.splice(1, defaultCtxIdx)
+          defaultCtx = loadedCtxs[defaultCtxIdx]
         }
-        loadedCtxs.forEach(ctx => Resting.contexts.push(ctx))
-        Resting.contexts.sort(sortCriteriaCtx)
+        loadedCtxs.forEach(ctx => contexts.push(ctx))
+        contexts.sort(sortCriteriaCtx)
       }
       )
     }
 
     const dismissConfirmDialog = () => {
-      Resting.showConfirmDialog(false);
+      showConfirmDialog(false);
     };
 
     const createContextDialog = () => {
-      Resting.showCreateContextDialog(true);
+      showCreateContextDialog(true);
     };
 
     const dismissCreateContextDialog = () => {
-      Resting.contextName('');
-      Resting.showCreateContextDialog(false);
+      contextName('');
+      showCreateContextDialog(false);
     };
 
     const createContext = () => {
-      Resting.contexts.push(new ContextVm(Resting.contextName()));
-      storage.saveContext({name : Resting.contextName(), variables : [] });
-      Resting.contexts.sort(sortCriteriaCtx)
-      dismissCreateContextDialog();
+      if (contextName() !== 'default') {
+        contexts.push(new ContextVm(contextName()))
+        storage.saveContext({name : contextName(), variables : [] })
+        contexts.sort(sortCriteriaCtx)
+      }
+      dismissCreateContextDialog()
+    }
 
-    };
      const loadBookmarkObj = (bookmarkObj) => {
-      Resting.bookmarkCopy = bookmarkProvider.copyBookmark(bookmarkObj);
-      Resting.folderSelected(bookmarkObj.folder);
+      bookmarkCopy = bookmarkProvider.copyBookmark(bookmarkObj);
+      folderSelected(bookmarkObj.folder);
       const name = _folderName(bookmarkObj.folder);
-      Resting.folderName(name ? name : '--');
+      folderName(name ? name : '--');
       return loadBookmarkData(bookmarkObj);
     }
 
@@ -747,7 +670,7 @@ const REQUEST_STATE_MAP = {
     }
 
     const _folderName = (id) => {
-      const folderObj =  Resting.folders().find((elem) => elem.id === id);
+      const folderObj =  folders().find((elem) => elem.id === id);
       return folderObj ? folderObj.name : folderObj;
     };
 
@@ -780,15 +703,15 @@ const REQUEST_STATE_MAP = {
     }
 
     const addFolder = ({folder, selectedFolder}) => {
-      Resting.folders.push(folder)
-      Resting.folders.sort(sortCriteria)
+      folders.push(folder)
+      folders.sort(sortCriteria)
       if (selectedFolder) {
-        Resting.folderSelected(folder.id)
+        folderSelected(folder.id)
       }
     }
 
     const removeFolder = (folder) => {
-      Resting.folders.remove(f => f.id === folder.id);
+      folders.remove(f => f.id === folder.id);
     };
 
     const activateTab = (tabActivated) => {
@@ -796,28 +719,28 @@ const REQUEST_STATE_MAP = {
     };
 
     const _activateTab = (tabActivated) => {
-       const newActiveIndex = Resting.tabContexts().indexOf(tabActivated);
+       const newActiveIndex = tabContexts().indexOf(tabActivated);
 
-       Resting.tabContexts().forEach(function(tab, idx) {
+       tabContexts().forEach(function(tab, idx) {
         if(tab.isActive()) { // update old tab data
-          tab.request = request.makeRequest(
-          Resting.request.method(), Resting.request.url(),
-          _extractModelFromVM(Resting.request.headers()), _extractModelFromVM(Resting.request.querystring()), Resting.request.bodyType(),
-          body(Resting.request.bodyType()),_authentication(), Resting.request.context());
+          tab.request = requestSrv.makeRequest(
+          request.method(), request.url(),
+          _extractModelFromVM(request.headers()), _extractModelFromVM(request.querystring()), request.bodyType(),
+          body(request.bodyType()),_authentication(), request.context());
 
-          if(Resting.bookmarkCopy) {
-            tab.bookmarkSelected.id(Resting.bookmarkCopy.id);
+          if(bookmarkCopy) {
+            tab.bookmarkSelected.id(bookmarkCopy.id);
           } else {
             tab.bookmarkSelected.id('');
           }
-          tab.bookmarkSelected.name(Resting.bookmarkSelected.name());
-          tab.bookmarkSelected.folder(Resting.folderSelected());
+          tab.bookmarkSelected.name(bookmarkSelected.name());
+          tab.bookmarkSelected.folder(folderSelected());
         }
          
         // set new active tab
         tab.isActive(idx == newActiveIndex);
        });
-       Resting.activeTab = tabActivated;
+       activeTab = tabActivated;
 
       // set new active tab data
       let bookmark = tabActivated.bookmarkSelected.toModel();
@@ -839,22 +762,22 @@ const REQUEST_STATE_MAP = {
     };
     
     const newTab = () => {
-      const newTabContext = new TabContextVm(++Resting.tabCounter);
-      Resting.tabContexts.push(newTabContext);
+      const newTabContext = new TabContextVm(++tabCounter);
+      tabContexts.push(newTabContext);
       _activateTab(newTabContext);
     };
 
     const removeTab = (tab) => {
-      const tabToRemoveIndex = Resting.tabContexts().indexOf(tab);
-      const tabs = Resting.tabContexts().length;
+      const tabToRemoveIndex = tabContexts().indexOf(tab);
+      const tabs = tabContexts().length;
       if(tabs > 1 && tab.isActive()) {
-        _activateTab(Resting.tabContexts()[Math.abs(tabToRemoveIndex - 1)]);
+        _activateTab(tabContexts()[Math.abs(tabToRemoveIndex - 1)]);
       } 
-      Resting.tabContexts.remove(tab);
+      tabContexts.remove(tab);
     };
 
     const enableSaveButton = () => {
-      if (Resting.request.url() && Resting.request.url().trim().length != 0) {
+      if (request.url() && request.url().trim().length != 0) {
         return true;
       }
       return false;  
@@ -866,55 +789,90 @@ const REQUEST_STATE_MAP = {
     bacheca.subscribe('addFolder', addFolder)
     bacheca.subscribe('deleteFolder', removeFolder)
 
-    Resting.clearRequest = clearRequest;
-    Resting.parseRequest = parseRequest;
-    Resting.dataToSend = dataToSend;
-    Resting.deleteBookmark = deleteBookmark;
-    Resting.callSendOnEnter = callSendOnEnter;
-    Resting.callSendOnCtrlEnter = callSendOnCtrlEnter;
+    return {
+      contexts, 
+      selectedCtx,
+      defaultCtx,
+     
+      bookmarkSelected,
+      tabCounter,
+      tabContexts, 
+      activeTab, 
+      request, 
+      bookmarkCopy,
+      bookmarks,
+      folders,
+      folderSelected,
+      folderName,
+      bookmarkName,
+      methods,
+      showRequestHeaders,
+      showRequestBody,
+      showQuerystring,
+      showAuthentication,
+      showActiveContext,
 
-    Resting.send = send;
-    Resting.saveBookmark = saveBookmark;
-    Resting.reset = reset;
+      showBookmarkDialog,
+      showContextDialog,
+      showCreateContextDialog,
+      showConfirmDialog,
+     
+      requestState,
 
-    Resting.requestBodyPanel = requestBodyPanel;
-    Resting.requestHeadersPanel = requestHeadersPanel;
-    Resting.querystringPanel = querystringPanel;
-    Resting.authenticationPanel = authenticationPanel;
-    Resting.contextPanel = contextPanel;
+      saveAsNewBookmark,
 
-    Resting.aboutDialog = aboutDialog;
-    Resting.creditsDialog = creditsDialog;
-    Resting.donateDialog = donateDialog;
-    Resting.contextDialog = contextDialog;
-    Resting.defaultContextDialog = defaultContextDialog
-    Resting.contextDialogByName = contextDialogByName
-    Resting.saveBookmarkDialog = saveBookmarkDialog;
-    Resting.saveAsBookmarkDialog = saveAsBookmarkDialog;
+      dialogConfirmMessage,
+      contextName,
 
-    Resting.dismissSaveBookmarkDialog = dismissSaveBookmarkDialog;
-    Resting.dismissContextDialog = dismissContextDialog;
-    Resting.closeDialogOnExcape = closeDialogOnExcape;
-    Resting.saveContext = saveContext;
-    // FIXME: not good to expose this internal function
-    Resting._saveBookmark = _saveBookmark;
-    Resting.newTab = newTab;
-    Resting.removeTab = removeTab;
-    Resting.activateTab = activateTab;
-
-    Resting.loadBookmarkInView = loadBookmarkInView;
-    Resting.isBookmarkLoaded = isBookmarkLoaded;
-    Resting.bookmarkScreenName = bookmarkScreenName;
-    Resting.loadContexts = loadContexts;
-    Resting.createContextDialog = createContextDialog;
-    Resting.dismissCreateContextDialog = dismissCreateContextDialog;
-    Resting.createContext = createContext;
-    Resting.deleteContext = deleteContext;
-    Resting.confirmDeleteContext = confirmDeleteContext;
-    Resting.dismissConfirmDialog = dismissConfirmDialog;
-    Resting.enableSaveButton = enableSaveButton;
-
-    return Resting;
+      // functions
+      clearRequest,
+      parseRequest,
+      dataToSend,
+      deleteBookmark,
+      callSendOnEnter,
+      callSendOnCtrlEnter,
+  
+      send,
+      saveBookmark,
+      reset,
+  
+      requestBodyPanel,
+      requestHeadersPanel,
+      querystringPanel,
+      authenticationPanel,
+      contextPanel,
+  
+      aboutDialog,
+      creditsDialog,
+      donateDialog,
+      contextDialog,
+      defaultContextDialog,
+      contextDialogByName,
+      saveBookmarkDialog,
+      saveAsBookmarkDialog,
+  
+      dismissSaveBookmarkDialog,
+      dismissContextDialog,
+      closeDialogOnEscape,
+      saveContext,
+      // FIXME: not good to expose this internal function
+      _saveBookmark,
+      newTab,
+      removeTab,
+      activateTab,
+  
+      loadBookmarkInView,
+      isBookmarkLoaded,
+      bookmarkScreenName,
+      loadContexts,
+      createContextDialog,
+      dismissCreateContextDialog,
+      createContext,
+      deleteContext,
+      confirmDeleteContext,
+      dismissConfirmDialog,
+      enableSaveButton,
+    }
   }
 
   // init application
@@ -989,8 +947,6 @@ const REQUEST_STATE_MAP = {
     $(this).parent().toggleClass('open');
   });
 
-  // appVM.feedbackDialog();
-  // appVM.communicationDialog();
   appVM.loadContexts()
   });
 });
