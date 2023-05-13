@@ -56,10 +56,11 @@
                       <li class="dropdown dropdown-submenu"><a href="#" class="dropdown-toggle" data-toggle="dropdown">Contexts</a>
                         <ul class="dropdown-menu">
                           <li><a href="#" data-bind="click: defaultContextDialog"><span data-bind="text: defaultCtx.name"></span></a></li>
-                          <!-- ko ifnot: noCtxs-->
                           <li role="separator" class="divider"></li>
-                          <li data-bind="foreach: contexts"><a href="#" data-bind="click: $parent.contextDialog"><span data-bind="text: name"></span></a></li>
-                          <!-- /ko -->
+                          <li data-bind="foreach: contexts">
+                            <a href="#" data-bind="ifnot: isDefault, click: $parent.contextDialog"><span data-bind="text: name"></span>
+                            </a>
+                          </li>
                           <li role="separator" class="divider"></li>
                           <li>
                             <a href="#" data-bind="click: createContextDialog">Create
@@ -183,11 +184,9 @@
                   <label for="active-context">Active Context</label>
                   <select class="form-control" style="margin-left: 10px;" id="active-context" data-bind="value: request.context">
                     <option value="default">default</option>
-                    <!-- ko ifnot: noCtxs -->
                     <option disabled="disabled">_______________</option>
                     <!-- ko foreach: contexts -->
                     <option data-bind="visible: !$data.isDefault, text: $data.name, attr: {value: $data.name}"></option>
-                    <!-- /ko -->
                     <!-- /ko -->
                   </select>
                   <button type="button" class="btn btn-default" title="New context" data-bind="click: createContextDialog">

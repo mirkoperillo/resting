@@ -1,6 +1,7 @@
 define([
-    'knockout', 
-    ],function(ko) {
+    'knockout',
+    'component/entry-list/entryItemVm' 
+    ],function(ko, EntryItemVm) {
 
     return  function ContextVm(name = 'default',variables = []) {
         const self = this;

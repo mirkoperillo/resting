@@ -234,15 +234,15 @@ define([
 
      // FIXME: duplication of appVm function
     const _saveContext = (context = {}) => {
-      storage.saveContext({name : context.name, variables : context.variables});
-      const contextToEdit = contexts().find(ctx => ctx.name() === context.name);
-      const contextVm = new ContextVm(context.name, context.variables);
-      if(contextToEdit) {
-        contexts.replace(contextToEdit, contextVm);
-      } else {
-        contexts.push(contextVm);
+      storage.saveContext({name : context.name, variables : context.variables})
+      const contextToEdit = contexts().find(ctx => ctx.name() === context.name)
+      const contextVm = new ContextVm(context.name, context.variables)
+      if (contextToEdit) {
+        contexts.replace(contextToEdit, contextVm)
+      } else if (context.name != 'default') {
+        contexts.push(contextVm)
       }
-    };
+    }
 
     const _handleExport = () => {
         const contextsModels = _extractContextFromVM(contexts());

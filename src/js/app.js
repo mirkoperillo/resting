@@ -79,46 +79,41 @@ const REQUEST_STATE_MAP = {
 
   function AppVm() {
     const contexts = ko.observableArray()
-    const selectedCtx= new ContextVm()
-    let  defaultCtx= new ContextVm()
+    const selectedCtx = new ContextVm()
+    let  defaultCtx = new ContextVm()
      
     const bookmarkSelected = new BookmarkSelectedVm()  // bookmark loaded
-    let tabCounter= 0
+    let tabCounter = 0
     const tabContexts = ko.observableArray()
     let activeTab = null
     const request = new RequestVm()
-    let bookmarkCopy= null   // copy of bookmark object loaded used to match with modified version in _saveBookmark
-    const bookmarks= ko.observableArray()
-    const folders= ko.observableArray()
-    const folderSelected= ko.observable()  // used by save dialog
-    const folderName= ko.observable()  // used by loadedBookmark div
-    const bookmarkName= ko.observable()  // used by save dialog
+    let bookmarkCopy = null   // copy of bookmark object loaded used to match with modified version in _saveBookmark
+    const bookmarks = ko.observableArray()
+    const folders = ko.observableArray()
+    const folderSelected = ko.observable()  // used by save dialog
+    const folderName = ko.observable()  // used by loadedBookmark div
+    const bookmarkName = ko.observable()  // used by save dialog
     const methods= ko.observableArray(['GET','POST','PUT','DELETE','HEAD','OPTIONS','CONNECT','TRACE','PATCH'])
 
     // request panel flags
-    const showRequestHeaders= ko.observable(true)
-    const showRequestBody= ko.observable(false)
-    const showQuerystring= ko.observable(false)
-    const showAuthentication= ko.observable(false)
-    const showActiveContext= ko.observable(false)
+    const showRequestHeaders = ko.observable(true)
+    const showRequestBody = ko.observable(false)
+    const showQuerystring = ko.observable(false)
+    const showAuthentication = ko.observable(false)
+    const showActiveContext = ko.observable(false)
 
     // Flags to show/hide dialogs
-    const  showBookmarkDialog= ko.observable(false)
-    const  showContextDialog= ko.observable(false)
-    const showCreateContextDialog= ko.observable(false)
-    const showConfirmDialog= ko.observable(false)
+    const showBookmarkDialog = ko.observable(false)
+    const showContextDialog = ko.observable(false)
+    const showCreateContextDialog = ko.observable(false)
+    const showConfirmDialog = ko.observable(false)
      
-    const requestState= ko.observable(REQUEST_STATE_MAP.NOT_STARTED)
+    const requestState = ko.observable(REQUEST_STATE_MAP.NOT_STARTED)
 
-    const saveAsNewBookmark= ko.observable(false)
+    const saveAsNewBookmark = ko.observable(false)
 
-    const dialogConfirmMessage= ko.observable()
-    const contextName= ko.observable()
-    
-
-    const noCtxs = ko.computed(function() {
-      return contexts().length <= 0
-    })
+    const dialogConfirmMessage = ko.observable()
+    const contextName = ko.observable()
 
     const bookmarkProvider = makeBookmarkProvider(storage);
 
@@ -160,14 +155,13 @@ const REQUEST_STATE_MAP = {
       contextDialog(defaultCtx)
     }
 
-    const contextDialogByName = (a) => {
-       let ctxToLoad = contexts()
-           .find(ctx =>
-             ctx.name() === request.context())
-       if (ctxToLoad === undefined) {
-         ctxToLoad = defaultCtx
-       }
-       contextDialog(ctxToLoad)
+    const contextDialogByName = () => {
+      let ctxToLoad = contexts()
+        .find(ctx => ctx.name() === request.context())
+      if (ctxToLoad === undefined) {
+        ctxToLoad = defaultCtx
+      }
+      contextDialog(ctxToLoad)
     }
 
     const dismissContextDialog = () => {
@@ -613,29 +607,26 @@ const REQUEST_STATE_MAP = {
     };
 
     const deleteContext = () => {
-       const ctxToRemove = contexts().find(ctx => ctx.name() === selectedCtx.name());
-       storage.deleteContextById(selectedCtx.name());
-       contexts.remove(ctxToRemove);
-       dismissConfirmDialog();
-       dismissContextDialog();
+       const ctxToRemove = contexts().find(ctx => ctx.name() === selectedCtx.name())
+       storage.deleteContextById(selectedCtx.name())
+       contexts.remove(ctxToRemove)
+       dismissConfirmDialog()
+       dismissContextDialog()
     };
 
     const loadContexts = () => {
       // load contexts
       const loadedCtxs = []
       storage.loadContexts( ctx => {
-        // contexts.push(new ContextVm(ctx.name,ctx.variables));
-        loadedCtxs.push(new ContextVm(ctx.name,ctx.variables));
+        loadedCtxs.push(new ContextVm(ctx.name,ctx.variables))
       },
       () => {
-        //const defaultCtxIdx = contexts().findIndex(ctx => ctx.name() === 'default')
         const defaultCtxIdx = loadedCtxs.findIndex(ctx => ctx.name() === 'default')
         if(defaultCtxIdx < 0) {
           // default context
           defaultCtx = new ContextVm()
         } else {
-          defaultCtx = contexts()[defaultCtxIdx]
-          //contexts.splice(1, defaultCtxIdx)
+          defaultCtx = loadedCtxs[defaultCtxIdx]
         }
         loadedCtxs.forEach(ctx => contexts.push(ctx))
         contexts.sort(sortCriteriaCtx)
@@ -657,12 +648,14 @@ const REQUEST_STATE_MAP = {
     };
 
     const createContext = () => {
-      contexts.push(new ContextVm(contextName()));
-      storage.saveContext({name : contextName(), variables : [] });
-      contexts.sort(sortCriteriaCtx)
-      dismissCreateContextDialog();
+      if (contextName() !== 'default') {
+        contexts.push(new ContextVm(contextName()))
+        storage.saveContext({name : contextName(), variables : [] })
+        contexts.sort(sortCriteriaCtx)
+      }
+      dismissCreateContextDialog()
+    }
 
-    };
      const loadBookmarkObj = (bookmarkObj) => {
       bookmarkCopy = bookmarkProvider.copyBookmark(bookmarkObj);
       folderSelected(bookmarkObj.folder);
