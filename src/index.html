@@ -30,12 +30,12 @@
   <title>Resting - the REST client</title>
 
   <!-- Bootstrap -->
-  <link href="css/bootstrap.min.css" rel="stylesheet" type="text/css"></link>
-  <link href="css/fork-awesome.min.css" rel="stylesheet" type="text/css"></link>
-  <link href="css/resting.css" rel="stylesheet" type="text/css"></link>
+  <link href="css/bootstrap.min.css" rel="stylesheet" type="text/css">
+  <link href="css/fork-awesome.min.css" rel="stylesheet" type="text/css">
+  <link href="css/resting.css" rel="stylesheet" type="text/css">
 
   <link rel="stylesheet" type="text/css"
-      href="css/styles/default.css"></link>
+      href="css/styles/default.css">
       
   <link rel="icon" type="image/png" href="icons/letter-r_32.png">
 
@@ -47,7 +47,7 @@
  <nav class="navbar navbar-default">
       <div class="container-fluid">
         <div class="navbar-header">
-            <img style="padding: 5px;" src="icons/letter-r_64.png"></img>
+            <img style="padding: 5px;" src="icons/letter-r_64.png">
         </div>
         <div class="collapse navbar-collapse">
             <ul class="nav navbar-nav">
@@ -215,7 +215,7 @@
     </div>
     <div class="panel-body">
       <div class="form-group">
-        Name <input type="text" class="form-control" data-bind="attr: { placeholder: bookmarkName || request.method + ' ' + (request.url || '') }, textInput: bookmarkName"></input>
+        Name <input type="text" class="form-control" data-bind="attr: { placeholder: bookmarkName || request.method + ' ' + (request.url || '') }, textInput: bookmarkName">
       </div>
       <div class="form-group">
         Folder <select class="form-control" data-bind="options: folders, optionsText: 'name', optionsValue: 'id', optionsCaption: 'None', value: folderSelected"></select>
@@ -236,6 +236,7 @@
     <div class="panel-body">
       <p>
         Use variables as <strong>{var_name}</strong> in
+      </p>
         <ul>
           <li>the request URL</li>
           <li>value of header</li>
@@ -243,7 +244,6 @@
           <li>value of querystring</li>
           <li>as username and password in BASIC authentication</li>
         </ul>
-      </p>
       <entry-list params="entryList : selectedCtx.variables"></entry-list>
     </div>
      <div class="panel-footer">
@@ -258,7 +258,7 @@
     </div>
     <div class="panel-body">
       <div class="form-group">
-        Name <input type="text" class="form-control" data-bind="value: contextName"></input>
+        Name <input type="text" class="form-control" data-bind="value: contextName">
       </div>
     </div>
     <div class="panel-footer">
@@ -279,6 +279,7 @@
 
     <script data-main="js/app" src="js/require.js"></script>
     
+  </div>
   </div>
 </body>
 </html>

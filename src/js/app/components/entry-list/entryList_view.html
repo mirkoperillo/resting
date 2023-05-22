@@ -21,10 +21,10 @@
 <html>
 <div data-bind="foreach: entryList">
     <div class="row form-inline form-group">
-        <input type="checkbox" class="form-control" style="margin-right: 2px;" data-bind="checked: enabled"></input>
-        <label data-bind="css: {disabled: !enabled}">Name</label><input type="text" style="margin-left: 10px" class="form-control" data-bind="value: name, enable: enabled"></input>
+        <input type="checkbox" class="form-control" style="margin-right: 2px;" data-bind="checked: enabled">
+        <label data-bind="css: {disabled: !enabled}">Name</label><input type="text" style="margin-left: 10px" class="form-control" data-bind="value: name, enable: enabled">
         <span data-bind="ifnot: isFileEntry">
-          <label data-bind="css: {disabled: !enabled}" style="margin-left: 5px;">Value</label><input type="text" style="margin-left: 10px;" class="form-control" data-bind="value: value, enable: enabled"></input>
+          <label data-bind="css: {disabled: !enabled}" style="margin-left: 5px;">Value</label><input type="text" style="margin-left: 10px;" class="form-control" data-bind="value: value, enable: enabled">
         </span>
         <span data-bind="if: isFileEntry">
           <label data-bind="css: {disabled: !enabled}" style="margin-left: 5px;">Value</label> <span data-bind="text: valueFile.name"></span>
@@ -35,15 +35,15 @@
     </div>
 </div>
 <div class="row form-inline form-group">
-    <input type="checkbox" class="form-control" style="margin-right: 2px; visibility:hidden;"></input>
-    <label>Name</label><input type="text" style="margin-left: 10px;" class="form-control" data-bind="value: entryName, hasFocus: focusToNameField"></input>
+    <input type="checkbox" class="form-control" style="margin-right: 2px; visibility:hidden;">
+    <label>Name</label><input type="text" style="margin-left: 10px;" class="form-control" data-bind="value: entryName, hasFocus: focusToNameField">
     <select class="form-control" data-bind="visible: enableFileEntry, value: entryType, options: entryTypes"></select>
     <label style="margin-left: 5px;">Value</label>
     <span data-bind="ifnot: isFileEntry">
-      <input type="text" style="margin-left: 10px;" class="form-control" data-bind="value: entryValue, event: { keyup: addOnEnter}"></input>
+      <input type="text" style="margin-left: 10px;" class="form-control" data-bind="value: entryValue, event: { keyup: addOnEnter}">
     </span>
     <span data-bind="visible: isFileEntry">
-      <input type="file" id="resting-file" hidden data-bind="event:{ change: onFileSelectedEvent }"></input>
+      <input type="file" id="resting-file" hidden data-bind="event:{ change: onFileSelectedEvent }">
       <label id="select-file-button" class="file-label" for="resting-file" >Select</label>
       <span id="file-name" />
       <button id="file-remove-button" type="button" class="btn btn-default btn-xs" data-bind="click: removeFile">
