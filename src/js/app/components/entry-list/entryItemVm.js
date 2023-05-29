@@ -16,22 +16,27 @@
     You should have received a copy of the GNU General Public License
     along with Resting.  If not, see <http://www.gnu.org/licenses/>.
 */
- 
-define(['knockout'],function(ko) {
 
-  return function EntryItemVm(name, value, enabled, valueFile = null, enableFileEntry = false, entryType = 'Text') {
+define(['knockout'], function (ko) {
+  return function EntryItemVm(
+    name,
+    value,
+    enabled,
+    valueFile = null,
+    enableFileEntry = false,
+    entryType = 'Text'
+  ) {
     const self = this
-    self.name = ko.observable(name);
-    self.value = ko.observable(value);
-    self.valueFile = valueFile;
-    self.enabled = ko.observable(enabled);
-    self.enableFileEntry = ko.observable(enableFileEntry);
-    self.entryType = ko.observable(entryType);
+    self.name = ko.observable(name)
+    self.value = ko.observable(value)
+    self.valueFile = valueFile
+    self.enabled = ko.observable(enabled)
+    self.enableFileEntry = ko.observable(enableFileEntry)
+    self.entryType = ko.observable(entryType)
     self.isFileEntry = ko.computed(function () {
       return self.entryType() === 'File'
-    }, this);
+    }, this)
 
-    self.entryTypes = ko.observableArray(['Text', 'File']);
+    self.entryTypes = ko.observableArray(['Text', 'File'])
   }
-
-});
+})

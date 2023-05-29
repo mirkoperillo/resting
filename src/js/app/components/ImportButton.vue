@@ -1,5 +1,8 @@
 <template>
-  <button class="btn btn-default btn-sm" @click.prevent.stop="action" title="Import">
+  <button
+    class="btn btn-default btn-sm"
+    @click.prevent.stop="action"
+    title="Import">
     <span class="glyphicon glyphicon-import" aria-hidden="true"></span>
   </button>
 </template>
@@ -11,7 +14,7 @@ export default {
   methods: {
     action() {
       bacheca.publish('importDialog')
-    }
-  }
+    },
+  },
 }
 </script>

@@ -16,57 +16,60 @@
     You should have received a copy of the GNU General Public License
     along with Resting.  If not, see <http://www.gnu.org/licenses/>.
  */
- 
+
 // ATTENTION: in this moment this service class is unused
-define(['jquery'], function($) {
-    var handlers = [];
+define(['jquery'], function ($) {
+  var handlers = []
 
-    // replace by click event on vue.js component
-    function bindOn(selector) {
-        $(selector).on('click', function(event) {
-            event.preventDefault();
-            event.stopPropagation();
-            document.execCommand('copy');
-        });        
-    }
+  // replace by click event on vue.js component
+  function bindOn(selector) {
+    $(selector).on('click', function (event) {
+      event.preventDefault()
+      event.stopPropagation()
+      document.execCommand('copy')
+    })
+  }
 
-    function copyClipboardHandler(contentSelector, copyButtonClass) {
-        return function(event) {
-            // move from clickable div to click event
-            /*if (!$(event.target).hasClass(copyButtonClass)) {
+  function copyClipboardHandler(contentSelector, copyButtonClass) {
+    return function (event) {
+      // move from clickable div to click event
+      /*if (!$(event.target).hasClass(copyButtonClass)) {
                 return;
             }*/
-            
-            event.preventDefault();
-            event.stopPropagation();
 
-            var response = $(contentSelector).text();
-            if (!response) {
-                return;
-            }
+      event.preventDefault()
+      event.stopPropagation()
 
-            event.clipboardData.setData('text/plain', response);
-            notify();
-        };
+      var response = $(contentSelector).text()
+      if (!response) {
+        return
+      }
+
+      event.clipboardData.setData('text/plain', response)
+      notify()
     }
+  }
 
-    function copyFrom(contentSelector, copyButtonClass) {
-        document.addEventListener('copy', copyClipboardHandler(contentSelector, copyButtonClass));
-    }
+  function copyFrom(contentSelector, copyButtonClass) {
+    document.addEventListener(
+      'copy',
+      copyClipboardHandler(contentSelector, copyButtonClass)
+    )
+  }
 
-    function onCopy(handler) {
-        handlers.push(handler);
-    }
+  function onCopy(handler) {
+    handlers.push(handler)
+  }
 
-    function notify() {
-        handlers.forEach(function(handler) {
-            handler();
-        });
-    }
- 
-    return {
-        bindOn: bindOn,
-        copyFrom: copyFrom,
-        onCopy: onCopy
-    };
-});
+  function notify() {
+    handlers.forEach(function (handler) {
+      handler()
+    })
+  }
+
+  return {
+    bindOn: bindOn,
+    copyFrom: copyFrom,
+    onCopy: onCopy,
+  }
+})

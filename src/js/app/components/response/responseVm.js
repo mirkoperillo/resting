@@ -17,103 +17,112 @@
     along with Resting.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-define(['knockout','jquery','hjls', 'app/bacheca','Vue','app/clipboard', 'vuecomp/response-menu.umd'],function(ko,$,hjls, bacheca, Vue, clipboard, ResponseMenu) {
-
+define([
+  'knockout',
+  'jquery',
+  'hjls',
+  'app/bacheca',
+  'Vue',
+  'app/clipboard',
+  'vuecomp/response-menu.umd',
+], function (ko, $, hjls, bacheca, Vue, clipboard, ResponseMenu) {
   return function ResponseVm(params) {
+    const callDuration = ko.observable('-')
+    const callStatus = ko.observable('-')
+    const callSize = ko.observable('-')
+    const headers = ko.observableArray()
+    const content = ko.observable('')
 
-    const callDuration = ko.observable('-');
-    const callStatus = ko.observable('-');
-    const callSize = ko.observable('-');
-    const headers = ko.observableArray();;
-    const content = ko.observable('');
+    const showHeaders = ko.observable(false)
+    const showBody = ko.observable(true)
+    const useFormattedBody = ko.observable(true)
+    const useRawBody = ko.observable(false)
+    const body = ko.observable('')
 
-    const showHeaders = ko.observable(false);
-    const showBody = ko.observable(true);
-    const useFormattedBody = ko.observable(true);
-    const useRawBody = ko.observable(false);
-    const body = ko.observable('');
-
-   const headersPanel = () => {
-      showHeaders(true);
-      showBody(false);
+    const headersPanel = () => {
+      showHeaders(true)
+      showBody(false)
 
       // close jquery accordion
-      $('#collapseOne').collapse('hide');
-    };
+      $('#collapseOne').collapse('hide')
+    }
 
     const bodyPanel = () => {
-      showBody(true);
-      showHeaders(false);
-    };
+      showBody(true)
+      showHeaders(false)
+    }
 
     const formattedBody = () => {
-      useFormattedBody(true);
-      useRawBody(false);
-      if(content().length === 0 && !Array.isArray(content())) {
-        body('');
+      useFormattedBody(true)
+      useRawBody(false)
+      if (content().length === 0 && !Array.isArray(content())) {
+        body('')
       } else {
-        body(JSON.stringify(content(),null,2));
+        body(JSON.stringify(content(), null, 2))
       }
-      _highlight();
-    };
+      _highlight()
+    }
 
     const rawBody = () => {
-      useFormattedBody(false);
-      useRawBody(true);
-      if(content().length === 0 && !Array.isArray(content())) {
-        body('');
+      useFormattedBody(false)
+      useRawBody(true)
+      if (content().length === 0 && !Array.isArray(content())) {
+        body('')
       } else {
-        body(JSON.stringify(content()));
+        body(JSON.stringify(content()))
       }
-      _unhighlight();
-    };
+      _unhighlight()
+    }
 
-    content.subscribe( newValue => { 
-     if(newValue.length === 0 && !Array.isArray(newValue)) {
-        body('');
-     }else if(useFormattedBody()) {
-        body(JSON.stringify(newValue,null,2));
-        _highlight();
+    content.subscribe((newValue) => {
+      if (newValue.length === 0 && !Array.isArray(newValue)) {
+        body('')
+      } else if (useFormattedBody()) {
+        body(JSON.stringify(newValue, null, 2))
+        _highlight()
       } else {
-        body(JSON.stringify(newValue));
+        body(JSON.stringify(newValue))
       }
-    });
+    })
 
-   const _unhighlight = () => {
-      $('#highlighted-response').removeClass('hljs');
-    };
+    const _unhighlight = () => {
+      $('#highlighted-response').removeClass('hljs')
+    }
 
     const _highlight = () => {
-      $('#highlighted-response').each(function(i, block) {
-      hljs.highlightBlock(block);
-      });
-    };
+      $('#highlighted-response').each(function (i, block) {
+        hljs.highlightBlock(block)
+      })
+    }
 
     const display = (response) => {
-      clear();
-       setTimeout(function () {
-        callDuration(`${response.duration}ms`);
-        callStatus(response.status);
+      clear()
+      setTimeout(function () {
+        callDuration(`${response.duration}ms`)
+        callStatus(response.status)
         callSize(`${response.size.toFixed(2)}KB`)
-        response.headers.forEach(header => headers.push(header));
-        content(response.content);
-    }, 500);
-    };
+        response.headers.forEach((header) => headers.push(header))
+        content(response.content)
+      }, 500)
+    }
 
     const clear = () => {
-      headers.removeAll();
-      content('');
-      callDuration('-');
-      callStatus('-');
-      callSize('-');
-    };
+      headers.removeAll()
+      content('')
+      callDuration('-')
+      callStatus('-')
+      callSize('-')
+    }
 
     const copyResponse = () => {
       responseContent = $('#highlighted-response').text()
-      navigator.clipboard.writeText(responseContent)
-        .then(() =>{
+      navigator.clipboard
+        .writeText(responseContent)
+        .then(() => {
           $('.alert').removeClass('hide')
-          setTimeout(function () { $('.alert').addClass('hide'); }, 2000)
+          setTimeout(function () {
+            $('.alert').addClass('hide')
+          }, 2000)
         })
         .catch(() => console.log('Error copying to clipboard'))
     }
@@ -137,11 +146,11 @@ define(['knockout','jquery','hjls', 'app/bacheca','Vue','app/clipboard', 'vuecom
     new Vue({
       el: '#v-response-b-group',
       components: {
-        ResponseMenu
+        ResponseMenu,
       },
-      render: function(h) {
+      render: function (h) {
         return h('response-menu')
-      }
+      },
     })
 
     return {
@@ -160,7 +169,6 @@ define(['knockout','jquery','hjls', 'app/bacheca','Vue','app/clipboard', 'vuecom
       callStatus,
       callSize,
       headers,
-    };
-
+    }
   }
-});
+})

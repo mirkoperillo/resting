@@ -16,19 +16,26 @@
     You should have received a copy of the GNU General Public License
     along with Resting.  If not, see <http://www.gnu.org/licenses/>.
  */
- 
-define(function(){
-  
-  const makeResponse = ({content = {}, headers = [],status,duration = 0, size = 0}) => ({content,headers,status,duration, size});
-  
+
+define(function () {
+  const makeResponse = ({
+    content = {},
+    headers = [],
+    status,
+    duration = 0,
+    size = 0,
+  }) => ({ content, headers, status, duration, size })
+
   const parseHeaders = (headers = '') =>
-      headers.trim().split('\n')
-        .map(header =>
-          header.split(/:(.*)/)
-            .map(h => h.trim()))
-        .map(headerFields => ({ name: headerFields[0], value: headerFields[1] }));
-  
-  
+    headers
+      .trim()
+      .split('\n')
+      .map((header) => header.split(/:(.*)/).map((h) => h.trim()))
+      .map((headerFields) => ({
+        name: headerFields[0],
+        value: headerFields[1],
+      }))
+
   return {
     makeResponse,
     parseHeaders,

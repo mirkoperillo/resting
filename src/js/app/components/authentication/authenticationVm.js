@@ -16,11 +16,10 @@
     You should have received a copy of the GNU General Public License
     along with Resting.  If not, see <http://www.gnu.org/licenses/>.
 */
- 
-define(['knockout'],function(ko) {
 
+define(['knockout'], function (ko) {
   return function AuthenticationVm(params) {
-    const request = params.request;
+    const request = params.request
 
     const Authentication = {
       types: ko.observableArray(['Basic', 'JWT', 'Oauth 2.0']),
@@ -31,8 +30,8 @@ define(['knockout'],function(ko) {
       jwtToken: request.jwtToken,
       oauthAuthPosition: request.oauthAuthPosition,
       oauthAccessToken: request.oauthAccessToken,
-    };
+    }
 
-    return Authentication;
+    return Authentication
   }
-});
+})

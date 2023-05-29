@@ -16,27 +16,26 @@
     You should have received a copy of the GNU General Public License
     along with Resting.  If not, see <http://www.gnu.org/licenses/>.
  */
- 
-define([],function() {
-  let subscribers = {};
+
+define([], function () {
+  let subscribers = {}
 
   const subscribe = (channel, listener) => {
-    if(!subscribers[channel]) {
-      subscribers[channel] = [];
+    if (!subscribers[channel]) {
+      subscribers[channel] = []
     }
-    subscribers[channel].push(listener);
-  };
+    subscribers[channel].push(listener)
+  }
 
   const publish = (channel, data = {}) => {
-    const publishedOnChannel = subscribers[channel];
-    if(publishedOnChannel) {
-      publishedOnChannel.forEach(listener => listener(data));
+    const publishedOnChannel = subscribers[channel]
+    if (publishedOnChannel) {
+      publishedOnChannel.forEach((listener) => listener(data))
     }
-  };
+  }
 
   return {
     subscribe,
-    publish
-  };
-
-});
+    publish,
+  }
+})

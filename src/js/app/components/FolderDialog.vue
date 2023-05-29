@@ -1,10 +1,26 @@
 <template>
-  <r-dialog title="Add folder" :show-footer="true" @dismiss-dialog="$emit('dismiss-dialog')">
-    Name: <input type="text" class="form-control" v-model.trim="folderName" @keyup.enter="addFolder"/>
+  <r-dialog
+    title="Add folder"
+    :show-footer="true"
+    @dismiss-dialog="$emit('dismiss-dialog')">
+    Name:
+    <input
+      type="text"
+      class="form-control"
+      v-model.trim="folderName"
+      @keyup.enter="addFolder" />
     <template v-slot:footer>
-      <button class="btn btn-default" @click="addFolder" :disabled="folderName.length === 0">Save</button><button class="btn btn-default" @click="dismissFolderDialog">Cancel</button>
+      <button
+        class="btn btn-default"
+        @click="addFolder"
+        :disabled="folderName.length === 0">
+        Save
+      </button>
+      <button class="btn btn-default" @click="dismissFolderDialog">
+        Cancel
+      </button>
     </template>
-  </r-dialog>      
+  </r-dialog>
 </template>
 
 <script>
@@ -19,12 +35,12 @@ export default {
     selectedFolder: {
       type: Boolean,
       default: false,
-    }
+    },
   },
   data() {
     return {
       folderName: '',
-      bookmarkProvider: makeBookmarkProvider(storage)
+      bookmarkProvider: makeBookmarkProvider(storage),
     }
   },
   methods: {
@@ -33,22 +49,28 @@ export default {
       this.$emit('dismiss-dialog')
     },
     addFolder() {
-      const folder = this.bookmarkProvider.makeFolder(storage.generateId(), this.folderName);
-      storage.save(this._serializeBookmark(folder));
-      this.dismissFolderDialog();
-      bacheca.publish('addFolder', { folder: folder, selectedFolder: this.selectedFolder })
+      const folder = this.bookmarkProvider.makeFolder(
+        storage.generateId(),
+        this.folderName
+      )
+      storage.save(this._serializeBookmark(folder))
+      this.dismissFolderDialog()
+      bacheca.publish('addFolder', {
+        folder: folder,
+        selectedFolder: this.selectedFolder,
+      })
       /*
        * FIXME: published to newFolder is a workaround:
        * it permits to bookmarksVm to not duplicated folder items in view
-      */
-      bacheca.publish('newFolder', folder);
+       */
+      bacheca.publish('newFolder', folder)
     },
     _serializeBookmark(bookmarkObj) {
-      return this.bookmarkProvider.fromJson(JSON.stringify(bookmarkObj));
-    }
+      return this.bookmarkProvider.fromJson(JSON.stringify(bookmarkObj))
+    },
   },
   components: {
-    RDialog
-  }
+    RDialog,
+  },
 }
 </script>

@@ -1,5 +1,8 @@
 <template>
-  <button @click.prevent.stop="push" title="Copy to clipboard" class="btn btn-default copy-n-paste">
+  <button
+    @click.prevent.stop="push"
+    title="Copy to clipboard"
+    class="btn btn-default copy-n-paste">
     <i class="fa fa-clipboard" aria-hidden="true"></i>
   </button>
 </template>
@@ -12,7 +15,7 @@ export default {
   methods: {
     push(event) {
       bacheca.publish('copyResponse')
-    }
-  }
+    },
+  },
 }
 </script>

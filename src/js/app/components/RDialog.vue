@@ -1,9 +1,13 @@
 <template>
   <div class="panel panel-primary dialog">
     <div class="panel-heading">
-      {{title}}<span style="cursor: pointer;" class="glyphicon glyphicon-remove pull-right" @click="$emit('dismiss-dialog')"></span>
+      {{ title }}
+      <span
+        style="cursor: pointer"
+        class="glyphicon glyphicon-remove pull-right"
+        @click="$emit('dismiss-dialog')"></span>
     </div>
-     <div class="panel-body">
+    <div class="panel-body">
       <slot>
         <p>DEFAULT</p>
       </slot>
@@ -27,13 +31,13 @@ export default {
   props: {
     title: {
       type: String,
-        required: true
-     },
+      required: true,
+    },
     showFooter: {
       type: Boolean,
       required: false,
-      default: false
-    }
-  }
+      default: false,
+    },
+  },
 }
 </script>
