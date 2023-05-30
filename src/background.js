@@ -17,13 +17,11 @@
     along with Resting.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-
 // Open a new tab, and load Resting
 function openResting() {
-   chrome.tabs.create({
-     "url": "/index.html"
-   });
+  chrome.tabs.create({
+    url: '/index.html',
+  })
 }
 
-chrome.browserAction.onClicked.addListener(openResting);
- 
+chrome.browserAction.onClicked.addListener(openResting)

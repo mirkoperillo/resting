@@ -1,0 +1,7 @@
+# ignore
+src/css/*
+src/js/vendor/
+src/js/require.js
+
+# exceptions
+!src/css/resting.css

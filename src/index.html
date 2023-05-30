@@ -20,266 +20,455 @@
 <!DOCTYPE html>
 
 <html lang="en">
-<head>
-  <meta name="generator" content="HTML Tidy for Linux (vers 25 March 2009), see www.w3.org">
-  <meta charset="utf-8">
-  <meta http-equiv="X-UA-Compatible" content="IE=edge">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <head>
+    <meta
+      name="generator"
+      content="HTML Tidy for Linux (vers 25 March 2009), see www.w3.org" />
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
 
-  <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
-  <title>Resting - the REST client</title>
+    <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
+    <title>Resting - the REST client</title>
 
-  <!-- Bootstrap -->
-  <link href="css/bootstrap.min.css" rel="stylesheet" type="text/css">
-  <link href="css/fork-awesome.min.css" rel="stylesheet" type="text/css">
-  <link href="css/resting.css" rel="stylesheet" type="text/css">
+    <!-- Bootstrap -->
+    <link href="css/bootstrap.min.css" rel="stylesheet" type="text/css" />
+    <link href="css/fork-awesome.min.css" rel="stylesheet" type="text/css" />
+    <link href="css/resting.css" rel="stylesheet" type="text/css" />
 
-  <link rel="stylesheet" type="text/css"
-      href="css/styles/default.css">
-      
-  <link rel="icon" type="image/png" href="icons/letter-r_32.png">
+    <link rel="stylesheet" type="text/css" href="css/styles/default.css" />
 
-</head>
+    <link rel="icon" type="image/png" href="icons/letter-r_32.png" />
+  </head>
 
-<body data-bind="event: { keyup: closeDialogOnEscape}">
-  <div class="container-fluid">
-
- <nav class="navbar navbar-default">
-      <div class="container-fluid">
-        <div class="navbar-header">
-            <img style="padding: 5px;" src="icons/letter-r_64.png">
-        </div>
-        <div class="collapse navbar-collapse">
+  <body data-bind="event: { keyup: closeDialogOnEscape}">
+    <div class="container-fluid">
+      <nav class="navbar navbar-default">
+        <div class="container-fluid">
+          <div class="navbar-header">
+            <img style="padding: 5px" src="icons/letter-r_64.png" />
+          </div>
+          <div class="collapse navbar-collapse">
             <ul class="nav navbar-nav">
-              <li class="dropdown"><a href="#" class="dropdown-toggle" data-toggle="dropdown"><h4>Settings <b class="caret"></b></h4></a>
-                  <ul class="dropdown-menu">
-                      <li class="dropdown dropdown-submenu"><a href="#" class="dropdown-toggle" data-toggle="dropdown">Contexts</a>
-                        <ul class="dropdown-menu">
-                          <li><a href="#" data-bind="click: defaultContextDialog"><span data-bind="text: defaultCtx.name"></span></a></li>
-                          <li role="separator" class="divider"></li>
-                          <li data-bind="foreach: contexts">
-                            <a href="#" data-bind="ifnot: isDefault, click: $parent.contextDialog"><span data-bind="text: name"></span>
-                            </a>
-                          </li>
-                          <li role="separator" class="divider"></li>
-                          <li>
-                            <a href="#" data-bind="click: createContextDialog">Create
-                              <span class="pull-right">
-                                <button class="btn btn-xs btn-primary"><span class="glyphicon glyphicon-plus" aria-hidden="true"></span></button>
-                              </span>
-                            </a>
-                          </li>
-                        </ul>
+              <li class="dropdown">
+                <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+                  <h4>
+                    Settings
+                    <b class="caret"></b>
+                  </h4>
+                </a>
+                <ul class="dropdown-menu">
+                  <li class="dropdown dropdown-submenu">
+                    <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+                      Contexts
+                    </a>
+                    <ul class="dropdown-menu">
+                      <li>
+                        <a href="#" data-bind="click: defaultContextDialog">
+                          <span data-bind="text: defaultCtx.name"></span>
+                        </a>
                       </li>
-                  </ul>
+                      <li role="separator" class="divider"></li>
+                      <li data-bind="foreach: contexts">
+                        <a
+                          href="#"
+                          data-bind="ifnot: isDefault, click: $parent.contextDialog">
+                          <span data-bind="text: name"></span>
+                        </a>
+                      </li>
+                      <li role="separator" class="divider"></li>
+                      <li>
+                        <a href="#" data-bind="click: createContextDialog">
+                          Create
+                          <span class="pull-right">
+                            <button class="btn btn-xs btn-primary">
+                              <span
+                                class="glyphicon glyphicon-plus"
+                                aria-hidden="true"></span>
+                            </button>
+                          </span>
+                        </a>
+                      </li>
+                    </ul>
+                  </li>
+                </ul>
               </li>
-              <li><a href="#" data-bind="click: aboutDialog"><h4>About</h4></a></li>
-              <li><a href="#" data-bind="click: creditsDialog"><h4>Credits</h4></a></li>
+              <li>
+                <a href="#" data-bind="click: aboutDialog"><h4>About</h4></a>
+              </li>
+              <li>
+                <a href="#" data-bind="click: creditsDialog">
+                  <h4>Credits</h4>
+                </a>
+              </li>
             </ul>
             <ul class="nav navbar-nav navbar-right">
-                <li><a href="#" data-bind="click: donateDialog"><h4>❤️&nbsp;Support the project</h4></a></li>
+              <li>
+                <a href="#" data-bind="click: donateDialog">
+                  <h4>❤️&nbsp;Support the project</h4>
+                </a>
+              </li>
             </ul>
+          </div>
         </div>
-      </div>
-    </nav>
+      </nav>
 
+      <!-- FIRST ROW -->
 
-    <!-- FIRST ROW -->
-
-    <ul class="nav nav-pills">
-      <!-- ko foreach: tabContexts -->
-      <li role="presentation" data-bind="css: {active : $data.isActive}">
-          <a href="#" data-bind="click: $parent.activateTab"><span data-bind="text: $data.name"></span>
-            <button type="button" class="btn btn-xs btn-danger" data-bind="click: $parent.removeTab, clickBubble: false">
-            <span class="glyphicon glyphicon-remove"></span>
+      <ul class="nav nav-pills">
+        <!-- ko foreach: tabContexts -->
+        <li role="presentation" data-bind="css: {active : $data.isActive}">
+          <a href="#" data-bind="click: $parent.activateTab">
+            <span data-bind="text: $data.name"></span>
+            <button
+              type="button"
+              class="btn btn-xs btn-danger"
+              data-bind="click: $parent.removeTab, clickBubble: false">
+              <span class="glyphicon glyphicon-remove"></span>
             </button>
           </a>
-      </li>
-      <!-- /ko -->
-      <li>
-        <a id="plus-tab" style="margin-left: 2px;" class="btn btn-xs btn-primary" data-bind="click: newTab" title="new tab">
-          <span class="glyphicon glyphicon-plus"></span>
-        </a>
-      </li>
-    </ul>
+        </li>
+        <!-- /ko -->
+        <li>
+          <a
+            id="plus-tab"
+            style="margin-left: 2px"
+            class="btn btn-xs btn-primary"
+            data-bind="click: newTab"
+            title="new tab">
+            <span class="glyphicon glyphicon-plus"></span>
+          </a>
+        </li>
+      </ul>
 
-    <div class="row row-no-gutters" style="margin-top: 5px;">
-      <div class="col-md-1">
-        <select class="form-control" id="sel1" data-bind="options: methods, value: request.method">
-        </select>
-      </div>
+      <div class="row row-no-gutters" style="margin-top: 5px">
+        <div class="col-md-1">
+          <select
+            class="form-control"
+            id="sel1"
+            data-bind="options: methods, value: request.method"></select>
+        </div>
 
-      <div class="col-md-8" style="margin-left: 5px;">
-        <div class="form-group">
-        <input type="text" class="form-control" placeholder="http://" data-bind="textInput: request.url, event: { keyup: callSendOnEnter}">
-          <div class="progress" style="margin-top: 5px">
-            <div data-bind="css: { animate-progress: requestState().value === 'IN_PROGRESS' }" style="height: 20px; text-indent: -10000px;">
-              <div class="progress-bar progress-bar-striped" data-bind="css: { active: requestState().value === 'IN_PROGRESS', progress-bar-animated: requestState().value === 'IN_PROGRESS' }, attr: { aria-busy: requestState().value === 'IN_PROGRESS' }, text: requestState().ariaText, style: { width: requestState().progressWidth }" aria-role="alert"></div>
+        <div class="col-md-8" style="margin-left: 5px">
+          <div class="form-group">
+            <input
+              type="text"
+              class="form-control"
+              placeholder="http://"
+              data-bind="textInput: request.url, event: { keyup: callSendOnEnter}" />
+            <div class="progress" style="margin-top: 5px">
+              <div
+                data-bind="css: { animate-progress: requestState().value === 'IN_PROGRESS' }"
+                style="height: 20px; text-indent: -10000px">
+                <div
+                  class="progress-bar progress-bar-striped"
+                  data-bind="css: { active: requestState().value === 'IN_PROGRESS', progress-bar-animated: requestState().value === 'IN_PROGRESS' }, attr: { aria-busy: requestState().value === 'IN_PROGRESS' }, text: requestState().ariaText, style: { width: requestState().progressWidth }"
+                  aria-role="alert"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-md-2" style="margin-left: 5px">
+          <div class="btn-toolbar" role="toolbar">
+            <div class="btn-group" role="group">
+              <button
+                type="button"
+                class="btn btn-primary"
+                data-bind="click: send">
+                Send
+              </button>
+            </div>
+            <div class="btn-group">
+              <button
+                type="button"
+                class="btn btn-primary"
+                aria-haspopup="true"
+                aria-expanded="false"
+                data-bind="click: saveBookmarkDialog, enable: enableSaveButton()">
+                Save
+              </button>
+              <button
+                type="button"
+                class="btn btn-primary dropdown-toggle"
+                data-toggle="dropdown">
+                <span class="caret"></span>
+                <span class="sr-only">Toggle Dropdown</span>
+              </button>
+              <ul class="dropdown-menu">
+                <li>
+                  <a href="#" data-bind="click: saveAsBookmarkDialog">
+                    Save as
+                  </a>
+                </li>
+              </ul>
+            </div>
+
+            <div class="btn-group" role="group">
+              <button
+                type="button"
+                class="btn btn-primary"
+                data-bind="click: reset">
+                Reset
+              </button>
             </div>
           </div>
         </div>
       </div>
+      <!-- SECOND ROW -->
 
-      <div class="col-md-2" style="margin-left: 5px;">
-        <div class="btn-toolbar" role="toolbar">
-          <div class="btn-group" role="group">
-            <button type="button" class="btn btn-primary" data-bind="click: send">Send</button>
-          </div>
-          <div class="btn-group">
-            <button type="button" class="btn btn-primary" aria-haspopup="true" aria-expanded="false" data-bind="click: saveBookmarkDialog, enable: enableSaveButton()">Save</button>
-            <button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown">
-              <span class="caret"></span>
-              <span class="sr-only">Toggle Dropdown</span>
-            </button>
-            <ul class="dropdown-menu">
-              <li><a href="#" data-bind="click: saveAsBookmarkDialog">Save as</a></li>
-            </ul>
-          </div>
-
-
-          <div class="btn-group" role="group">
-            <button type="button" class="btn btn-primary" data-bind="click: reset">Reset</button>
-          </div>
-        </div>
-      </div>
-    </div><!-- SECOND ROW -->
-
-    <div class="row">
-      <div class="col-md-3">
-        <bookmarks params="bookmarks: bookmarks, appVm : $root"></bookmarks>
-      </div>
-
-      <div class="col-md-9">
-        <div class="row" data-bind="if: isBookmarkLoaded()">
-          <div class="col-md-12">
-          <div class="panel panel-default">
-            <div class="panel-body">
-              <div>Loaded <strong><span data-bind="text: bookmarkScreenName()"></span></strong></div>
-              <span style="margin-right: 15px;"><span class="glyphicon glyphicon-folder-close" aria-hidden="true"></span> <strong><span data-bind="text: folderName"></span></strong></span>
-              <span>Context: <a href="#" data-bind="click: contextDialogByName, text: request.context"></a></span>
-            </div>
-          </div>
-          </div>
-        </div>
       <div class="row">
-        <div class="col-md-12">
-        <ul class="nav nav-pills">
-          <li role="presentation" data-bind="css: {active : showRequestHeaders()}"><a href="#" data-bind="click: requestHeadersPanel">Headers</a></li>
-          <li role="presentation" data-bind="css: {active : showRequestBody()}"><a href="#" data-bind="click: requestBodyPanel">Body</a></li>
-          <li role="presentation" data-bind="css: {active : showQuerystring()}"><a href="#" data-bind="click: querystringPanel">Querystring</a></li>
-          <li role="presentation" data-bind="css: {active : showAuthentication()}"><a href="#" data-bind="click: authenticationPanel">Authentication</a></li>
-          <li role="presentation" data-bind="css: {active : showActiveContext()}"><a href="#" data-bind="click: contextPanel">Context</a></li>
-        </ul>
+        <div class="col-md-3">
+          <bookmarks params="bookmarks: bookmarks, appVm : $root"></bookmarks>
+        </div>
 
-        <div class="panel panel-default" style="padding: 10px;" data-bind="event: { keyup: callSendOnCtrlEnter }">
-          <div class="panel-body">
-            <request-body params="request: request" data-bind="visible : showRequestBody"></request-body>
-            <entry-list params="entryList : request.headers" data-bind="visible : showRequestHeaders"></entry-list>
-            <entry-list params="entryList : request.querystring" data-bind="visible : showQuerystring"></entry-list>
-            <authentication params="request: request" data-bind="visible : showAuthentication"></authentication>
-            <!-- ACTIVE CONTEXT PANEL -->
-            <div class="row" data-bind="visible: showActiveContext">
-              <div class="form-inline">
-                <div class="form-group">
-                  <label for="active-context">Active Context</label>
-                  <select class="form-control" style="margin-left: 10px;" id="active-context" data-bind="value: request.context">
-                    <option value="default">default</option>
-                    <option disabled="disabled">_______________</option>
-                    <!-- ko foreach: contexts -->
-                    <option data-bind="visible: !$data.isDefault, text: $data.name, attr: {value: $data.name}"></option>
-                    <!-- /ko -->
-                  </select>
-                  <button type="button" class="btn btn-default" title="New context" data-bind="click: createContextDialog">
-                    <span class="glyphicon glyphicon-plus" aria-hidden="true"></span>
-                  </button>
+        <div class="col-md-9">
+          <div class="row" data-bind="if: isBookmarkLoaded()">
+            <div class="col-md-12">
+              <div class="panel panel-default">
+                <div class="panel-body">
+                  <div>
+                    Loaded
+                    <strong>
+                      <span data-bind="text: bookmarkScreenName()"></span>
+                    </strong>
+                  </div>
+                  <span style="margin-right: 15px">
+                    <span
+                      class="glyphicon glyphicon-folder-close"
+                      aria-hidden="true"></span>
+                    <strong><span data-bind="text: folderName"></span></strong>
+                  </span>
+                  <span>
+                    Context:
+                    <a
+                      href="#"
+                      data-bind="click: contextDialogByName, text: request.context"></a>
+                  </span>
                 </div>
-            </div>
+              </div>
             </div>
           </div>
-        </div>
-        </div>
-        </div>
-        <response-panel></response-panel>
-    </div>
-    </div>
+          <div class="row">
+            <div class="col-md-12">
+              <ul class="nav nav-pills">
+                <li
+                  role="presentation"
+                  data-bind="css: {active : showRequestHeaders()}">
+                  <a href="#" data-bind="click: requestHeadersPanel">Headers</a>
+                </li>
+                <li
+                  role="presentation"
+                  data-bind="css: {active : showRequestBody()}">
+                  <a href="#" data-bind="click: requestBodyPanel">Body</a>
+                </li>
+                <li
+                  role="presentation"
+                  data-bind="css: {active : showQuerystring()}">
+                  <a href="#" data-bind="click: querystringPanel">
+                    Querystring
+                  </a>
+                </li>
+                <li
+                  role="presentation"
+                  data-bind="css: {active : showAuthentication()}">
+                  <a href="#" data-bind="click: authenticationPanel">
+                    Authentication
+                  </a>
+                </li>
+                <li
+                  role="presentation"
+                  data-bind="css: {active : showActiveContext()}">
+                  <a href="#" data-bind="click: contextPanel">Context</a>
+                </li>
+              </ul>
 
-  <!-- **********************************************************************
+              <div
+                class="panel panel-default"
+                style="padding: 10px"
+                data-bind="event: { keyup: callSendOnCtrlEnter }">
+                <div class="panel-body">
+                  <request-body
+                    params="request: request"
+                    data-bind="visible : showRequestBody"></request-body>
+                  <entry-list
+                    params="entryList : request.headers"
+                    data-bind="visible : showRequestHeaders"></entry-list>
+                  <entry-list
+                    params="entryList : request.querystring"
+                    data-bind="visible : showQuerystring"></entry-list>
+                  <authentication
+                    params="request: request"
+                    data-bind="visible : showAuthentication"></authentication>
+                  <!-- ACTIVE CONTEXT PANEL -->
+                  <div class="row" data-bind="visible: showActiveContext">
+                    <div class="form-inline">
+                      <div class="form-group">
+                        <label for="active-context">Active Context</label>
+                        <select
+                          class="form-control"
+                          style="margin-left: 10px"
+                          id="active-context"
+                          data-bind="value: request.context">
+                          <option value="default">default</option>
+                          <option disabled="disabled">_______________</option>
+                          <!-- ko foreach: contexts -->
+                          <option
+                            data-bind="visible: !$data.isDefault, text: $data.name, attr: {value: $data.name}"></option>
+                          <!-- /ko -->
+                        </select>
+                        <button
+                          type="button"
+                          class="btn btn-default"
+                          title="New context"
+                          data-bind="click: createContextDialog">
+                          <span
+                            class="glyphicon glyphicon-plus"
+                            aria-hidden="true"></span>
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <response-panel></response-panel>
+        </div>
+      </div>
+
+      <!-- **********************************************************************
 
   DIALOGS
 
   *************************************************************************** -->
 
-  <div id="save-bookmark-dialog" class="panel panel-primary dialog" data-bind="visible: showBookmarkDialog">
-    <div class="panel-heading">
-      Save Bookmark
-    </div>
-    <div class="panel-body">
-      <div class="form-group">
-        Name <input type="text" class="form-control" data-bind="attr: { placeholder: bookmarkName || request.method + ' ' + (request.url || '') }, textInput: bookmarkName">
+      <div
+        id="save-bookmark-dialog"
+        class="panel panel-primary dialog"
+        data-bind="visible: showBookmarkDialog">
+        <div class="panel-heading">Save Bookmark</div>
+        <div class="panel-body">
+          <div class="form-group">
+            Name
+            <input
+              type="text"
+              class="form-control"
+              data-bind="attr: { placeholder: bookmarkName || request.method + ' ' + (request.url || '') }, textInput: bookmarkName" />
+          </div>
+          <div class="form-group">
+            Folder
+            <select
+              class="form-control"
+              data-bind="options: folders, optionsText: 'name', optionsValue: 'id', optionsCaption: 'None', value: folderSelected"></select>
+            <div id="v-save-bookmark"></div>
+          </div>
+        </div>
+        <div class="panel-footer">
+          <button class="btn btn-default" data-bind="click: saveBookmark">
+            Save
+          </button>
+          <button
+            class="btn btn-default"
+            data-bind="click: dismissSaveBookmarkDialog">
+            Cancel
+          </button>
+        </div>
       </div>
-      <div class="form-group">
-        Folder <select class="form-control" data-bind="options: folders, optionsText: 'name', optionsValue: 'id', optionsCaption: 'None', value: folderSelected"></select>
-        <div id="v-save-bookmark"></div>
+
+      <div id="v-dialogs"></div>
+
+      <div
+        id="context-dialog"
+        class="panel panel-primary context-dialog"
+        data-bind="visible: showContextDialog">
+        <div class="panel-heading">
+          Context
+          <span data-bind="text: selectedCtx.name"></span>
+          <span
+            style="cursor: pointer"
+            class="glyphicon glyphicon-remove pull-right"
+            data-bind="click: dismissContextDialog"></span>
+        </div>
+        <div class="panel-body">
+          <p>
+            Use variables as
+            <strong>{var_name}</strong>
+            in
+          </p>
+          <ul>
+            <li>the request URL</li>
+            <li>value of header</li>
+            <li>part of the body</li>
+            <li>value of querystring</li>
+            <li>as username and password in BASIC authentication</li>
+          </ul>
+          <entry-list params="entryList : selectedCtx.variables"></entry-list>
+        </div>
+        <div class="panel-footer">
+          <button class="btn btn-default" data-bind="click: saveContext">
+            Save
+          </button>
+          <button
+            class="btn btn-default"
+            data-bind="click: dismissContextDialog">
+            Cancel
+          </button>
+          <button
+            class="btn btn-danger pull-right"
+            data-bind="click: confirmDeleteContext, visible: !selectedCtx.isDefault">
+            Delete
+          </button>
+        </div>
+      </div>
+
+      <div
+        id="create-context-dialog"
+        class="panel panel-primary dialog"
+        data-bind="visible: showCreateContextDialog">
+        <div class="panel-heading">Create context</div>
+        <div class="panel-body">
+          <div class="form-group">
+            Name
+            <input
+              type="text"
+              class="form-control"
+              data-bind="value: contextName" />
+          </div>
+        </div>
+        <div class="panel-footer">
+          <button class="btn btn-default" data-bind="click: createContext">
+            Save
+          </button>
+          <button
+            class="btn btn-default"
+            data-bind="click: dismissCreateContextDialog">
+            Cancel
+          </button>
+        </div>
+      </div>
+
+      <div
+        id="dialog-confirm"
+        class="panel panel-danger dialog"
+        data-bind="visible: showConfirmDialog">
+        <div class="panel-heading">Confirm operation</div>
+        <div class="panel-body">
+          <p><span data-bind="text: dialogConfirmMessage"></span></p>
+          <div class="panel-footer">
+            <button class="btn btn-danger" data-bind="click: deleteContext">
+              Confirm
+            </button>
+            <button
+              class="btn btn-default"
+              data-bind="click: dismissConfirmDialog">
+              Cancel
+            </button>
+          </div>
+        </div>
+
+        <script data-main="js/app" src="js/require.js"></script>
       </div>
     </div>
-    <div class="panel-footer">
-      <button class="btn btn-default" data-bind="click: saveBookmark">Save</button><button class="btn btn-default" data-bind="click: dismissSaveBookmarkDialog">Cancel</button>
-    </div>
-  </div>
-
-  <div id="v-dialogs"></div>
-
-   <div id="context-dialog" class="panel panel-primary context-dialog" data-bind="visible: showContextDialog">
-    <div class="panel-heading">
-      Context <span data-bind="text: selectedCtx.name"></span><span style="cursor: pointer;" class="glyphicon glyphicon-remove pull-right" data-bind="click: dismissContextDialog"></span>
-    </div>
-    <div class="panel-body">
-      <p>
-        Use variables as <strong>{var_name}</strong> in
-      </p>
-        <ul>
-          <li>the request URL</li>
-          <li>value of header</li>
-          <li>part of the body</li>
-          <li>value of querystring</li>
-          <li>as username and password in BASIC authentication</li>
-        </ul>
-      <entry-list params="entryList : selectedCtx.variables"></entry-list>
-    </div>
-     <div class="panel-footer">
-      <button class="btn btn-default" data-bind="click: saveContext">Save</button><button class="btn btn-default" data-bind="click: dismissContextDialog">Cancel</button>
-      <button class="btn btn-danger pull-right" data-bind="click: confirmDeleteContext, visible: !selectedCtx.isDefault">Delete</button>
-    </div>
-  </div>
-
-  <div id="create-context-dialog" class="panel panel-primary dialog" data-bind="visible: showCreateContextDialog">
-    <div class="panel-heading">
-      Create context
-    </div>
-    <div class="panel-body">
-      <div class="form-group">
-        Name <input type="text" class="form-control" data-bind="value: contextName">
-      </div>
-    </div>
-    <div class="panel-footer">
-      <button class="btn btn-default" data-bind="click: createContext">Save</button><button class="btn btn-default" data-bind="click: dismissCreateContextDialog">Cancel</button>
-    </div>
-  </div>
-
-   <div id="dialog-confirm" class="panel panel-danger dialog" data-bind="visible: showConfirmDialog">
-    <div class="panel-heading">
-      Confirm operation
-    </div>
-    <div class="panel-body">
-      <p><span data-bind="text: dialogConfirmMessage"></span></p>
-    <div class="panel-footer">
-      <button class="btn btn-danger" data-bind="click: deleteContext">Confirm</button><button class="btn btn-default" data-bind="click: dismissConfirmDialog">Cancel</button>
-    </div>
-  </div>
-
-    <script data-main="js/app" src="js/require.js"></script>
-    
-  </div>
-  </div>
-</body>
+  </body>
 </html>

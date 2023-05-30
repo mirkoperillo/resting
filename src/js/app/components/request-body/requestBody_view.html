@@ -22,17 +22,28 @@
   <div class="row">
     <div class="form-inline">
       <div class="form-group">
-         <label for="body-type">Type</label>
-           <select class="form-control" style="margin-left: 10px;" id="body-type" data-bind="options: types, optionsCaption: 'None', value: bodyType"></select>
-    </div>
+        <label for="body-type">Type</label>
+        <select
+          class="form-control"
+          style="margin-left: 10px"
+          id="body-type"
+          data-bind="options: types, optionsCaption: 'None', value: bodyType"></select>
+      </div>
     </div>
   </div>
-  <div class="row" style="margin-top: 10px;">
+  <div class="row" style="margin-top: 10px">
     <div class="col-md-12">
-      <entry-list params="entryList : formDataParams, enableFileEntry: true" data-bind="visible : bodyType() == 'form-data'"></entry-list>
-      <entry-list params="entryList : formEncodedParams" data-bind="visible : bodyType() == 'x-www-form-urlencoded'"></entry-list>
+      <entry-list
+        params="entryList : formDataParams, enableFileEntry: true"
+        data-bind="visible : bodyType() == 'form-data'"></entry-list>
+      <entry-list
+        params="entryList : formEncodedParams"
+        data-bind="visible : bodyType() == 'x-www-form-urlencoded'"></entry-list>
       <div class="form-group" data-bind="visible : bodyType() == 'raw'">
-        <textarea class="form-control" rows="20" data-bind="value: rawBody"></textarea>
+        <textarea
+          class="form-control"
+          rows="20"
+          data-bind="value: rawBody"></textarea>
       </div>
     </div>
   </div>

@@ -16,19 +16,21 @@
     You should have received a copy of the GNU General Public License
     along with Resting.  If not, see <http://www.gnu.org/licenses/>.
  */
- 
-define(['knockout'],function(ko) {
 
- return function RequestBodyVm(params) {
-    const self = this;
+define(['knockout'], function (ko) {
+  return function RequestBodyVm(params) {
+    const self = this
 
-    const request = params.request;
-    self.bodyType = request.bodyType;
-    self.formDataParams = request.formDataParams;
-    self.formEncodedParams = request.formEncodedParams;
-    self.rawBody = request.rawBody;
+    const request = params.request
+    self.bodyType = request.bodyType
+    self.formDataParams = request.formDataParams
+    self.formEncodedParams = request.formEncodedParams
+    self.rawBody = request.rawBody
 
-    self.types = ko.observableArray(['form-data','x-www-form-urlencoded','raw'])
-
+    self.types = ko.observableArray([
+      'form-data',
+      'x-www-form-urlencoded',
+      'raw',
+    ])
   }
-});
+})

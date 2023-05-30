@@ -1,10 +1,10 @@
 <template>
-    <div class="btn-group" role="group" style="margin-bottom: 2px;">
-        <add-folder-button />
-        <import-button />
-        <export-button />
-        <sort-button />
-    </div>
+  <div class="btn-group" role="group" style="margin-bottom: 2px">
+    <add-folder-button />
+    <import-button />
+    <export-button />
+    <sort-button />
+  </div>
 </template>
 
 <script>
@@ -15,7 +15,10 @@ import SortButton from 'Components/SortButton.vue'
 
 export default {
   components: {
-    AddFolderButton, ImportButton, ExportButton, SortButton
-  }
+    AddFolderButton,
+    ImportButton,
+    ExportButton,
+    SortButton,
+  },
 }
 </script>
