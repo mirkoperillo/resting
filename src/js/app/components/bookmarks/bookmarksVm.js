@@ -43,7 +43,7 @@ define([
 
     let bookmarkToDelete = null
     let bookmarkOfContextMenu
-    const bookmarkToDeleteName = ko.observable()
+    const bookmarkToDeleteName = ko.observable();
     const tryToDeleteFolder = ko.observable(false)
     const showBookmarkDeleteDialog = ko.observable(false)
     const showImportDialog = ko.observable(false)
