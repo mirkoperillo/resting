@@ -63,21 +63,52 @@
       class="form-control"
       style="margin-right: 2px; visibility: hidden" />
     <label>Name</label>
-    <input
-      type="text"
-      style="margin-left: 10px"
-      class="form-control"
-      data-bind="value: entryName, hasFocus: focusToNameField" />
+    <span data-bind="if: showHeaderList">
+      <input
+        type="text"
+        style="margin-left: 10px"
+        class="form-control"
+        list="headerNames"
+        data-bind="value: entryName, hasFocus: focusToNameField" />
+      <datalist id="headerNames">
+        <!-- ko foreach: httpHeaderNames -->
+        <option><span data-bind="text: $data"></span></option>
+        <!-- /ko -->
+      </datalist>
+    </span>
+    <span data-bind="ifnot: showHeaderList">
+      <input
+        type="text"
+        style="margin-left: 10px"
+        class="form-control"
+        data-bind="value: entryName, hasFocus: focusToNameField" />
+    </span>
     <select
       class="form-control"
       data-bind="visible: enableFileEntry, value: entryType, options: entryTypes"></select>
     <label style="margin-left: 5px">Value</label>
     <span data-bind="ifnot: isFileEntry">
-      <input
-        type="text"
-        style="margin-left: 10px"
-        class="form-control"
-        data-bind="value: entryValue, event: { keyup: addOnEnter}" />
+      <span data-bind="ifnot: showHeaderList">
+        <input
+          type="text"
+          style="margin-left: 10px"
+          class="form-control"
+          data-bind="value: entryValue, event: { keyup: addOnEnter}" />
+      </span>
+
+      <span data-bind="if: showHeaderList">
+        <input
+          type="text"
+          style="margin-left: 10px"
+          class="form-control"
+          list="headerValues"
+          data-bind="value: entryValue, event: { keyup: addOnEnter}" />
+        <datalist id="headerValues">
+          <!-- ko foreach: httpHeaderValues -->
+          <option><span data-bind="text: $data"></span></option>
+          <!-- /ko -->
+        </datalist>
+      </span>
     </span>
     <span data-bind="visible: isFileEntry">
       <input

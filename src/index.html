@@ -292,7 +292,7 @@
                     params="request: request"
                     data-bind="visible : showRequestBody"></request-body>
                   <entry-list
-                    params="entryList : request.headers"
+                    params="entryList : request.headers, showHeaderList: true"
                     data-bind="visible : showRequestHeaders"></entry-list>
                   <entry-list
                     params="entryList : request.querystring"
