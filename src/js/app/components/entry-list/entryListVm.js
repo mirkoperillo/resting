@@ -21,10 +21,13 @@ define([
   'knockout',
   'component/entry-list/entryItemVm',
   'app/bacheca',
-], function (ko, EntryItemVm, bacheca) {
+  'app/httpHeaders',
+], function (ko, EntryItemVm, bacheca, httpHeaders) {
   'use strict'
   return function EntryListVm(params) {
     const entryList = params.entryList
+    const showHeaderList = params.showHeaderList ? true : false
+    const httpHeaderNames = Object.keys(httpHeaders)
     const enableFileEntry =
       params.enableFileEntry !== undefined && params.enableFileEntry
     const entryName = ko.observable()
@@ -48,9 +51,19 @@ define([
       return entryType() === 'File'
     }, this)
 
+    const httpHeaderValues = ko.computed(function () {
+      const vals = httpHeaders[entryName()]
+      return vals ? vals : []
+    }, this)
+
     const addOnEnter = (data, event) => {
       const enter = 13
       if (event.keyCode === enter) {
+        if (showHeaderList) {
+          // hitting `enter` on a data-list option while selecting will trigger this
+          // function but `entryValue` would still be `undefined` causing error
+          entryValue(event.target.value)
+        }
         add()
         focusToNameField(true)
       }
@@ -129,6 +142,9 @@ define([
       addOnEnter,
       removeFile,
       onFileSelectedEvent,
+      httpHeaderNames,
+      httpHeaderValues,
+      showHeaderList,
     }
   }
 })
