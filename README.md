@@ -55,7 +55,7 @@ Resting is available for:
 You can install Resting from the source code following these instructions:
 
 1. `git clone https://github.com/mirkoperillo/resting.git`
-2. `cd resting/scripts && ./build-unsigned.sh`
+2. `cd resting/scripts && ./build-unsigned.sh` or `cd resting/scripts && ./build-unsigned.ps1` if you are using windows
 3. Go to the addons page in Firefox and click `Install Add-on From File`
 
 ### Setup a development environment
