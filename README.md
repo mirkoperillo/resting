@@ -13,6 +13,7 @@ The goal of Resting is to be light and focused on the management of saved reques
 * Support multipart, x-www-form-urlencoded, raw data request body, file upload.
 * BASIC, Oauth2.0, JWT  Authentication.
 * Work with multiple requests using Tabs.
+* Http headers autocompletion.
 
 ### Response
 * Highlight the response.
