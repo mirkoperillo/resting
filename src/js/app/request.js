@@ -172,7 +172,7 @@ define(['jquery', 'app/response'], function ($, response) {
   }
 
   chrome.tabs.getCurrent((currentTab) =>
-    browser.webRequest.onResponseStarted.addListener(
+    chrome.webRequest.onResponseStarted.addListener(
       (request) => {
         const headers = []
         for (let { name, value } of request.responseHeaders) {

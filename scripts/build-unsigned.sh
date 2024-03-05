@@ -1,6 +1,9 @@
 #!/bin/bash
 
-actual_dir=`pwd`
+parent_path=$( cd "$(dirname "${BASH_SOURCE[0]}")" ; pwd -P )
+
+cd $parent_path;
+echo "Moved to scripts dir"
 
 if [ ! -d "../dist" ] 
 then
@@ -16,14 +19,24 @@ cd ..
 ./scripts/build-vue-comp.sh
 echo "vue components built"
 
-cd src
-
 # patch the manifest
-mkdir -p ../dist/tmp
+mkdir -p dist/tmp
 if [ $? -eq 0 ]; then
   echo "created tmp folder"
 fi
 
+if [ $1 == 'chrome' ]
+then
+  cp addon/chrome/* dist/tmp/
+  echo "copy chrome manifest"
+else
+  cp addon/firefox/* dist/tmp/ 
+  echo "copy firefox manifest"
+fi
+
+
+# copy sources
+cd src
 cp -R * ../dist/tmp
 if [ $? -eq 0 ]; then
   echo "copy src in tmp folder"
@@ -60,4 +73,5 @@ if [ $? -eq 0 ]; then
 else
   echo "error deleting tmp folder"
 fi
-cd $actual_dir
+
+echo "Done!"

@@ -1,5 +1,5 @@
 {
-  "description": "rest client focused on organization of the saved requests",
+  "description": "Debug, inspect and test http requests in a easy way",
   "manifest_version": 2,
   "name": "Resting",
   "version": "1.8.0",

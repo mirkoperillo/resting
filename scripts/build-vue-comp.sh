@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 COMPONENTS_FOLDER="src/js/app/components"
 DIST_FOLDER="src/js/vendor/vue-stuff"
