@@ -6,7 +6,9 @@
   "scripts": {
     "check-format": "prettier -c src",
     "format": "prettier --write src",
-    "test": "jasmine --config=test/config/jasmine.json"
+    "test": "jasmine --config=test/config/jasmine.json",
+    "dev:chrome": "./node_modules/nodemon/bin/nodemon.js --ext '*' --watch ./src --ignore 'js/vendor/**' --exec './scripts/build-dev.sh chrome'",
+    "dev:firefox": "./node_modules/nodemon/bin/nodemon.js --ext '*' --watch ./src --ignore 'js/vendor/**' --exec './scripts/build-dev.sh firefox'"
   },
   "author": "",
   "license": "ISC",
@@ -14,6 +16,7 @@
     "@vue/cli-service": "~4.5.0",
     "jasmine": "~3.0.0",
     "lodash": "^4.17.21",
+    "nodemon": "^3.1.0",
     "prettier": "^2.8.8",
     "requirejs": "~2.3.5",
     "vue-template-compiler": "^2.6.11"
