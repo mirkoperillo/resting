@@ -29,6 +29,7 @@ requirejs.config({
     hjls: 'highlight.pack',
     Vue: 'vue.runtime.min',
     bootstrap: 'bootstrap.min',
+    'json-viewer': 'json-viewer',
   },
   shim: {
     bootstrap: {
@@ -58,6 +59,7 @@ requirejs(
     'component/bookmarks/bookmarkVm',
     'vuecomp/dialogs-app.umd',
     'vuecomp/add-folder-button.umd',
+    'json-viewer',
   ],
   function (
     $,
@@ -78,7 +80,8 @@ requirejs(
     EntryItemVm,
     BookmarkVm,
     DialogsApp,
-    AddFolderButton
+    AddFolderButton,
+    jsonViewer
   ) {
     const REQUEST_STATE_MAP = {
       NOT_STARTED: {

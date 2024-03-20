@@ -21,14 +21,14 @@ fi
 mkdir ../build
 echo "Created build dir"
 
-cp -r ../src/* ../build
-echo "Copied sources"
-
 cd ..
 ./scripts/build-vue-comp.sh
 echo "Built vue components"
 
 cd scripts
+cp -r ../src/* ../build
+echo "Copied sources"
+
 if [ $1 == 'chrome' ]
 then
   cp ../addon/chrome/* ../build

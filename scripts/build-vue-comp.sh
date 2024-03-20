@@ -12,3 +12,4 @@ ${CLI_PATH}/vue-cli-service build --target lib --formats umd --dest ${DIST_FOLDE
 ${CLI_PATH}/vue-cli-service build --target lib --formats umd --dest ${DIST_FOLDER} --no-clean --name add-folder-button  ${COMPONENTS_FOLDER}/AddFolderButton.vue
 ${CLI_PATH}/vue-cli-service build --target lib --formats umd --dest ${DIST_FOLDER} --no-clean --name bookmarks-menu  ${COMPONENTS_FOLDER}/BookmarksMenu.vue
 ${CLI_PATH}/vue-cli-service build --target lib --formats umd --dest ${DIST_FOLDER} --no-clean --name response-menu  ${COMPONENTS_FOLDER}/ResponseMenu.vue
+${CLI_PATH}/vue-cli-service build --target lib --formats umd --dest ${DIST_FOLDER} --no-clean --name response-viewer  ${COMPONENTS_FOLDER}/ResponseViewer.vue
