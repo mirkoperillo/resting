@@ -44,10 +44,8 @@ requirejs(
     'app/storage',
     'knockout',
     'knockout-secure-binding',
-    'hjls',
     'app/request',
     'app/bookmark',
-    'app/clipboard',
     'app/bacheca',
     'bootstrap',
     'app/contextVm',
@@ -59,17 +57,14 @@ requirejs(
     'component/bookmarks/bookmarkVm',
     'vuecomp/dialogs-app.umd',
     'vuecomp/add-folder-button.umd',
-    'json-viewer',
   ],
   function (
     $,
     storage,
     ko,
     ksb,
-    hjls,
     requestSrv,
     makeBookmarkProvider,
-    clipboard,
     bacheca,
     bootstrap,
     ContextVm,
@@ -80,27 +75,8 @@ requirejs(
     EntryItemVm,
     BookmarkVm,
     DialogsApp,
-    AddFolderButton,
-    jsonViewer
+    AddFolderButton
   ) {
-    const REQUEST_STATE_MAP = {
-      NOT_STARTED: {
-        ariaText: 'No request sent',
-        value: 'NOT_STARTED',
-        progressWidth: '0.01%',
-      },
-      IN_PROGRESS: {
-        ariaText: 'request in progress',
-        value: 'IN_PROGRESS',
-        progressWidth: '100%',
-      },
-      COMPLETE: {
-        ariaText: 'Request complete',
-        value: 'COMPLETE',
-        progressWidth: '100%',
-      },
-    }
-
     function AppVm() {
       const contexts = ko.observableArray()
       const selectedCtx = new ContextVm()
@@ -142,8 +118,7 @@ requirejs(
       const showCreateContextDialog = ko.observable(false)
       const showConfirmDialog = ko.observable(false)
 
-      const requestState = ko.observable(REQUEST_STATE_MAP.NOT_STARTED)
-
+      const executionInProgress = ko.observable(false)
       const saveAsNewBookmark = ko.observable(false)
 
       const dialogConfirmMessage = ko.observable()
@@ -546,12 +521,12 @@ requirejs(
           _authentication(mapping),
           _manageResponse
         )
-        requestState(REQUEST_STATE_MAP.IN_PROGRESS)
+        executionInProgress(true)
       }
 
       const _manageResponse = (response) => {
         activeTab.response = response
-        requestState(REQUEST_STATE_MAP.COMPLETE)
+        executionInProgress(false)
         _displayResponse(response)
       }
 
@@ -922,8 +897,7 @@ requirejs(
         showCreateContextDialog,
         showConfirmDialog,
 
-        requestState,
-
+        executionInProgress,
         saveAsNewBookmark,
 
         dialogConfirmMessage,
