@@ -15,7 +15,7 @@ export default {
   },
   methods: {
     view(content) {
-      if(content === '') {
+      if (content === '') {
         jsonViewer.clear()
       } else {
         jsonViewer.showJSON(JSON.parse(content))

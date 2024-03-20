@@ -24,14 +24,7 @@ define([
   'Vue',
   'vuecomp/response-menu.umd',
   'vuecomp/response-viewer.umd',
-], function (
-  ko,
-  $,
-  bacheca,
-  Vue,
-  ResponseMenu,
-  ResponseViewer
-) {
+], function (ko, $, bacheca, Vue, ResponseMenu, ResponseViewer) {
   return function ResponseVm(params) {
     const callDuration = ko.observable('-')
     const callStatus = ko.observable('-')
@@ -82,7 +75,7 @@ define([
     const prepareBodyForView = () => {
       let view = ''
       if (responseBody.length === 0 && !Array.isArray(responseBody)) {
-        ; // do nothing
+        // do nothing
       } else if (useFormattedBody()) {
         view = JSON.stringify(responseBody, null, 2)
         bacheca.publish('response', view)

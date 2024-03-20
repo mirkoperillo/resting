@@ -49,7 +49,9 @@
             <div data-bind="visible: showBody && useFormattedBody">
               <div id="v-response-viewer"></div>
             </div>
-            <pre class="pre-scrollable" data-bind="visible: showBody && useRawBody">
+            <pre
+              class="pre-scrollable"
+              data-bind="visible: showBody && useRawBody">
               <code id="highlighted-response" data-bind="text: content"></code>
             </pre>
             <div data-bind="visible: showHeaders">
