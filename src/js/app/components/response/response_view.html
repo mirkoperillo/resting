@@ -46,9 +46,12 @@
             <div class="alert alert-success hide" role="alert">
               <p>Response copied successfully!</p>
             </div>
-            <pre class="pre-scrollable" data-bind="visible: showBody">
-                <code id="highlighted-response" data-bind="text: body"></code>
-              </pre>
+            <div data-bind="visible: showBody && useFormattedBody">
+              <div id="v-response-viewer"></div>
+            </div>
+            <pre class="pre-scrollable" data-bind="visible: showBody && useRawBody">
+              <code id="highlighted-response" data-bind="text: content"></code>
+            </pre>
             <div data-bind="visible: showHeaders">
               <table class="table table-striped">
                 <tbody data-bind="foreach: headers">

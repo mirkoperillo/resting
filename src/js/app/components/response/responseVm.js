@@ -20,12 +20,18 @@
 define([
   'knockout',
   'jquery',
-  'hjls',
   'app/bacheca',
   'Vue',
-  'app/clipboard',
   'vuecomp/response-menu.umd',
-], function (ko, $, hjls, bacheca, Vue, clipboard, ResponseMenu) {
+  'vuecomp/response-viewer.umd',
+], function (
+  ko,
+  $,
+  bacheca,
+  Vue,
+  ResponseMenu,
+  ResponseViewer
+) {
   return function ResponseVm(params) {
     const callDuration = ko.observable('-')
     const callStatus = ko.observable('-')
@@ -37,14 +43,11 @@ define([
     const showBody = ko.observable(true)
     const useFormattedBody = ko.observable(true)
     const useRawBody = ko.observable(false)
-    const body = ko.observable('')
+    let responseBody = ''
 
     const headersPanel = () => {
       showHeaders(true)
       showBody(false)
-
-      // close jquery accordion
-      $('#collapseOne').collapse('hide')
     }
 
     const bodyPanel = () => {
@@ -55,44 +58,13 @@ define([
     const formattedBody = () => {
       useFormattedBody(true)
       useRawBody(false)
-      if (content().length === 0 && !Array.isArray(content())) {
-        body('')
-      } else {
-        body(JSON.stringify(content(), null, 2))
-      }
-      _highlight()
+      prepareBodyForView()
     }
 
     const rawBody = () => {
       useFormattedBody(false)
       useRawBody(true)
-      if (content().length === 0 && !Array.isArray(content())) {
-        body('')
-      } else {
-        body(JSON.stringify(content()))
-      }
-      _unhighlight()
-    }
-
-    content.subscribe((newValue) => {
-      if (newValue.length === 0 && !Array.isArray(newValue)) {
-        body('')
-      } else if (useFormattedBody()) {
-        body(JSON.stringify(newValue, null, 2))
-        _highlight()
-      } else {
-        body(JSON.stringify(newValue))
-      }
-    })
-
-    const _unhighlight = () => {
-      $('#highlighted-response').removeClass('hljs')
-    }
-
-    const _highlight = () => {
-      $('#highlighted-response').each(function (i, block) {
-        hljs.highlightBlock(block)
-      })
+      prepareBodyForView()
     }
 
     const display = (response) => {
@@ -102,20 +74,35 @@ define([
         callStatus(response.status)
         callSize(`${response.size.toFixed(2)}KB`)
         response.headers.forEach((header) => headers.push(header))
-        content(response.content)
+        responseBody = response.content
+        prepareBodyForView()
       }, 500)
+    }
+
+    const prepareBodyForView = () => {
+      let view = ''
+      if (responseBody.length === 0 && !Array.isArray(responseBody)) {
+        ; // do nothing
+      } else if (useFormattedBody()) {
+        view = JSON.stringify(responseBody, null, 2)
+        bacheca.publish('response', view)
+      } else {
+        view = JSON.stringify(responseBody)
+      }
+      content(view)
     }
 
     const clear = () => {
       headers.removeAll()
       content('')
+      bacheca.publish('response', '')
       callDuration('-')
       callStatus('-')
       callSize('-')
     }
 
     const copyResponse = () => {
-      responseContent = $('#highlighted-response').text()
+      responseContent = content()
       navigator.clipboard
         .writeText(responseContent)
         .then(() => {
@@ -153,6 +140,16 @@ define([
       },
     })
 
+    new Vue({
+      el: '#v-response-viewer',
+      components: {
+        ResponseViewer,
+      },
+      render: function (h) {
+        return h('response-viewer')
+      },
+    })
+
     return {
       headersPanel,
       bodyPanel,
@@ -164,7 +161,7 @@ define([
       useRawBody,
 
       // response fields
-      body,
+      content,
       callDuration,
       callStatus,
       callSize,
