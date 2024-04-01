@@ -21,13 +21,15 @@ define([
   'knockout',
   'jquery',
   'app/bacheca',
+  'app/response',
   'Vue',
   'vuecomp/response-menu.umd',
   'vuecomp/response-viewer.umd',
-], function (ko, $, bacheca, Vue, ResponseMenu, ResponseViewer) {
+], function (ko, $, bacheca, responseHelper, Vue, ResponseMenu, ResponseViewer) {
   return function ResponseVm(params) {
     const callDuration = ko.observable('-')
     const callStatus = ko.observable('-')
+    const statusHelp = ko.observable('')
     const callSize = ko.observable('-')
     const headers = ko.observableArray()
     const content = ko.observable('')
@@ -64,7 +66,10 @@ define([
       clear()
       setTimeout(function () {
         callDuration(`${response.duration}ms`)
-        callStatus(response.status)
+        const { label, desc, link } = responseHelper.statusMeaning[response.status]
+        statusHelp(`${desc}
+        for more info ${link}`)
+        callStatus(label)
         callSize(`${response.size.toFixed(2)}KB`)
         response.headers.forEach((header) => headers.push(header))
         responseBody = response.content
@@ -91,6 +96,7 @@ define([
       bacheca.publish('response', '')
       callDuration('-')
       callStatus('-')
+      statusHelp('')
       callSize('-')
     }
 
@@ -157,6 +163,7 @@ define([
       content,
       callDuration,
       callStatus,
+      statusHelp,
       callSize,
       headers,
     }

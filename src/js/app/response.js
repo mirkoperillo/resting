@@ -18,6 +18,14 @@
  */
 
 define(function () {
+
+  const statusMeaning = {
+    200: {
+      label: '200 OK',
+      desc: 'The 200 (OK) status code indicates that the request has succeeded.<br/> The content sent in a 200 response depends on the request method.',
+      link: 'https://www.rfc-editor.org/rfc/rfc9110#section-15.3.1'
+    }
+  }
   const makeResponse = ({
     content = {},
     headers = [],
@@ -39,5 +47,6 @@ define(function () {
   return {
     makeResponse,
     parseHeaders,
+    statusMeaning
   }
 })
