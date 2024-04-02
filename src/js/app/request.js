@@ -90,7 +90,6 @@ define(['jquery', 'app/response'], function ($, response) {
       url: requestUrl,
       headers: headers,
       processData: false,
-      cache: false,
       crossDomain: true,
       contentType: contentTypesFromBodyTypes[bodyType],
       data: body,
