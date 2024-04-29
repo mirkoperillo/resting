@@ -13,6 +13,7 @@ define(['knockout', 'app/bookmarkSelectedVm'], function (
     this.bookmarkSelected = new BookmarkSelectedVm()
 
     this.isActive = ko.observable(false)
+    this.showRemoveTabButton = ko.observable(true)
 
     this.reset = () => {
       this.request = {}

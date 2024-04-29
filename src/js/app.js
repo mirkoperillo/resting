@@ -844,6 +844,13 @@ requirejs(
 
       const newTab = () => {
         const newTabContext = new TabContextVm(++tabCounter)
+        if (tabContexts().length === 0) {
+          newTabContext.showRemoveTabButton(false)
+        }
+        if (tabContexts().length === 1) {
+          const prevTabContext = tabContexts()[0]
+          prevTabContext.showRemoveTabButton(true)
+        }
         tabContexts.push(newTabContext)
         _activateTab(newTabContext)
       }
@@ -855,6 +862,11 @@ requirejs(
           _activateTab(tabContexts()[Math.abs(tabToRemoveIndex - 1)])
         }
         tabContexts.remove(tab)
+
+        if (tabContexts().length === 1) {
+          const lastTab = tabContexts()[0]
+          lastTab.showRemoveTabButton(false)
+        }
       }
 
       const enableSaveButton = () => {
