@@ -121,12 +121,14 @@
         <li role="presentation" data-bind="css: {active : $data.isActive}">
           <a href="#" data-bind="click: $parent.activateTab">
             <span data-bind="text: $data.name"></span>
-            <button
-              type="button"
-              class="btn btn-xs btn-danger"
-              data-bind="click: $parent.removeTab, clickBubble: false">
-              <span class="glyphicon glyphicon-remove"></span>
-            </button>
+            <span data-bind="visible: $data.showRemoveTabButton">
+              <button
+                type="button"
+                class="btn btn-xs btn-danger"
+                data-bind="click: $parent.removeTab, clickBubble: false">
+                <span class="glyphicon glyphicon-remove"></span>
+              </button>
+            </span>
           </a>
         </li>
         <!-- /ko -->
