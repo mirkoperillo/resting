@@ -80,7 +80,8 @@ requirejs(
     function AppVm() {
       const contexts = ko.observableArray()
       const selectedCtx = new ContextVm()
-      let defaultCtx = new ContextVm()
+      const defaultCtxName = 'default';
+      let defaultCtxIdx = -1;
 
       const bookmarkSelected = new BookmarkSelectedVm() // bookmark loaded
       let tabCounter = 0
@@ -163,15 +164,15 @@ requirejs(
       }
 
       const defaultContextDialog = () => {
-        contextDialog(defaultCtx)
+        contextDialog(_getDefaultCtx())
       }
 
       const contextDialogByName = () => {
         let ctxToLoad = contexts().find(
-          (ctx) => ctx.name() === request.context()
+          ctx => ctx.name() === request.context()
         )
         if (ctxToLoad === undefined) {
-          ctxToLoad = defaultCtx
+          ctxToLoad = _getDefaultCtx()
         }
         contextDialog(ctxToLoad)
       }
@@ -533,9 +534,9 @@ requirejs(
       // Note that elements order is important
       const _mapContext = () =>
         [
-          defaultCtx,
+          _getDefaultCtx(),
           request.context() !== 'default' &&
-            contexts().find((ctx) => ctx.name() === request.context()),
+            contexts().find(ctx => ctx.name() === request.context()),
         ]
           .filter((ctx) => !!ctx)
           .map((ctx) => _extractCtxVars(ctx.variables()))
@@ -661,7 +662,7 @@ requirejs(
           name: selectedCtx.name(),
           variables: _extractModelFromVM(selectedCtx.variables()),
         })
-        const contextToEditIdx = contexts().find(
+        const contextToEditIdx = contexts().findIndex(
           (ctx) => ctx.name === selectedCtx.name()
         )
         if (contextToEditIdx > -1) {
@@ -690,23 +691,25 @@ requirejs(
         // load contexts
         const loadedCtxs = []
         storage.loadContexts(
-          (ctx) => {
+          ctx => {
             loadedCtxs.push(new ContextVm(ctx.name, ctx.variables))
           },
           () => {
-            const defaultCtxIdx = loadedCtxs.findIndex(
-              (ctx) => ctx.name() === 'default'
+            defaultCtxIdx = loadedCtxs.findIndex(
+              ctx => ctx.name() === 'default'
             )
             if (defaultCtxIdx < 0) {
-              // default context
-              defaultCtx = new ContextVm()
-            } else {
-              defaultCtx = loadedCtxs[defaultCtxIdx]
+              defaultCtxIdx = 0
+              contexts.push(new ContextVm())
             }
-            loadedCtxs.forEach((ctx) => contexts.push(ctx))
+            loadedCtxs.forEach(ctx => contexts.push(ctx))
             contexts.sort(sortCriteriaCtx)
           }
         )
+      }
+
+      const _getDefaultCtx = () => {
+        return defaultCtxIdx >= 0 ? contexts()[defaultCtxIdx] : new ContextVm()
       }
 
       const dismissConfirmDialog = () => {
@@ -884,7 +887,8 @@ requirejs(
       return {
         contexts,
         selectedCtx,
-        defaultCtx,
+        defaultCtxName,
+        defaultCtxIdx,
 
         bookmarkSelected,
         tabCounter,

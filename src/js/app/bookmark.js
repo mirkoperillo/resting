@@ -63,7 +63,7 @@ define(function () {
 
   const addBookmarks = (folder, bookmarks = []) => {
     const newFolder = Object.assign({}, folder)
-    newFolder.bookmarks = folder.bookmarks.concat(bookmarks)
+    newFolder.bookmarks = folder.bookmarks ? folder.bookmarks.concat(bookmarks) : [].concat(bookmarks)
     return newFolder
   }
 
@@ -73,13 +73,13 @@ define(function () {
       b.id === id
 
   const sortBookmarks = (folder, criteria) => {
-    const bookmarks = folder.bookmarks
+    const bookmarks = folder.bookmarks ? folder.bookmarks : []
     bookmarks.sort(criteria)
     return Object.assign({}, folder, { bookmarks })
   }
 
   const replaceBookmark = (folder, bookmark) => {
-    const bookmarks = folder.bookmarks.slice()
+    const bookmarks = folder.bookmarks ? folder.bookmarks.slice() : []
     const indexToReplace = bookmarks.findIndex(bookmarkById(bookmark))
     if (indexToReplace !== -1) {
       bookmarks.splice(indexToReplace, 1, bookmark)
@@ -91,7 +91,7 @@ define(function () {
   }
 
   const removeBookmarks = (folder, bookmarksToRemove = []) => {
-    let bookmarks = folder.bookmarks.slice()
+    let bookmarks = folder.bookmarks ? folder.bookmarks.slice() : []
 
     const bookmarksToRemoveIds = (
       Array.isArray(bookmarksToRemove) ? bookmarksToRemove : [bookmarksToRemove]
@@ -187,22 +187,23 @@ define(function () {
   }
 
   const exportObj = (bookmarks = [], contexts = []) => {
+    const exportSelectedBookmark = bookmarks.length === 1 && !bookmarks[0].isFolder
     let harExport = {}
     harExport.log = {}
     harExport.log.version = '1.1'
     harExport.log.creator = {}
     harExport.log.creator.name = 'Resting WebExtension'
     harExport.log.creator.version = '1.0'
-    harExport.log.entries = _bookmarkToHar(bookmarks)
+    harExport.log.entries = _bookmarkToHar(bookmarks, exportSelectedBookmark)
     harExport.log._contexts = _contextsToHar(contexts)
     return harExport
   }
 
   const _contextsToHar = (contexts = []) => {
-    return contexts.map((c) => {
+    return contexts.map(ctx => {
       let contextHarField = {}
-      contextHarField.name = c.name
-      contextHarField.variables = c.variables.map((v) => ({
+      contextHarField.name = ctx.name
+      contextHarField.variables = ctx.variables.map(v => ({
         name: v.name,
         value: v.value,
         enabled: v.enabled,
@@ -211,7 +212,7 @@ define(function () {
     })
   }
 
-  const _bookmarkToHar = (sources = []) => {
+  const _bookmarkToHar = (sources = [], exportSelectedBookmark = false) => {
     let exported = []
     if (sources.length > 0) {
       let bookmarkExport = {}
@@ -219,7 +220,9 @@ define(function () {
       bookmarkExport._isFolder = sources[0].isFolder
       bookmarkExport._id = sources[0].id
       bookmarkExport._created = sources[0].created
-      bookmarkExport._folder = sources[0].folder
+      if (!exportSelectedBookmark) {
+        bookmarkExport._folder = sources[0].folder
+      }
       bookmarkExport.startedDateTime = '1970-01-01T00:00:00Z' // not supported
       bookmarkExport.request = {
         headersSize: -1,

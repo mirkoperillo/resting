@@ -52,7 +52,8 @@ define([
     const exportSrc = ko.observable('har')
 
     // contextual menu
-    const showContextMenu = ko.observable(false)
+    const showBookmarkContextMenu = ko.observable(false)
+    const showFolderContextMenu = ko.observable(false)
     const contextMenuPosX = ko.observable('0px')
     const contextMenuPosY = ko.observable('0px')
 
@@ -181,7 +182,8 @@ define([
         showBookmarkDeleteDialog(false)
         showImportDialog(false)
         showExportDialog(false)
-        showContextMenu(false)
+        showBookmarkContextMenu(false)
+        showFolderContextMenu(false)
       }
     }
     const loadBookmarkObj = (bookmarkObj) => {
@@ -192,7 +194,11 @@ define([
       const posX = event.clientY
       const posY = event.clientX
       bookmarkOfContextMenu = bookmark
-      showContextMenu(true)
+      if (bookmark.isFolder) {
+        showFolderContextMenu(true)
+      } else {
+        showBookmarkContextMenu(true)
+      }
       contextMenuPosX(`${posX}px`)
       contextMenuPosY(`${posY}px`)
     }
@@ -218,6 +224,33 @@ define([
       }
     }
 
+    const exportSelectedBookmarks = () => {
+      const contextsModels = _extractContextFromVM(contexts())
+      let contextsToExport = []
+      if(bookmarkOfContextMenu.isFolder) {
+        if(bookmarkOfContextMenu.bookmarks) {
+          contextsToExport = [...new Set(bookmarkOfContextMenu.bookmarks.map(b => b.request.context))]
+        }
+      } else {
+        contextsToExport.push(bookmarkOfContextMenu.request.context)
+      }
+      const selectedContexts = contextsModels.filter(cm => contextsToExport.includes(cm.name))
+      const exportContent = JSON.stringify(
+        bookmarkProvider.exportObj([bookmarkOfContextMenu], selectedContexts)
+      )
+      const exportFile = new File([exportContent], 'export.resting.json', {
+        type: 'application/json',
+      })
+
+      const url = URL.createObjectURL(exportFile)
+
+      chrome.downloads.download({
+        filename: exportFile.name,
+        url: url,
+        saveAs: true,
+      })
+    }
+
     const _handleImport = () => {
       const f = document.getElementById('import-file').files
       const fr = new FileReader()
@@ -240,7 +273,7 @@ define([
           }
         })
 
-        importedBookmarks.contexts.forEach((c) => _saveContext(c))
+        importedBookmarks.contexts.forEach(c => _saveContext(c))
       }
       if (f[0]) {
         fr.readAsText(f[0])
@@ -250,15 +283,25 @@ define([
 
     // FIXME: duplication of appVm function
     const _saveContext = (context = {}) => {
-      storage.saveContext({ name: context.name, variables: context.variables })
-      const contextToEdit = contexts().find(
-        (ctx) => ctx.name() === context.name
+      const contextToEditIdx = contexts().findIndex(
+        ctx => ctx.name() === context.name
       )
-      const contextVm = new ContextVm(context.name, context.variables)
-      if (contextToEdit) {
-        contexts.replace(contextToEdit, contextVm)
-      } else if (context.name != 'default') {
+      let contextToSave;
+      if (contextToEditIdx >= 0) {
+        // append variables to existent context
+        contextToSave = { name: context.name, variables: _extractItemFromVM(contexts()[contextToEditIdx].variables()).concat(context.variables) }
+      } else {
+        contextToSave = context
+      }
+      storage.saveContext(contextToSave)
+      const contextVm = new ContextVm(contextToSave.name, contextToSave.variables)
+      if (contextToEditIdx >= 0) {
+        contexts.replace(contexts()[contextToEditIdx], contextVm)
+      } else {
         contexts.push(contextVm)
+      }
+      if (context.name === 'default') {
+        appVm.defaultCtxIdx = contextToEditIdx
       }
     }
 
@@ -327,7 +370,8 @@ define([
     $(() => {
       // hide context menu on every click on page
       $('.row').on('click', function () {
-        showContextMenu(false)
+        showBookmarkContextMenu(false)
+        showFolderContextMenu(false)
       })
       _loadBookmarksNewFormat()
 
@@ -340,23 +384,6 @@ define([
           return h('bookmarks-menu')
         },
       })
-      /*new Vue({
-          el: '#v-bookmarks-buttons',
-          components: {
-            ImportButton, ExportButton, SortButton, AddFolderButton
-          },
-          render: function(h) {
-            return h(
-              'div', 
-              {},
-              [
-                h('add-folder-button'),
-                h('import-button'),
-                h('export-button'),
-                h('sort-button')
-              ])
-          }
-        })*/
     })
 
     /*
@@ -392,9 +419,11 @@ define([
       expandFolder,
       importBookmarks,
       exportBookmarks,
+      exportSelectedBookmarks,
       // context menu
       contextMenu,
-      showContextMenu,
+      showBookmarkContextMenu,
+      showFolderContextMenu,
       contextMenuPosX,
       contextMenuPosY,
       // context menu actions
