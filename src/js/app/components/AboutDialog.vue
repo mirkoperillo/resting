@@ -1,6 +1,6 @@
 <template>
   <r-dialog title="About Resting" @dismiss-dialog="$emit('dismiss-dialog')">
-    <h4>Resting v1.9.1</h4>
+    <h4>Resting v1.10.0</h4>
     <p>
       License:
       <a
