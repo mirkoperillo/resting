@@ -63,7 +63,9 @@ define(function () {
 
   const addBookmarks = (folder, bookmarks = []) => {
     const newFolder = Object.assign({}, folder)
-    newFolder.bookmarks = folder.bookmarks ? folder.bookmarks.concat(bookmarks) : [].concat(bookmarks)
+    newFolder.bookmarks = folder.bookmarks
+      ? folder.bookmarks.concat(bookmarks)
+      : [].concat(bookmarks)
     return newFolder
   }
 
@@ -187,7 +189,8 @@ define(function () {
   }
 
   const exportObj = (bookmarks = [], contexts = []) => {
-    const exportSelectedBookmark = bookmarks.length === 1 && !bookmarks[0].isFolder
+    const exportSelectedBookmark =
+      bookmarks.length === 1 && !bookmarks[0].isFolder
     let harExport = {}
     harExport.log = {}
     harExport.log.version = '1.1'
@@ -200,10 +203,10 @@ define(function () {
   }
 
   const _contextsToHar = (contexts = []) => {
-    return contexts.map(ctx => {
+    return contexts.map((ctx) => {
       let contextHarField = {}
       contextHarField.name = ctx.name
-      contextHarField.variables = ctx.variables.map(v => ({
+      contextHarField.variables = ctx.variables.map((v) => ({
         name: v.name,
         value: v.value,
         enabled: v.enabled,

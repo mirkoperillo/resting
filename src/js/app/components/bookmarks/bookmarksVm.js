@@ -227,14 +227,20 @@ define([
     const exportSelectedBookmarks = () => {
       const contextsModels = _extractContextFromVM(contexts())
       let contextsToExport = []
-      if(bookmarkOfContextMenu.isFolder) {
-        if(bookmarkOfContextMenu.bookmarks) {
-          contextsToExport = [...new Set(bookmarkOfContextMenu.bookmarks.map(b => b.request.context))]
+      if (bookmarkOfContextMenu.isFolder) {
+        if (bookmarkOfContextMenu.bookmarks) {
+          contextsToExport = [
+            ...new Set(
+              bookmarkOfContextMenu.bookmarks.map((b) => b.request.context)
+            ),
+          ]
         }
       } else {
         contextsToExport.push(bookmarkOfContextMenu.request.context)
       }
-      const selectedContexts = contextsModels.filter(cm => contextsToExport.includes(cm.name))
+      const selectedContexts = contextsModels.filter((cm) =>
+        contextsToExport.includes(cm.name)
+      )
       const exportContent = JSON.stringify(
         bookmarkProvider.exportObj([bookmarkOfContextMenu], selectedContexts)
       )
@@ -273,7 +279,7 @@ define([
           }
         })
 
-        importedBookmarks.contexts.forEach(c => _saveContext(c))
+        importedBookmarks.contexts.forEach((c) => _saveContext(c))
       }
       if (f[0]) {
         fr.readAsText(f[0])
@@ -284,17 +290,25 @@ define([
     // FIXME: duplication of appVm function
     const _saveContext = (context = {}) => {
       const contextToEditIdx = contexts().findIndex(
-        ctx => ctx.name() === context.name
+        (ctx) => ctx.name() === context.name
       )
-      let contextToSave;
+      let contextToSave
       if (contextToEditIdx >= 0) {
         // append variables to existent context
-        contextToSave = { name: context.name, variables: _extractItemFromVM(contexts()[contextToEditIdx].variables()).concat(context.variables) }
+        contextToSave = {
+          name: context.name,
+          variables: _extractItemFromVM(
+            contexts()[contextToEditIdx].variables()
+          ).concat(context.variables),
+        }
       } else {
         contextToSave = context
       }
       storage.saveContext(contextToSave)
-      const contextVm = new ContextVm(contextToSave.name, contextToSave.variables)
+      const contextVm = new ContextVm(
+        contextToSave.name,
+        contextToSave.variables
+      )
       if (contextToEditIdx >= 0) {
         contexts.replace(contexts()[contextToEditIdx], contextVm)
       } else {

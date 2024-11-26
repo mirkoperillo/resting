@@ -80,8 +80,8 @@ requirejs(
     function AppVm() {
       const contexts = ko.observableArray()
       const selectedCtx = new ContextVm()
-      const defaultCtxName = 'default';
-      let defaultCtxIdx = -1;
+      const defaultCtxName = 'default'
+      let defaultCtxIdx = -1
 
       const bookmarkSelected = new BookmarkSelectedVm() // bookmark loaded
       let tabCounter = 0
@@ -169,7 +169,7 @@ requirejs(
 
       const contextDialogByName = () => {
         let ctxToLoad = contexts().find(
-          ctx => ctx.name() === request.context()
+          (ctx) => ctx.name() === request.context()
         )
         if (ctxToLoad === undefined) {
           ctxToLoad = _getDefaultCtx()
@@ -536,7 +536,7 @@ requirejs(
         [
           _getDefaultCtx(),
           request.context() !== 'default' &&
-            contexts().find(ctx => ctx.name() === request.context()),
+            contexts().find((ctx) => ctx.name() === request.context()),
         ]
           .filter((ctx) => !!ctx)
           .map((ctx) => _extractCtxVars(ctx.variables()))
@@ -691,18 +691,18 @@ requirejs(
         // load contexts
         const loadedCtxs = []
         storage.loadContexts(
-          ctx => {
+          (ctx) => {
             loadedCtxs.push(new ContextVm(ctx.name, ctx.variables))
           },
           () => {
             defaultCtxIdx = loadedCtxs.findIndex(
-              ctx => ctx.name() === 'default'
+              (ctx) => ctx.name() === 'default'
             )
             if (defaultCtxIdx < 0) {
               defaultCtxIdx = 0
               contexts.push(new ContextVm())
             }
-            loadedCtxs.forEach(ctx => contexts.push(ctx))
+            loadedCtxs.forEach((ctx) => contexts.push(ctx))
             contexts.sort(sortCriteriaCtx)
           }
         )
