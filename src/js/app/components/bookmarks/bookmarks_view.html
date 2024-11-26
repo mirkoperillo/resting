@@ -38,10 +38,10 @@
               <span data-bind="text: name"></span>
               <span class="pull-right">
                 <button
-                  class="btn btn-xs btn-danger"
-                  data-bind="click: $parent.confirmDelete, clickBubble: false">
+                  class="btn btn-xs"
+                  data-bind="click: $parent.contextMenu, clickBubble: false">
                   <span
-                    class="glyphicon glyphicon-trash"
+                    class="glyphicon glyphicon-menu-hamburger"
                     aria-hidden="true"></span>
                 </button>
               </span>
@@ -120,7 +120,7 @@
 
   <div
     class="ctx-menu"
-    data-bind="visible: showContextMenu, style: {'position':'fixed', 'top': contextMenuPosX, 'left': contextMenuPosY }, clickBubble: false">
+    data-bind="visible: showBookmarkContextMenu, style: {'position':'fixed', 'top': contextMenuPosX, 'left': contextMenuPosY }, clickBubble: false">
     <ul class="list-group">
       <li class="list-group-item ctx-menu-item" data-bind="click: openInTab">
         Open in new tab
@@ -133,6 +133,29 @@
         data-bind="click: confirmDeleteFromCtxMenu">
         Remove
         <i class="glyphicon glyphicon-trash pull-right"></i>
+      </li>
+      <li
+        class="list-group-item ctx-menu-item"
+        data-bind="click: exportSelectedBookmarks">
+        Export
+      </li>
+    </ul>
+  </div>
+
+  <div
+    class="ctx-menu"
+    data-bind="visible: showFolderContextMenu, style: {'position':'fixed', 'top': contextMenuPosX, 'left': contextMenuPosY }, clickBubble: false">
+    <ul class="list-group">
+      <li
+        class="list-group-item ctx-menu-item"
+        data-bind="click: confirmDeleteFromCtxMenu">
+        Remove
+        <i class="glyphicon glyphicon-trash pull-right"></i>
+      </li>
+      <li
+        class="list-group-item ctx-menu-item"
+        data-bind="click: exportSelectedBookmarks">
+        Export
       </li>
     </ul>
   </div>
