@@ -26,7 +26,7 @@ define([
   'app/contextVm',
   'component/bookmarks/bookmarkVm',
   'component/entry-list/entryItemVm',
-  'vuecomp/bookmarks-menu.umd',
+  'vuecomp/bookmarks-menu.umd'
 ], function (
   Vue,
   ko,
@@ -46,9 +46,7 @@ define([
     const bookmarkToDeleteName = ko.observable()
     const tryToDeleteFolder = ko.observable(false)
     const showBookmarkDeleteDialog = ko.observable(false)
-    const showImportDialog = ko.observable(false)
     const showExportDialog = ko.observable(false)
-    const importSrc = ko.observable('har')
     const exportSrc = ko.observable('har')
 
     // contextual menu
@@ -115,11 +113,6 @@ define([
       deleteChildrenBookmarks(false)
     }
 
-    const dismissImportDialog = () => {
-      showImportDialog(false)
-      document.getElementById('import-file').value = ''
-    }
-
     const dismissExportDialog = () => {
       showExportDialog(false)
     }
@@ -158,18 +151,9 @@ define([
       }
     }
 
-    const importBookmarks = () => {
-      _handleImport()
-      dismissImportDialog()
-    }
-
     const exportBookmarks = () => {
       _handleExport()
       dismissExportDialog()
-    }
-
-    const _importDialog = () => {
-      showImportDialog(true)
     }
 
     const _exportDialog = () => {
@@ -180,7 +164,6 @@ define([
       const excape = 27
       if (event.keyCode === excape) {
         showBookmarkDeleteDialog(false)
-        showImportDialog(false)
         showExportDialog(false)
         showBookmarkContextMenu(false)
         showFolderContextMenu(false)
@@ -409,15 +392,12 @@ define([
     bacheca.subscribe('newFolder', _addFolder)
     bacheca.subscribe('sortBookmarks', _sortBookmarks)
     bacheca.subscribe('exportDialog', _exportDialog)
-    bacheca.subscribe('importDialog', _importDialog)
+    bacheca.subscribe('importBookmarks', _handleImport)
 
     return {
       closeDialogOnExcape,
-      showImportDialog,
       showExportDialog,
-      dismissImportDialog,
       dismissExportDialog,
-      importSrc,
       exportSrc,
       bookmarks,
       showBookmarkDeleteDialog,
@@ -431,7 +411,6 @@ define([
       deleteBookmarkFromView,
       loadBookmarkObj,
       expandFolder,
-      importBookmarks,
       exportBookmarks,
       exportSelectedBookmarks,
       // context menu
