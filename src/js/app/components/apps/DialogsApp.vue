@@ -17,6 +17,10 @@
       v-show="showImportDialog"
       @dismiss-dialog="showImportDialog = false"
     ></import-dialog>
+    <export-dialog
+      v-show="showExportDialog"
+      @dismiss-dialog="showExportDialog = false"
+    ></export-dialog>
   </div>
 </template>
 
@@ -27,6 +31,7 @@ import CreditsDialog from 'Components/CreditsDialog.vue'
 import DonateDialog from 'Components/DonateDialog.vue'
 import FolderDialog from 'Components/FolderDialog.vue'
 import ImportDialog from 'Components/ImportDialog.vue'
+import ExportDialog from 'Components/ExportDialog.vue'
 
 export default {
   name: 'DialogsApp',
@@ -42,6 +47,7 @@ export default {
       this.selectedFolder = selectedFolder
     })
     bacheca.subscribe('showImportDialog', () => (this.showImportDialog = true))
+    bacheca.subscribe('showExportDialog', () => (this.showExportDialog = true))
   },
   data() {
     return {
@@ -50,6 +56,7 @@ export default {
       showDonateDialog: false,
       showFolderDialog: false,
       showImportDialog: false,
+      showExportDialog: false,
       selectedFolder: false,
     }
   },
@@ -58,7 +65,8 @@ export default {
     CreditsDialog,
     DonateDialog,
     FolderDialog,
-    ImportDialog
+    ImportDialog,
+    ExportDialog
   },
 }
 </script>

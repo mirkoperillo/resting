@@ -46,8 +46,6 @@ define([
     const bookmarkToDeleteName = ko.observable()
     const tryToDeleteFolder = ko.observable(false)
     const showBookmarkDeleteDialog = ko.observable(false)
-    const showExportDialog = ko.observable(false)
-    const exportSrc = ko.observable('har')
 
     // contextual menu
     const showBookmarkContextMenu = ko.observable(false)
@@ -113,10 +111,6 @@ define([
       deleteChildrenBookmarks(false)
     }
 
-    const dismissExportDialog = () => {
-      showExportDialog(false)
-    }
-
     const deleteBookmark = (bookmark, deleteChildrenBookmarks) => {
       if (bookmark.folder) {
         const containerFolder = bookmarks().find(
@@ -151,20 +145,10 @@ define([
       }
     }
 
-    const exportBookmarks = () => {
-      _handleExport()
-      dismissExportDialog()
-    }
-
-    const _exportDialog = () => {
-      showExportDialog(true)
-    }
-
     const closeDialogOnExcape = (data, event) => {
       const excape = 27
       if (event.keyCode === excape) {
         showBookmarkDeleteDialog(false)
-        showExportDialog(false)
         showBookmarkContextMenu(false)
         showFolderContextMenu(false)
       }
@@ -391,14 +375,11 @@ define([
      */
     bacheca.subscribe('newFolder', _addFolder)
     bacheca.subscribe('sortBookmarks', _sortBookmarks)
-    bacheca.subscribe('exportDialog', _exportDialog)
     bacheca.subscribe('importBookmarks', _handleImport)
+    bacheca.subscribe('exportBookmarks', _handleExport)
 
     return {
       closeDialogOnExcape,
-      showExportDialog,
-      dismissExportDialog,
-      exportSrc,
       bookmarks,
       showBookmarkDeleteDialog,
       bookmarkToDeleteName,
@@ -411,7 +392,6 @@ define([
       deleteBookmarkFromView,
       loadBookmarkObj,
       expandFolder,
-      exportBookmarks,
       exportSelectedBookmarks,
       // context menu
       contextMenu,
