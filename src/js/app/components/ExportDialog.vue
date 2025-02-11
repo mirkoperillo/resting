@@ -3,21 +3,14 @@
     title="Export bookmarks"
     :show-footer="true"
     @dismiss-dialog="$emit('dismiss-dialog')">
-   <div class="form-group">
+    <div class="form-group">
       To:
       <input type="radio" value="har" v-model="exportSrc" />
       <label style="margin-left: 2px">har</label>
     </div>
     <template v-slot:footer>
-      <button
-        class="btn btn-default"
-        @click="exportBookmarks"
-        >
-        Export
-      </button>
-      <button class="btn btn-default" @click="dismissDialog">
-        Cancel
-      </button>
+      <button class="btn btn-default" @click="exportBookmarks">Export</button>
+      <button class="btn btn-default" @click="dismissDialog">Cancel</button>
     </template>
   </r-dialog>
 </template>
@@ -30,7 +23,7 @@ export default {
   name: 'ExportDialog',
   data() {
     return {
-      exportSrc: 'har'
+      exportSrc: 'har',
     }
   },
   methods: {
@@ -42,8 +35,8 @@ export default {
       this.$emit('dismiss-dialog')
     },
   },
-   components: {
+  components: {
     RDialog,
-  }
+  },
 }
 </script>

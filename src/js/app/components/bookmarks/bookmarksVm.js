@@ -26,7 +26,7 @@ define([
   'app/contextVm',
   'component/bookmarks/bookmarkVm',
   'component/entry-list/entryItemVm',
-  'vuecomp/bookmarks-menu.umd'
+  'vuecomp/bookmarks-menu.umd',
 ], function (
   Vue,
   ko,

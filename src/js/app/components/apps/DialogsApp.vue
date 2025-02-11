@@ -15,12 +15,10 @@
       @dismiss-dialog="showFolderDialog = false"></folder-dialog>
     <import-dialog
       v-show="showImportDialog"
-      @dismiss-dialog="showImportDialog = false"
-    ></import-dialog>
+      @dismiss-dialog="showImportDialog = false"></import-dialog>
     <export-dialog
       v-show="showExportDialog"
-      @dismiss-dialog="showExportDialog = false"
-    ></export-dialog>
+      @dismiss-dialog="showExportDialog = false"></export-dialog>
   </div>
 </template>
 
@@ -66,7 +64,7 @@ export default {
     DonateDialog,
     FolderDialog,
     ImportDialog,
-    ExportDialog
+    ExportDialog,
   },
 }
 </script>

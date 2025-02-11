@@ -12,15 +12,8 @@
       <input type="file" ref="import-file" id="import-file" />
     </div>
     <template v-slot:footer>
-      <button
-        class="btn btn-default"
-        @click="importBookmarks"
-        >
-        Import
-      </button>
-      <button class="btn btn-default" @click="dismissDialog">
-        Cancel
-      </button>
+      <button class="btn btn-default" @click="importBookmarks">Import</button>
+      <button class="btn btn-default" @click="dismissDialog">Cancel</button>
     </template>
   </r-dialog>
 </template>
@@ -33,7 +26,7 @@ export default {
   name: 'ImportDialog',
   data() {
     return {
-      importSrc: 'har'
+      importSrc: 'har',
     }
   },
   methods: {
@@ -46,8 +39,8 @@ export default {
       this.$emit('dismiss-dialog')
     },
   },
-   components: {
+  components: {
     RDialog,
-  }
+  },
 }
 </script>
