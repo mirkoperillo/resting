@@ -13,7 +13,7 @@ import bacheca from 'Services/bacheca'
 export default {
   methods: {
     action() {
-      bacheca.publish('exportDialog')
+      bacheca.publish('showExportDialog')
     },
   },
 }
