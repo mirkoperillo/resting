@@ -57,6 +57,7 @@ requirejs(
     'component/bookmarks/bookmarkVm',
     'vuecomp/dialogs-app.umd',
     'vuecomp/add-folder-button.umd',
+    'vuecomp/response-panel.umd',
   ],
   function (
     $,
@@ -75,7 +76,8 @@ requirejs(
     EntryItemVm,
     BookmarkVm,
     DialogsApp,
-    AddFolderButton
+    AddFolderButton,
+    ResponsePanel
   ) {
     function AppVm() {
       const contexts = ko.observableArray()
@@ -1004,13 +1006,6 @@ requirejs(
         },
       })
 
-      ko.components.register('response-panel', {
-        viewModel: { require: 'app/components/response/responseVm' },
-        template: {
-          require: 'text!app/components/response/response_view.html',
-        },
-      })
-
       // Show all options, more restricted setup than the Knockout regular binding.
       var options = {
         attribute: 'data-bind', // default "data-sbind"
@@ -1042,6 +1037,16 @@ requirejs(
         },
         render: function (h) {
           return h(AddFolderButton, { props: { selectedFolder: true } })
+        },
+      })
+
+      const responsePanelVueApp = new Vue({
+        el: '#v-response-panel',
+        components: {
+          ResponsePanel,
+        },
+        render: function (h) {
+          return h('response-panel')
         },
       })
 

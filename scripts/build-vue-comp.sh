@@ -15,3 +15,4 @@ ${CLI_PATH}/vue-cli-service build --target lib --formats umd --dest ${DIST_FOLDE
 ${CLI_PATH}/vue-cli-service build --target lib --formats umd --dest ${DIST_FOLDER} --no-clean --name response-viewer  ${COMPONENTS_FOLDER}/ResponseViewer.vue
 ${CLI_PATH}/vue-cli-service build --target lib --formats umd --dest ${DIST_FOLDER} --no-clean --name import-dialog  ${COMPONENTS_FOLDER}/ImportDialog.vue
 ${CLI_PATH}/vue-cli-service build --target lib --formats umd --dest ${DIST_FOLDER} --no-clean --name export-dialog  ${COMPONENTS_FOLDER}/ExportDialog.vue
+${CLI_PATH}/vue-cli-service build --target lib --formats umd --dest ${DIST_FOLDER} --no-clean --name response-panel  ${COMPONENTS_FOLDER}/ResponsePanel.vue
