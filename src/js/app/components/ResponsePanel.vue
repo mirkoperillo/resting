@@ -1,32 +1,30 @@
 <template>
-    <div class="row">
+  <div class="row">
     <div class="col-md-12">
       <div class="panel panel-default">
         <div class="panel-heading">
           <p class="text-center">
             <span class="response-metric">Status:</span>
-            <span
-              class="response-metric-value"> {{callStatus}} </span>
+            <span class="response-metric-value">{{ callStatus }}</span>
             <span class="response-metric">Time:</span>
-            <span
-              class="response-metric-value"> {{callDuration}} </span>
+            <span class="response-metric-value">{{ callDuration }}</span>
             <span class="response-metric">Size:</span>
-            <span
-              class="response-metric-value"> {{callSize}} </span>
+            <span class="response-metric-value">{{ callSize }}</span>
           </p>
         </div>
 
         <div class="panel-body row">
           <div class="col-md-12">
             <response-menu></response-menu>
-            <div class="alert alert-success" :class="{'hide': isHidden}" role="alert">
+            <div
+              class="alert alert-success"
+              :class="{ hide: isHidden }"
+              role="alert">
               <p>Response copied successfully!</p>
             </div>
             <div v-if="showBody">
-            <response-viewer v-if="useFormattedBody"></response-viewer>
-            <pre
-              class="pre-scrollable"
-              v-if="useRawBody">
+              <response-viewer v-if="useFormattedBody"></response-viewer>
+              <pre class="pre-scrollable" v-if="useRawBody">
               <code id="highlighted-response">{{content}}</code>
             </pre>
             </div>
@@ -35,9 +33,9 @@
                 <tbody v-for="header in headers" :key="header.name">
                   <tr>
                     <td>
-                      <strong>{{header.name}}</strong>
+                      <strong>{{ header.name }}</strong>
                     </td>
-                    <td>{{header.value}}</td>
+                    <td>{{ header.value }}</td>
                   </tr>
                 </tbody>
               </table>
@@ -63,11 +61,11 @@ export default {
     bacheca.subscribe('deleteBookmark', this.clear)
     bacheca.subscribe('copyResponse', this.copyResponse)
     bacheca.subscribe('showResponseBody', this.showResponseBody),
-    bacheca.subscribe('showResponseHeaders', this.showResponseHeaders),
-    bacheca.subscribe('formattedBody', this.formattedBody)
+      bacheca.subscribe('showResponseHeaders', this.showResponseHeaders),
+      bacheca.subscribe('formattedBody', this.formattedBody)
     bacheca.subscribe('rawBody', this.rawBody)
   },
-  data(){
+  data() {
     return {
       callStatus: '-',
       callDuration: '-',
@@ -149,10 +147,11 @@ export default {
           }, 2000)
         })
         .catch(() => console.log('Error copying to clipboard'))
-    }
+    },
   },
   components: {
-    ResponseMenu, ResponseViewer
-  }
+    ResponseMenu,
+    ResponseViewer,
+  },
 }
 </script>
