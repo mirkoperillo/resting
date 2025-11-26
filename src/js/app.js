@@ -60,6 +60,7 @@ requirejs(
     'vuecomp/response-panel.umd',
     'vuecomp/authentication-panel.umd',
     'vuecomp/header.umd',
+    'vuecomp/entry-list.umd',
   ],
   function (
     $,
@@ -81,7 +82,8 @@ requirejs(
     AddFolderButton,
     ResponsePanel,
     AuthenticationPanel,
-    RHeader
+    RHeader,
+    EntryList
   ) {
     function AppVm() {
       const contexts = ko.observableArray()
@@ -907,6 +909,16 @@ requirejs(
         request.oauthAuthPosition(value)
       })
 
+      bacheca.subscribe('update.reqHeaders.entryList', (value) => {
+        request.headers.removeAll()
+        request.headers(
+          value.map(
+            (item) =>
+              new EntryItemVm(item.entryName, item.entryValue, item.enabled)
+          )
+        )
+      })
+
       return {
         contexts,
         selectedCtx,
@@ -1082,6 +1094,16 @@ requirejs(
         },
         render: function (h) {
           return h('r-header')
+        },
+      })
+
+      const requestHeaderTab = new Vue({
+        el: '#v-request-header-tab',
+        components: {
+          EntryList,
+        },
+        render: function (h) {
+          return h('entry-list', { props: { elem: 'reqHeaders' } })
         },
       })
 

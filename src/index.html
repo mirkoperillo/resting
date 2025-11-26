@@ -220,9 +220,9 @@
                   <request-body
                     params="request: request"
                     data-bind="visible : showRequestBody"></request-body>
-                  <entry-list
-                    params="entryList : request.headers, showHeaderList: true"
-                    data-bind="visible : showRequestHeaders"></entry-list>
+                  <div data-bind="visible: showRequestHeaders">
+                    <div id="v-request-header-tab"></div>
+                  </div>
                   <entry-list
                     params="entryList : request.querystring"
                     data-bind="visible : showQuerystring"></entry-list>
