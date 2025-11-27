@@ -1035,16 +1035,6 @@ requirejs(
         },
       })
 
-      // ko.components.register('authentication', {
-      //   viewModel: {
-      //     require: 'app/components/authentication/authenticationVm',
-      //   },
-      //   template: {
-      //     require:
-      //       'text!app/components/authentication/authentication_view.html',
-      //   },
-      // })
-
       // Show all options, more restricted setup than the Knockout regular binding.
       var options = {
         attribute: 'data-bind', // default "data-sbind"
