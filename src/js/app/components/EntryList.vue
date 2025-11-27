@@ -127,7 +127,7 @@ export default {
     bacheca.subscribe('reset', this.reset)
     this.$refs['name-field'].focus()
 
-    bacheca.subscribe('loadBookmark', this.loadHeaders)
+    bacheca.subscribe(`loadBookmark.${this.elem}`, this.load)
   },
   data() {
     return {
@@ -223,9 +223,8 @@ export default {
       this.cleanFields()
       this.entryList = []
     },
-    loadHeaders(bookmark) {
-      const headers = bookmark.request.headers
-      this.entryList = headers.map((h) => ({
+    load(entryList) {
+      this.entryList = entryList.map((h) => ({
         entryName: h.name,
         entryValue: h.value,
         enabled: h.enabled,

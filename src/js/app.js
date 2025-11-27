@@ -252,6 +252,8 @@ requirejs(
           request.querystring(
             req.querystring ? _convertToEntryItemVM(req.querystring) : []
           )
+          bacheca.publish('loadBookmark.reqHeaders', req.headers)
+          bacheca.publish('loadBookmark.reqQuerystring', req.querystring)
           _updateAuthentication(req.authentication)
           updateBody(req.bodyType, req.body)
           request.context(req.context)
@@ -919,6 +921,16 @@ requirejs(
         )
       })
 
+      bacheca.subscribe('update.reqQuerystring.entryList', (value) => {
+        request.querystring.removeAll()
+        request.querystring(
+          value.map(
+            (item) =>
+              new EntryItemVm(item.entryName, item.entryValue, item.enabled)
+          )
+        )
+      })
+
       return {
         contexts,
         selectedCtx,
@@ -1104,6 +1116,16 @@ requirejs(
         },
         render: function (h) {
           return h('entry-list', { props: { elem: 'reqHeaders' } })
+        },
+      })
+
+      const requestQuerystringTab = new Vue({
+        el: '#v-request-querystring-tab',
+        components: {
+          EntryList,
+        },
+        render: function (h) {
+          return h('entry-list', { props: { elem: 'reqQuerystring' } })
         },
       })
 

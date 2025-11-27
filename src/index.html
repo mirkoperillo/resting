@@ -223,9 +223,9 @@
                   <div data-bind="visible: showRequestHeaders">
                     <div id="v-request-header-tab"></div>
                   </div>
-                  <entry-list
-                    params="entryList : request.querystring"
-                    data-bind="visible : showQuerystring"></entry-list>
+                  <div data-bind="visible: showQuerystring">
+                    <div id="v-request-querystring-tab"></div>
+                  </div>
                   <div data-bind="visible: showAuthentication">
                     <div id="v-authentication-panel"></div>
                   </div>
