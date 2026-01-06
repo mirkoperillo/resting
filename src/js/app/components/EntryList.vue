@@ -20,28 +20,15 @@
  
 -->
   <div>
-    <div
-      v-for="(entryListItem, idx) in entryList"
-      :key="`${entryListItem.entryName}_${entryListItem.entryValue}`">
-      <entry-list-item
-        :item="entryListItem"
-        :index="idx"
-        @remove-item="removeItem"
+    <div v-for="(entryListItem, idx) in entryList" :key="`${entryListItem.name}_${entryListItem.value}`">
+      <entry-list-item :item="entryListItem" :index="idx" @remove-item="removeItem"
         @update-entryListItem="updateItem" />
     </div>
     <div class="row form-inline form-group">
-      <input
-        type="checkbox"
-        class="form-control"
-        style="margin-right: 2px; visibility: hidden" />
+      <input type="checkbox" class="form-control" style="margin-right: 2px; visibility: hidden" />
       <label>Name</label>
       <span v-if="showHeaderList">
-        <input
-          type="text"
-          style="margin-left: 10px"
-          class="form-control"
-          list="headerNames"
-          v-model="entryName"
+        <input type="text" style="margin-left: 10px" class="form-control" list="headerNames" v-model="entryName"
           ref="name-field" />
         <datalist id="headerNames">
           <option v-for="h in headerNames" :key="h">
@@ -50,12 +37,7 @@
         </datalist>
       </span>
       <span v-else>
-        <input
-          type="text"
-          style="margin-left: 10px"
-          class="form-control"
-          v-model="entryName"
-          ref="name-field" />
+        <input type="text" style="margin-left: 10px" class="form-control" v-model="entryName" ref="name-field" />
       </span>
       <select class="form-control" v-if="enableFileEntry" v-model="entryType">
         <option v-for="e in entryTypes" :key="e">{{ e }}</option>
@@ -63,24 +45,13 @@
       <label style="margin-left: 5px">Value</label>
       <span v-if="!isFileEntry">
         <span v-if="!showHeaderList">
-          <input
-            type="text"
-            style="margin-left: 10px"
-            class="form-control"
-            v-model="entryValue"
-            @keyup.enter="addOnEnter"
-            ref="value-field" />
+          <input type="text" style="margin-left: 10px" class="form-control" v-model="entryValue"
+            @keyup.enter="addOnEnter" ref="value-field" />
         </span>
 
         <span v-if="showHeaderList">
-          <input
-            type="text"
-            style="margin-left: 10px"
-            class="form-control"
-            v-model="entryValue"
-            list="headerValues"
-            @keyup.enter="addOnEnter"
-            ref="value-field" />
+          <input type="text" style="margin-left: 10px" class="form-control" v-model="entryValue" list="headerValues"
+            @keyup.enter="addOnEnter" ref="value-field" />
           <datalist id="headerValues">
             <option v-for="h in headerValues" :key="h">
               <span>{{ h }}</span>
@@ -89,20 +60,12 @@
         </span>
       </span>
       <span v-if="isFileEntry">
-        <input
-          type="file"
-          id="resting-file"
-          hidden
-          @onChange="onFileSelectedEvent" />
+        <input type="file" id="resting-file" hidden @onChange="onFileSelectedEvent" />
         <label id="select-file-button" class="file-label" for="resting-file">
           Select
         </label>
         <span id="file-name" />
-        <button
-          id="file-remove-button"
-          type="button"
-          class="btn btn-default btn-xs"
-          @click="removeFile">
+        <button id="file-remove-button" type="button" class="btn btn-default btn-xs" @click="removeFile">
           <i class="fa fa-times" aria-hidden="true"></i>
         </button>
       </span>
@@ -121,18 +84,20 @@ export default {
   name: 'EntryList',
   props: {
     elem: String,
+    showHeaderList: Boolean
+  },
+  created() {
   },
   mounted() {
     this.headerNames = Object.keys(httpHeaders)
     bacheca.subscribe('reset', this.reset)
     this.$refs['name-field'].focus()
 
-    bacheca.subscribe(`loadBookmark.${this.elem}`, this.load)
+    bacheca.subscribe(`loadEntryList.${this.elem}`, this.load)
   },
   data() {
     return {
       entryList: [],
-      showHeaderList: true,
       entryName: '',
       entryValue: '',
       entryFile: null,
@@ -179,8 +144,8 @@ export default {
       let item
       if (this.entryType === 'Text') {
         item = {
-          entryName: this.entryName,
-          entryValue: this.entryValue,
+          name: this.entryName,
+          value: this.entryValue,
           enabled: true,
           valueFile: null,
           enableFileEntry: this.enableFileEntry,
@@ -189,8 +154,8 @@ export default {
       }
       if (this.entryType === 'File') {
         item = {
-          entryName: this.entryName,
-          entryValue: this.entryValue,
+          name: this.entryName,
+          value: this.entryValue,
           enabled: true,
           valueFile: this.entryFile,
           enableFileEntry: this.enableFileEntry,
@@ -223,15 +188,18 @@ export default {
       this.cleanFields()
       this.entryList = []
     },
-    load(entryList) {
-      this.entryList = entryList.map((h) => ({
-        entryName: h.name,
-        entryValue: h.value,
+    load(entryList = []) {
+      console.log('update variables ' + JSON.stringify(entryList))
+      this.entryList = []
+      this.entryList = entryList && Array.isArray(entryList) ? entryList.map((h) => ({
+        name: h.name,
+        value: h.value,
         enabled: h.enabled,
         valueFile: null,
         enableFileEntry: false,
         entryType: 'Text',
-      }))
+      })) : []
+      console.log('dopo aggiornamento: ' + JSON.stringify(this.entryList))
     },
     // better to use refs ?
     removeFile() {

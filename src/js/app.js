@@ -123,8 +123,6 @@ requirejs(
 
       // Flags to show/hide dialogs
       const showBookmarkDialog = ko.observable(false)
-      const showContextDialog = ko.observable(false)
-      const showConfirmDialog = ko.observable(false)
 
       const executionInProgress = ko.observable(false)
       const saveAsNewBookmark = ko.observable(false)
@@ -154,7 +152,6 @@ requirejs(
       const contextDialog = (context) => {
         selectedCtx.name(context.name())
         selectedCtx.variables(context.variables())
-        showContextDialog(true)
       }
 
       const defaultContextDialog = () => {
@@ -177,10 +174,6 @@ requirejs(
           ctxToLoad = _getDefaultCtx()
         }
         contextDialog(ctxToLoad)
-      }
-
-      const dismissContextDialog = () => {
-        showContextDialog(false)
       }
 
       const convertToUrlEncoded = (data = [], context) =>
@@ -252,8 +245,12 @@ requirejs(
           request.querystring(
             req.querystring ? _convertToEntryItemVM(req.querystring) : []
           )
-          bacheca.publish('loadBookmark.reqHeaders', req.headers)
-          bacheca.publish('loadBookmark.reqQuerystring', req.querystring)
+          if (req.headers !== undefined) {
+            bacheca.publish('loadEntryList.reqHeaders', req.headers)
+          }
+          if (req.querystring !== undefined) {
+            bacheca.publish('loadEntryList.reqQuerystring', req.querystring)
+          }
           _updateAuthentication(req.authentication)
           updateBody(req.bodyType, req.body)
           request.context(req.context)
@@ -654,41 +651,36 @@ requirejs(
       const closeDialogOnEscape = (data, event) => {
         const excape = 27
         if (event.keyCode === excape) {
-          showBookmarkDialog(false),
-            showContextDialog(false),
-            showConfirmDialog(false),
-            saveAsNewBookmark(false)
+          showBookmarkDialog(false), saveAsNewBookmark(false)
         }
       }
 
-      const saveContext = () => {
-        storage.saveContext({
-          name: selectedCtx.name(),
-          variables: _extractModelFromVM(selectedCtx.variables()),
-        })
+      const saveContext = (context) => {
+        console.log('saveCtx in app ' + JSON.stringify(context))
+        storage.saveContext(context)
+        console.log('ko contexts ' + JSON.stringify(ko.toJS(contexts)))
         const contextToEditIdx = contexts().findIndex(
-          (ctx) => ctx.name === selectedCtx.name()
+          (ctx) => ctx.name() === context.name
         )
+
+        console.log('trovato contesto ' + contextToEditIdx)
         if (contextToEditIdx > -1) {
-          contexts.replace(contexts[contextToEditIdx], selectedCtx)
+          console.log('replace contexts ' + JSON.stringify(context.variables))
+          contexts.replace(
+            contexts()[contextToEditIdx],
+            new ContextVm(context.name, context.variables)
+          )
+          console.log(
+            'context updated? ' +
+              JSON.stringify(ko.toJS(contexts()[contextToEditIdx]))
+          )
         }
-
-        dismissContextDialog()
       }
 
-      const confirmDeleteContext = () => {
-        showConfirmDialog(true)
-        dialogConfirmMessage('Confirm context delete ?')
-      }
-
-      const deleteContext = () => {
-        const ctxToRemove = contexts().find(
-          (ctx) => ctx.name() === selectedCtx.name()
-        )
-        storage.deleteContextById(selectedCtx.name())
+      const deleteContext = (contextName) => {
+        const ctxToRemove = contexts().find((ctx) => ctx.name() === contextName)
+        storage.deleteContextById(contextName)
         contexts.remove(ctxToRemove)
-        dismissConfirmDialog()
-        dismissContextDialog()
       }
 
       const loadContexts = () => {
@@ -716,9 +708,9 @@ requirejs(
         return defaultCtxIdx >= 0 ? contexts()[defaultCtxIdx] : new ContextVm()
       }
 
-      const dismissConfirmDialog = () => {
-        showConfirmDialog(false)
-      }
+      // const dismissConfirmDialog = () => {
+      //   showConfirmDialog(false)
+      // }
 
       // to remove when active context panel is converted to vue component
       const createContextDialog = () => {
@@ -888,8 +880,11 @@ requirejs(
         const context = getContextVm(ctxName)
         selectedCtx.name(context.name())
         selectedCtx.variables(context.variables())
-        showContextDialog(true)
+        console.log('showContext ' + JSON.stringify(ko.toJS(context)))
+        bacheca.publish('showContext', ko.toJS(context))
       })
+
+      bacheca.subscribe('deleteContext', deleteContext)
 
       bacheca.subscribe('update.authenticationType', (value) => {
         request.authenticationType(value)
@@ -915,8 +910,7 @@ requirejs(
         request.headers.removeAll()
         request.headers(
           value.map(
-            (item) =>
-              new EntryItemVm(item.entryName, item.entryValue, item.enabled)
+            (item) => new EntryItemVm(item.name, item.value, item.enabled)
           )
         )
       })
@@ -925,11 +919,12 @@ requirejs(
         request.querystring.removeAll()
         request.querystring(
           value.map(
-            (item) =>
-              new EntryItemVm(item.entryName, item.entryValue, item.enabled)
+            (item) => new EntryItemVm(item.name, item.value, item.enabled)
           )
         )
       })
+
+      bacheca.subscribe('saveContext', saveContext)
 
       return {
         contexts,
@@ -954,15 +949,10 @@ requirejs(
         showQuerystring,
         showAuthentication,
         showActiveContext,
-
         showBookmarkDialog,
-        showContextDialog,
-        showConfirmDialog,
 
         executionInProgress,
         saveAsNewBookmark,
-
-        dialogConfirmMessage,
 
         // functions
         clearRequest,
@@ -980,18 +970,16 @@ requirejs(
         requestHeadersPanel,
         querystringPanel,
         authenticationPanel,
-        contextPanel,
+        contextPanel, // used by tab active panel in request
 
-        contextDialog,
-        defaultContextDialog,
-        contextDialogByName,
+        //defaultContextDialog,
+        contextDialogByName, // used by onClick details selected bookmark
         saveBookmarkDialog,
         saveAsBookmarkDialog,
 
         dismissSaveBookmarkDialog,
-        dismissContextDialog, // used by context-dialog panel
         closeDialogOnEscape,
-        saveContext,
+        //saveContext,
         // FIXME: not good to expose this internal function
         _saveBookmark,
         newTab,
@@ -1001,12 +989,9 @@ requirejs(
         loadBookmarkInView,
         isBookmarkLoaded,
         bookmarkScreenName,
-        loadContexts,
-        createContextDialog,
-        createContext,
-        deleteContext,
-        confirmDeleteContext,
-        dismissConfirmDialog,
+        loadContexts, // used to trigger context loading from storage at startup
+        //createContextDialog,
+        //createContext,
         enableSaveButton,
       }
     }
@@ -1105,7 +1090,9 @@ requirejs(
           EntryList,
         },
         render: function (h) {
-          return h('entry-list', { props: { elem: 'reqHeaders' } })
+          return h('entry-list', {
+            props: { elem: 'reqHeaders', showHeaderList: true },
+          })
         },
       })
 

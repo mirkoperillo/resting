@@ -30,7 +30,9 @@ define([], function () {
   const publish = (channel, data = {}) => {
     const publishedOnChannel = subscribers[channel]
     if (publishedOnChannel) {
-      publishedOnChannel.forEach((listener) => listener(data))
+      publishedOnChannel.forEach((listener) => {
+        listener(data)
+      })
     }
   }
 
