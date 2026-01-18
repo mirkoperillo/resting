@@ -220,12 +220,12 @@
                   <request-body
                     params="request: request"
                     data-bind="visible : showRequestBody"></request-body>
-                  <entry-list
-                    params="entryList : request.headers, showHeaderList: true"
-                    data-bind="visible : showRequestHeaders"></entry-list>
-                  <entry-list
-                    params="entryList : request.querystring"
-                    data-bind="visible : showQuerystring"></entry-list>
+                  <div data-bind="visible: showRequestHeaders">
+                    <div id="v-request-header-tab"></div>
+                  </div>
+                  <div data-bind="visible: showQuerystring">
+                    <div id="v-request-querystring-tab"></div>
+                  </div>
                   <div data-bind="visible: showAuthentication">
                     <div id="v-authentication-panel"></div>
                   </div>
@@ -307,71 +307,7 @@
 
       <div id="v-dialogs"></div>
 
-      <div
-        id="context-dialog"
-        class="panel panel-primary context-dialog"
-        data-bind="visible: showContextDialog">
-        <div class="panel-heading">
-          Context
-          <span data-bind="text: selectedCtx.name"></span>
-          <span
-            style="cursor: pointer"
-            class="glyphicon glyphicon-remove pull-right"
-            data-bind="click: dismissContextDialog"></span>
-        </div>
-        <div class="panel-body">
-          <p>
-            Use variables as
-            <strong>{var_name}</strong>
-            in
-          </p>
-          <ul>
-            <li>the request URL</li>
-            <li>value of header</li>
-            <li>part of the body</li>
-            <li>value of querystring</li>
-            <li>as username and password in BASIC authentication</li>
-          </ul>
-          <entry-list params="entryList : selectedCtx.variables"></entry-list>
-        </div>
-        <div class="panel-footer">
-          <button class="btn btn-default" data-bind="click: saveContext">
-            Save
-          </button>
-          <button
-            class="btn btn-default"
-            data-bind="click: dismissContextDialog">
-            Cancel
-          </button>
-          <button
-            class="btn btn-danger pull-right"
-            data-bind="click: confirmDeleteContext, visible: !selectedCtx.isDefault">
-            Delete
-          </button>
-        </div>
-      </div>
-
-      <div
-        id="dialog-confirm"
-        class="panel panel-danger dialog"
-        data-bind="visible: showConfirmDialog">
-        <div class="panel-heading">Confirm operation</div>
-        <div class="panel-body">
-          <p><span data-bind="text: dialogConfirmMessage"></span></p>
-          <div class="panel-footer">
-            <button class="btn btn-danger" data-bind="click: deleteContext">
-              Confirm
-            </button>
-            <button
-              class="btn btn-default"
-              data-bind="click: dismissConfirmDialog">
-              Cancel
-            </button>
-          </div>
-        </div>
-
-        <script data-main="js/app" src="js/require.js"></script>
-      </div>
+      <script data-main="js/app" src="js/require.js"></script>
     </div>
   </body>
 </html>

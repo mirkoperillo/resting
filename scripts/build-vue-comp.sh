@@ -18,3 +18,7 @@ ${CLI_PATH}/vue-cli-service build --target lib --formats umd --dest ${DIST_FOLDE
 ${CLI_PATH}/vue-cli-service build --target lib --formats umd --dest ${DIST_FOLDER} --no-clean --name response-panel  ${COMPONENTS_FOLDER}/ResponsePanel.vue
 ${CLI_PATH}/vue-cli-service build --target lib --formats umd --dest ${DIST_FOLDER} --no-clean --name authentication-panel  ${COMPONENTS_FOLDER}/AuthenticationPanel.vue
 ${CLI_PATH}/vue-cli-service build --target lib --formats umd --dest ${DIST_FOLDER} --no-clean --name header  ${COMPONENTS_FOLDER}/Header.vue
+${CLI_PATH}/vue-cli-service build --target lib --formats umd --dest ${DIST_FOLDER} --no-clean --name entry-list-item  ${COMPONENTS_FOLDER}/EntryListItem.vue
+${CLI_PATH}/vue-cli-service build --target lib --formats umd --dest ${DIST_FOLDER} --no-clean --name entry-list  ${COMPONENTS_FOLDER}/EntryList.vue
+${CLI_PATH}/vue-cli-service build --target lib --formats umd --dest ${DIST_FOLDER} --no-clean --name context-dialog  ${COMPONENTS_FOLDER}/ContextDialog.vue
+${CLI_PATH}/vue-cli-service build --target lib --formats umd --dest ${DIST_FOLDER} --no-clean --name confirm-dialog  ${COMPONENTS_FOLDER}/ConfirmDialog.vue
