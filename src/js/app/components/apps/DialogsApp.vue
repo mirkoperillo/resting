@@ -1,17 +1,34 @@
 <template>
   <div>
-    <about-dialog v-show="showAboutDialog" @dismiss-dialog="showAboutDialog = false"></about-dialog>
-    <credits-dialog v-show="showCreditsDialog" @dismiss-dialog="showCreditsDialog = false"></credits-dialog>
-    <donate-dialog v-show="showDonateDialog" @dismiss-dialog="showDonateDialog = false"></donate-dialog>
-    <folder-dialog v-show="showFolderDialog" :selected-folder="selectedFolder"
+    <about-dialog
+      v-show="showAboutDialog"
+      @dismiss-dialog="showAboutDialog = false"></about-dialog>
+    <credits-dialog
+      v-show="showCreditsDialog"
+      @dismiss-dialog="showCreditsDialog = false"></credits-dialog>
+    <donate-dialog
+      v-show="showDonateDialog"
+      @dismiss-dialog="showDonateDialog = false"></donate-dialog>
+    <folder-dialog
+      v-show="showFolderDialog"
+      :selected-folder="selectedFolder"
       @dismiss-dialog="showFolderDialog = false"></folder-dialog>
-    <import-dialog v-show="showImportDialog" @dismiss-dialog="showImportDialog = false"></import-dialog>
-    <export-dialog v-show="showExportDialog" @dismiss-dialog="showExportDialog = false"></export-dialog>
-    <create-context-dialog v-show="showCreateContextDialog"
+    <import-dialog
+      v-show="showImportDialog"
+      @dismiss-dialog="showImportDialog = false"></import-dialog>
+    <export-dialog
+      v-show="showExportDialog"
+      @dismiss-dialog="showExportDialog = false"></export-dialog>
+    <create-context-dialog
+      v-show="showCreateContextDialog"
       @dismiss-dialog="showCreateContextDialog = false"></create-context-dialog>
-    <context-dialog v-show="showContextDialog" :selected-context="selectedContext"
+    <context-dialog
+      v-show="showContextDialog"
+      :selected-context="selectedContext"
       @dismiss-dialog="showContextDialog = false"></context-dialog>
-    <confirm-dialog v-show="showConfirmDialog" :confirmation="confirmationAction"
+    <confirm-dialog
+      v-show="showConfirmDialog"
+      :confirmation="confirmationAction"
       @dismiss-dialog="showConfirmDialog = false"></confirm-dialog>
   </div>
 </template>

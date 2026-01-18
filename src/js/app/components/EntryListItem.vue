@@ -1,14 +1,32 @@
 <template>
   <div>
     <div class="row form-inline form-group">
-      <input type="checkbox" class="form-control" style="margin-right: 2px" v-model="enabled" :disabled="readOnly" />
+      <input
+        type="checkbox"
+        class="form-control"
+        style="margin-right: 2px"
+        v-model="enabled"
+        :disabled="readOnly" />
       <label :class="{ disabled: readOnly }" ref="name">Name</label>
-      <input type="text" style="margin-left: 10px" class="form-control" v-model="name" :disabled="readOnly" />
+      <input
+        type="text"
+        style="margin-left: 10px"
+        class="form-control"
+        v-model="name"
+        :disabled="readOnly" />
       <span v-if="!isFileEntry">
-        <label :class="{ disabled: readOnly }" style="margin-left: 5px" ref="value">
+        <label
+          :class="{ disabled: readOnly }"
+          style="margin-left: 5px"
+          ref="value">
           Value
         </label>
-        <input type="text" style="margin-left: 10px" class="form-control" v-model="value" :disabled="readOnly" />
+        <input
+          type="text"
+          style="margin-left: 10px"
+          class="form-control"
+          v-model="value"
+          :disabled="readOnly" />
       </span>
       <!--  currently this vue component doesn't support fileEntry
       <span v-if="isFileEntry">
@@ -18,13 +36,30 @@
         <span>{{ valueFile.name }}</span>
       </span> -->
       <div class="btn-group">
-        <button type="button" v-if="readOnly" class="btn btn-default" aria-label="Edit entry" @click="readOnly = false">
+        <button
+          type="button"
+          v-if="readOnly"
+          class="btn btn-default"
+          aria-label="Edit entry"
+          @click="readOnly = false">
           <span class="glyphicon glyphicon-pencil" aria-hidden="true"></span>
         </button>
-        <button type="button" v-if="!readOnly" class="btn btn-default" aria-label="Save entry" @click="saveItem">
-          <span class="glyphicon glyphicon-floppy-disk" aria-hidden="true"></span>
+        <button
+          type="button"
+          v-if="!readOnly"
+          class="btn btn-default"
+          aria-label="Save entry"
+          @click="saveItem">
+          <span
+            class="glyphicon glyphicon-floppy-disk"
+            aria-hidden="true"></span>
         </button>
-        <button type="button" v-if="readOnly" class="btn btn-default" aria-label="Remove entry" @click="remove">
+        <button
+          type="button"
+          v-if="readOnly"
+          class="btn btn-default"
+          aria-label="Remove entry"
+          @click="remove">
           <span class="glyphicon glyphicon-trash" aria-hidden="true"></span>
         </button>
       </div>
@@ -47,7 +82,7 @@ export default {
       enableFileEntry: this.item.enableFileEntry,
       entryType: this.item.entryType,
       entryTypes: ['Text', 'File'],
-      readOnly: true
+      readOnly: true,
     }
   },
   computed: {
@@ -72,7 +107,7 @@ export default {
     },
     remove() {
       this.$emit('remove-item', this.index)
-    }
-  }
+    },
+  },
 }
 </script>

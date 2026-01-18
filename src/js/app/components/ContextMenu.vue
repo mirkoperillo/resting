@@ -17,7 +17,10 @@
           </li>
           <li role="separator" class="divider"></li>
           <li v-for="ctx in contexts" :key="ctx">
-            <a href="#" v-if="ctx !== 'default'" @click="showContextDialog(ctx)">
+            <a
+              href="#"
+              v-if="ctx !== 'default'"
+              @click="showContextDialog(ctx)">
               {{ ctx }}
             </a>
           </li>
@@ -27,7 +30,9 @@
               Create
               <span class="pull-right">
                 <button class="btn btn-xs btn-primary">
-                  <span class="glyphicon glyphicon-plus" aria-hidden="true"></span>
+                  <span
+                    class="glyphicon glyphicon-plus"
+                    aria-hidden="true"></span>
                 </button>
               </span>
             </a>
@@ -93,7 +98,7 @@ export default {
       }
     },
     deleteContext(contextName) {
-      this.contexts = this.contexts.filter(ctx => ctx !== contextName)
+      this.contexts = this.contexts.filter((ctx) => ctx !== contextName)
     },
     showCreateContextDialog() {
       bacheca.publish('showCreateContextDialog')

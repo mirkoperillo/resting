@@ -1,5 +1,8 @@
 <template>
-  <r-dialog title="Confirm operation" :show-footer="true" @dismiss-dialog="$emit('dismiss-dialog')">
+  <r-dialog
+    title="Confirm operation"
+    :show-footer="true"
+    @dismiss-dialog="$emit('dismiss-dialog')">
     <p>{{ confirmation.msg }}</p>
     <template v-slot:footer>
       <button class="btn btn-danger" @click="executeOperation">Confirm</button>

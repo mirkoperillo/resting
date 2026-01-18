@@ -1,5 +1,8 @@
 <template>
-  <r-dialog style="width: 700px" :title="`Context ${this.selectedContext.name}`" :show-footer="true"
+  <r-dialog
+    style="width: 700px"
+    :title="`Context ${this.selectedContext.name}`"
+    :show-footer="true"
     @dismiss-dialog="$emit('dismiss-dialog')">
     <p>
       Use variables as
@@ -20,7 +23,10 @@
       <button class="btn btn-default" @click="dismissContextDialog">
         Cancel
       </button>
-      <button class="btn btn-danger pull-right" @click="confirmDeleteContext" v-if="!selectedContext.isDefault">
+      <button
+        class="btn btn-danger pull-right"
+        @click="confirmDeleteContext"
+        v-if="!selectedContext.isDefault">
         Delete
       </button>
     </template>
@@ -49,12 +55,15 @@ export default {
   },
   data() {
     return {
-      variables: []
+      variables: [],
     }
   },
   methods: {
     saveContext() {
-      bacheca.publish('saveContext', { name: this.selectedContext.name, variables: this.variables })
+      bacheca.publish('saveContext', {
+        name: this.selectedContext.name,
+        variables: this.variables,
+      })
       this.dismissContextDialog()
     },
     dismissContextDialog() {
@@ -65,11 +74,14 @@ export default {
         bacheca.publish('deleteContext', this.selectedContext.name)
         this.dismissContextDialog()
       }.bind(this)
-      bacheca.publish('showConfirmDialog', { msg: 'Confirm context delete ?', action: action })
+      bacheca.publish('showConfirmDialog', {
+        msg: 'Confirm context delete ?',
+        action: action,
+      })
     },
     updateVariables(entryList = []) {
-      this.variables = entryList;
-    }
+      this.variables = entryList
+    },
   },
   components: {
     RDialog,

@@ -20,15 +20,28 @@
  
 -->
   <div>
-    <div v-for="(entryListItem, idx) in entryList" :key="`${entryListItem.name}_${entryListItem.value}`">
-      <entry-list-item :item="entryListItem" :index="idx" @remove-item="removeItem"
+    <div
+      v-for="(entryListItem, idx) in entryList"
+      :key="`${entryListItem.name}_${entryListItem.value}`">
+      <entry-list-item
+        :item="entryListItem"
+        :index="idx"
+        @remove-item="removeItem"
         @update-entryListItem="updateItem" />
     </div>
     <div class="row form-inline form-group">
-      <input type="checkbox" class="form-control" style="margin-right: 2px; visibility: hidden" />
+      <input
+        type="checkbox"
+        class="form-control"
+        style="margin-right: 2px; visibility: hidden" />
       <label>Name</label>
       <span v-if="showHeaderList">
-        <input type="text" style="margin-left: 10px" class="form-control" list="headerNames" v-model="entryName"
+        <input
+          type="text"
+          style="margin-left: 10px"
+          class="form-control"
+          list="headerNames"
+          v-model="entryName"
           ref="name-field" />
         <datalist id="headerNames">
           <option v-for="h in headerNames" :key="h">
@@ -37,7 +50,12 @@
         </datalist>
       </span>
       <span v-else>
-        <input type="text" style="margin-left: 10px" class="form-control" v-model="entryName" ref="name-field" />
+        <input
+          type="text"
+          style="margin-left: 10px"
+          class="form-control"
+          v-model="entryName"
+          ref="name-field" />
       </span>
       <select class="form-control" v-if="enableFileEntry" v-model="entryType">
         <option v-for="e in entryTypes" :key="e">{{ e }}</option>
@@ -45,13 +63,24 @@
       <label style="margin-left: 5px">Value</label>
       <span v-if="!isFileEntry">
         <span v-if="!showHeaderList">
-          <input type="text" style="margin-left: 10px" class="form-control" v-model="entryValue"
-            @keyup.enter="addOnEnter" ref="value-field" />
+          <input
+            type="text"
+            style="margin-left: 10px"
+            class="form-control"
+            v-model="entryValue"
+            @keyup.enter="addOnEnter"
+            ref="value-field" />
         </span>
 
         <span v-if="showHeaderList">
-          <input type="text" style="margin-left: 10px" class="form-control" v-model="entryValue" list="headerValues"
-            @keyup.enter="addOnEnter" ref="value-field" />
+          <input
+            type="text"
+            style="margin-left: 10px"
+            class="form-control"
+            v-model="entryValue"
+            list="headerValues"
+            @keyup.enter="addOnEnter"
+            ref="value-field" />
           <datalist id="headerValues">
             <option v-for="h in headerValues" :key="h">
               <span>{{ h }}</span>
@@ -60,12 +89,20 @@
         </span>
       </span>
       <span v-if="isFileEntry">
-        <input type="file" id="resting-file" hidden @onChange="onFileSelectedEvent" />
+        <input
+          type="file"
+          id="resting-file"
+          hidden
+          @onChange="onFileSelectedEvent" />
         <label id="select-file-button" class="file-label" for="resting-file">
           Select
         </label>
         <span id="file-name" />
-        <button id="file-remove-button" type="button" class="btn btn-default btn-xs" @click="removeFile">
+        <button
+          id="file-remove-button"
+          type="button"
+          class="btn btn-default btn-xs"
+          @click="removeFile">
           <i class="fa fa-times" aria-hidden="true"></i>
         </button>
       </span>
@@ -84,7 +121,7 @@ export default {
   name: 'EntryList',
   props: {
     elem: String,
-    showHeaderList: Boolean
+    showHeaderList: Boolean,
   },
   mounted() {
     this.headerNames = Object.keys(httpHeaders)
@@ -188,14 +225,17 @@ export default {
     },
     load(entryList = []) {
       this.entryList = []
-      this.entryList = entryList && Array.isArray(entryList) ? entryList.map((h) => ({
-        name: h.name,
-        value: h.value,
-        enabled: h.enabled,
-        valueFile: null,
-        enableFileEntry: false,
-        entryType: 'Text',
-      })) : []
+      this.entryList =
+        entryList && Array.isArray(entryList)
+          ? entryList.map((h) => ({
+              name: h.name,
+              value: h.value,
+              enabled: h.enabled,
+              valueFile: null,
+              enableFileEntry: false,
+              entryType: 'Text',
+            }))
+          : []
     },
     // better to use refs ?
     removeFile() {
