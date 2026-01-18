@@ -154,10 +154,6 @@ requirejs(
         selectedCtx.variables(context.variables())
       }
 
-      // const defaultContextDialog = () => {
-      //   contextDialog(_getDefaultCtx())
-      // }
-
       const getContextVm = (ctxName) => {
         let ctxToLoad = contexts().find((ctx) => ctx.name() === ctxName)
         if (ctxToLoad === undefined) {
@@ -968,14 +964,12 @@ requirejs(
         authenticationPanel,
         contextPanel, // used by tab active panel in request
 
-        //defaultContextDialog,
         contextDialogByName, // used by onClick details selected bookmark
         saveBookmarkDialog,
         saveAsBookmarkDialog,
 
         dismissSaveBookmarkDialog,
         closeDialogOnEscape,
-        //saveContext,
         // FIXME: not good to expose this internal function
         _saveBookmark,
         newTab,
@@ -987,7 +981,6 @@ requirejs(
         bookmarkScreenName,
         loadContexts, // used to trigger context loading from storage at startup
         createContextDialog, // to remove when active context panel is converted to vue component
-        //createContext,
         enableSaveButton,
       }
     }
