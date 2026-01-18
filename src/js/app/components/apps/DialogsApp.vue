@@ -55,7 +55,6 @@ export default {
     bacheca.subscribe('showConfirmDialog', (action) => {
       this.showConfirmDialog = true
       this.confirmationAction = action
-      // bacheca.publish('loadEntryList.context', context.variables)
     })
   },
   data() {

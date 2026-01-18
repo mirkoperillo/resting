@@ -127,7 +127,7 @@ requirejs(
       const executionInProgress = ko.observable(false)
       const saveAsNewBookmark = ko.observable(false)
 
-      const dialogConfirmMessage = ko.observable()
+      // const dialogConfirmMessage = ko.observable()
 
       const bookmarkProvider = makeBookmarkProvider(storage)
 
@@ -154,9 +154,9 @@ requirejs(
         selectedCtx.variables(context.variables())
       }
 
-      const defaultContextDialog = () => {
-        contextDialog(_getDefaultCtx())
-      }
+      // const defaultContextDialog = () => {
+      //   contextDialog(_getDefaultCtx())
+      // }
 
       const getContextVm = (ctxName) => {
         let ctxToLoad = contexts().find((ctx) => ctx.name() === ctxName)
@@ -218,7 +218,7 @@ requirejs(
         request.jwtToken('')
         request.oauthAuthPosition('')
         request.oauthAccessToken('')
-        request.context('default')
+        request.context(defaultCtxName)
       }
 
       const _convertToEntryItemVM = (items = []) =>
@@ -536,7 +536,7 @@ requirejs(
       const _mapContext = () =>
         [
           _getDefaultCtx(),
-          request.context() !== 'default' &&
+          request.context() !== defaultCtxName &&
             contexts().find((ctx) => ctx.name() === request.context()),
         ]
           .filter((ctx) => !!ctx)
@@ -656,23 +656,15 @@ requirejs(
       }
 
       const saveContext = (context) => {
-        console.log('saveCtx in app ' + JSON.stringify(context))
         storage.saveContext(context)
-        console.log('ko contexts ' + JSON.stringify(ko.toJS(contexts)))
         const contextToEditIdx = contexts().findIndex(
           (ctx) => ctx.name() === context.name
         )
 
-        console.log('trovato contesto ' + contextToEditIdx)
         if (contextToEditIdx > -1) {
-          console.log('replace contexts ' + JSON.stringify(context.variables))
           contexts.replace(
             contexts()[contextToEditIdx],
             new ContextVm(context.name, context.variables)
-          )
-          console.log(
-            'context updated? ' +
-              JSON.stringify(ko.toJS(contexts()[contextToEditIdx]))
           )
         }
       }
@@ -692,7 +684,7 @@ requirejs(
           },
           () => {
             defaultCtxIdx = loadedCtxs.findIndex(
-              (ctx) => ctx.name() === 'default'
+              (ctx) => ctx.name() === defaultCtxName
             )
             if (defaultCtxIdx < 0) {
               defaultCtxIdx = 0
@@ -705,12 +697,17 @@ requirejs(
       }
 
       const _getDefaultCtx = () => {
-        return defaultCtxIdx >= 0 ? contexts()[defaultCtxIdx] : new ContextVm()
-      }
+        defaultCtxIdx = contexts().findIndex(
+          (ctx) => ctx.name() === defaultCtxName
+        )
 
-      // const dismissConfirmDialog = () => {
-      //   showConfirmDialog(false)
-      // }
+        if (defaultCtxIdx < 0) {
+          defaultCtxIdx = 0
+          return new ContextVm()
+        } else {
+          return contexts()[defaultCtxIdx]
+        }
+      }
 
       // to remove when active context panel is converted to vue component
       const createContextDialog = () => {
@@ -718,7 +715,7 @@ requirejs(
       }
 
       const createContext = (ctxName) => {
-        if (ctxName !== 'default') {
+        if (ctxName !== defaultCtxName) {
           contexts.push(new ContextVm(ctxName))
           storage.saveContext({ name: ctxName, variables: [] })
           contexts.sort(sortCriteriaCtx)
@@ -880,7 +877,6 @@ requirejs(
         const context = getContextVm(ctxName)
         selectedCtx.name(context.name())
         selectedCtx.variables(context.variables())
-        console.log('showContext ' + JSON.stringify(ko.toJS(context)))
         bacheca.publish('showContext', ko.toJS(context))
       })
 
@@ -990,7 +986,7 @@ requirejs(
         isBookmarkLoaded,
         bookmarkScreenName,
         loadContexts, // used to trigger context loading from storage at startup
-        //createContextDialog,
+        createContextDialog, // to remove when active context panel is converted to vue component
         //createContext,
         enableSaveButton,
       }

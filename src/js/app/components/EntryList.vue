@@ -86,8 +86,6 @@ export default {
     elem: String,
     showHeaderList: Boolean
   },
-  created() {
-  },
   mounted() {
     this.headerNames = Object.keys(httpHeaders)
     bacheca.subscribe('reset', this.reset)
@@ -189,7 +187,6 @@ export default {
       this.entryList = []
     },
     load(entryList = []) {
-      console.log('update variables ' + JSON.stringify(entryList))
       this.entryList = []
       this.entryList = entryList && Array.isArray(entryList) ? entryList.map((h) => ({
         name: h.name,
@@ -199,7 +196,6 @@ export default {
         enableFileEntry: false,
         entryType: 'Text',
       })) : []
-      console.log('dopo aggiornamento: ' + JSON.stringify(this.entryList))
     },
     // better to use refs ?
     removeFile() {
