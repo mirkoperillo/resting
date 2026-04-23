@@ -9,7 +9,8 @@
     "test": "jasmine --config=test/config/jasmine.json",
     "dev:chrome": "./node_modules/nodemon/bin/nodemon.js --ext '*' --watch ./src --ignore 'js/vendor/**' --exec './scripts/build-dev.sh chrome'",
     "dev:firefox": "./node_modules/nodemon/bin/nodemon.js --ext '*' --watch ./src --ignore 'js/vendor/**' --exec './scripts/build-dev.sh firefox'",
-    "dev:win:firefox": "nodemon --ext '*' --watch /src --ignore 'js/vendor/**' --exec \"powershell -File scripts/build-dev.ps1 firefox\""
+    "dev:win:firefox": "nodemon --ext '*' --watch /src --ignore 'js/vendor/**' --exec \"powershell -File scripts/build-dev.ps1 firefox\"",
+    "dev:win:chrome": "nodemon --ext '*' --watch /src --ignore 'js/vendor/**' --exec \"powershell -File scripts/build-dev.ps1 chrome\""
   },
   "author": "",
   "license": "ISC",
