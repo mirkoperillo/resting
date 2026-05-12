@@ -75,7 +75,7 @@ You can install Resting from the source code following these instructions:
 #### Steps
 1. `git clone https://github.com/mirkoperillo/resting.git`
 2. Run `npm install`
-3. Run `npm run dev:firefox` (hot-reload enabled)
+3. Run `npm run dev:firefox` (hot-reload enabled) or `npm run dev:win:firefox` if you are on windows
 4. Open Firefox Dev Edition
 5. Visit url `about:debugging`
 6. Load temporary Addon

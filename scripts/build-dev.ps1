@@ -2,9 +2,7 @@ param(
 	[string]$browser
 )
 
-$currPwd = Get-Location
-
-Set-Location $currPwd
+Set-Location $PSScriptRoot
 Write-Output "Moved to scripts dir"
 
 if ($browser -eq "chrome")
@@ -15,6 +13,11 @@ if ($browser -eq "chrome")
 	Write-Output "Build firefox extension"
 }
 
+Set-Location ..
+#build-vuecomp
+& "$PSScriptRoot\build-vue-comp.ps1"
+Write-Output "Built vue components"
+Set-Location scripts
 
 if (Test-Path -path "../build")
 {
@@ -28,12 +31,6 @@ Write-Output "Created build dir"
 Copy-Item "../src/*" -destination "../build" -recurse -erroraction stop
 Write-Output "Copied Sources"
 
-Set-Location ..
-#build-vuecomp
-& "$PSScriptRoot\build-vue-comp.ps1"
-Write-Output "Built vue components"
-
-Set-Location scripts
 if ($browser -eq "chrome")
 {
 	Copy-Item "../addon/chrome/*" -destination "../build" -recurse -erroraction stop
